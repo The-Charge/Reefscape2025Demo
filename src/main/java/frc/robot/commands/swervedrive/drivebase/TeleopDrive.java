@@ -80,8 +80,8 @@ public class TeleopDrive extends Command {
     //Translation2d translation = SwerveController.getTranslation2d(desiredSpeeds);
     Translation2d translation = new Translation2d(vX.getAsDouble()*Constants.MAX_SPEED, vY.getAsDouble()*Constants.MAX_SPEED);
 
-    //SmartDashboard.putNumber("vxtranslation.getX", translation.getX());
-    //SmartDashboard.putNumber("vytranslation.getY", translation.getY());
+    SmartDashboard.putNumber("vxtranslation.getX", translation.getX());
+    SmartDashboard.putNumber("vytranslation.getY", translation.getY());
 
     // Make the robot move
     swerve.drive(translation, rotationSpeed, true);
