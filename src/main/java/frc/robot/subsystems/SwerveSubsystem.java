@@ -66,7 +66,7 @@ public class SwerveSubsystem extends SubsystemBase
   /**
    * AprilTag field layout.
    */
-  private final AprilTagFieldLayout aprilTagFieldLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2024Crescendo);
+  private final AprilTagFieldLayout aprilTagFieldLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2025Reefscape);
   /**
    * Enable vision odometry updates while driving.
    */
@@ -345,11 +345,12 @@ public class SwerveSubsystem extends SubsystemBase
    */
   public Command sysIdDriveMotorCommand()
   {
-    return SwerveDriveTest.generateSysIdCommand(
-        SwerveDriveTest.setDriveSysIdRoutine(
-            new Config(),
-            this, swerveDrive, 12),
-        3.0, 5.0, 3.0);
+    return Commands.none();
+    //return SwerveDriveTest.generateSysIdCommand(
+    //    SwerveDriveTest.setDriveSysIdRoutine(
+    //       new Config(),
+    //        this, swerveDrive, 12),
+    //    3.0, 5.0, 3.0);
   }
 
   /**
