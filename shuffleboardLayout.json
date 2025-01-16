@@ -426,6 +426,58 @@
               "_glyph": 148,
               "_showGlyph": false
             }
+          },
+          "4,3": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/swerve/modules/backleft/Adjusted Absolute Encoder",
+              "_title": "/SmartDashboard/swerve/modules/backleft/Adjusted Absolute Encoder",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "5,3": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/swerve/modules/backright/Adjusted Absolute Encoder",
+              "_title": "/SmartDashboard/swerve/modules/backright/Adjusted Absolute Encoder",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "4,2": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/swerve/modules/frontleft/Adjusted Absolute Encoder",
+              "_title": "/SmartDashboard/swerve/modules/frontleft/Adjusted Absolute Encoder",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "5,2": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/swerve/modules/frontright/Adjusted Absolute Encoder",
+              "_title": "/SmartDashboard/swerve/modules/frontright/Adjusted Absolute Encoder",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
           }
         }
       }
