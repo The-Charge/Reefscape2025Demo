@@ -43,10 +43,12 @@ public final class Constants
   {
 
     // Joystick Deadband
-    public static final double DEADBAND        = 0.1;
-    public static final double LEFT_Y_DEADBAND = 0.1;
+    public static final double LEFT_Y_DEADBAND  = 0.1;
+    public static final double LEFT_X_DEADBAND  = 0.1;
     public static final double RIGHT_X_DEADBAND = 0.1;
     public static final double TURN_CONSTANT    = 6;
+    public static final double DEADBAND = 0.1;
+    public static final double DRIVE_SPEED = 1; //1 is 100%
   }
 
   public static class LimelightReefConstants
