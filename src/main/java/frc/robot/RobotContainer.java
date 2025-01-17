@@ -4,11 +4,11 @@
 
 package frc.robot;
 
+import java.io.File;
+
 import com.pathplanner.lib.auto.NamedCommands;
+
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.RobotBase;
@@ -17,11 +17,8 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.OperatorConstants;
-import frc.robot.commands.swervedrive.drivebase.AbsoluteDriveAdv;
 import frc.robot.commands.swervedrive.drivebase.TeleopDrive;
 import frc.robot.subsystems.SwerveSubsystem;
-
-import java.io.File;
 import swervelib.SwerveInputStream;
 
 /**
@@ -40,6 +37,17 @@ public class RobotContainer
 
     int rotationXboxAxis = 4;
 
+    private final SwerveInputStream driveAngularVelocity = SwerveInputStream.of(
+      drivebase.getSwerveDrive(),
+      () -> -driverXbox.getLeftY(),
+      () -> -driverXbox.getLeftX()
+    ).withControllerRotationAxis(() -> -driverXbox.getRightX())
+      .deadband(OperatorConstants.DEADBAND)
+      .scaleTranslation(OperatorConstants.DRIVE_SPEED)
+      .scaleRotation(OperatorConstants.DRIVE_SPEED)
+      .allianceRelativeControl(true);
+    private final Command driveFieldOrientedAnglularVelocity = drivebase.driveFieldOriented(driveAngularVelocity);
+
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
@@ -56,7 +64,7 @@ public class RobotContainer
                                   OperatorConstants.LEFT_X_DEADBAND),
     () -> -driverXbox.getRawAxis(rotationXboxAxis));
 
-    drivebase.setDefaultCommand(teleopDrive);
+    drivebase.setDefaultCommand(driveFieldOrientedAnglularVelocity);
 
     // Configure the trigger bindings
     configureBindings();
