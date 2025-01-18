@@ -6,12 +6,15 @@ package frc.robot;
 
 import java.io.File;
 
+import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -30,9 +33,16 @@ import swervelib.SwerveInputStream;
 public class RobotContainer {
     
     private final CommandXboxController driverXbox = new CommandXboxController(0);
-    private final SwerveSubsystem drivebase = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "swerve"));
+    private final SwerveSubsystem swerve = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "swerve"));
     
     // int rotationXboxAxis = 4;
+    
+    /*
+     * ======================
+     * Auto
+     * ======================
+     */
+    private SendableChooser<Command> autoChooser;
     
     /*
      * ======================
@@ -40,7 +50,7 @@ public class RobotContainer {
      * ======================
      */
     private final SwerveInputStream swerveInputFieldOriented = SwerveInputStream.of(
-        drivebase.getSwerveDrive(),
+        swerve.getSwerveDrive(),
         () -> -driverXbox.getLeftY(),
         () -> -driverXbox.getLeftX()
     ).withControllerRotationAxis(() -> -driverXbox.getRightX())
@@ -51,8 +61,8 @@ public class RobotContainer {
     private final SwerveInputStream swereveInputRobotOriented = swerveInputFieldOriented.copy()
         .robotRelative(true)
         .allianceRelativeControl(false);
-    private final Command driveFieldOriented = drivebase.driveFieldOriented(swerveInputFieldOriented);
-    private final Command driveRobotOriented = drivebase.driveFieldOriented(swereveInputRobotOriented);
+    private final Command driveFieldOriented = swerve.driveFieldOriented(swerveInputFieldOriented);
+    private final Command driveRobotOriented = swerve.driveFieldOriented(swereveInputRobotOriented);
     public boolean isFieldCentric = true;
     
     public RobotContainer() {
@@ -67,24 +77,27 @@ public class RobotContainer {
         //                               SwerveConstants.LEFT_X_DEADBAND),
         // () -> -driverXbox.getRawAxis(rotationXboxAxis));
         
-        drivebase.setDefaultCommand(isFieldCentric ? driveFieldOriented : driveRobotOriented);
+        swerve.setDefaultCommand(isFieldCentric ? driveFieldOriented : driveRobotOriented);
         
         configureNamedCommands();
         configureBindings();
         DriverStation.silenceJoystickConnectionWarning(true);
+
+        autoChooser = AutoBuilder.buildAutoChooser();
+        SmartDashboard.putData("Auto Chooser", autoChooser);
     }
 
     private void configureBindings() {
-        driverXbox.b().onTrue((Commands.runOnce(drivebase::zeroGyroWithAlliance)));
-        driverXbox.x().whileTrue(Commands.runOnce(drivebase::lock, drivebase).repeatedly());
+        driverXbox.b().onTrue((Commands.runOnce(swerve::zeroGyroWithAlliance)));
+        driverXbox.x().whileTrue(Commands.runOnce(swerve::lock, swerve).repeatedly());
         driverXbox.back().onTrue(new InstantCommand(() -> {
             isFieldCentric = !isFieldCentric;
 
-            Command curr = drivebase.getCurrentCommand();
+            Command curr = swerve.getCurrentCommand();
             if(curr != null)
                 curr.cancel();
 
-            drivebase.setDefaultCommand(isFieldCentric ? driveFieldOriented : driveRobotOriented);
+            swerve.setDefaultCommand(isFieldCentric ? driveFieldOriented : driveRobotOriented);
         }));
         //driverXbox.b().whileTrue(
         //    drivebase.driveToPose(
@@ -99,9 +112,9 @@ public class RobotContainer {
         //Pathplanner named commands
     }
     public Command getAutonomousCommand() {
-        return drivebase.getAutonomousCommand("New Auto");
+        return autoChooser.getSelected();
     }
     public void setMotorBrake(boolean brake) {
-        drivebase.setMotorBrake(brake);
+        swerve.setMotorBrake(brake);
     }
 }
