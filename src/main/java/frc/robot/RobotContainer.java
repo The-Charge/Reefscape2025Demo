@@ -50,6 +50,9 @@ public class RobotContainer {
      * Swerve
      * ======================
      */
+
+
+
     private final SwerveInputStream swerveInputFieldOriented = SwerveInputStream.of(
         swerve.getSwerveDrive(),
         () -> -driverXbox.getLeftY(),
@@ -80,14 +83,23 @@ public class RobotContainer {
         //     rotationXboxAxis = 2;
         // }
         
-        // TeleopDrive teleopDrive = new TeleopDrive(drivebase,
-        // () -> -MathUtil.applyDeadband(driverXbox.getLeftY(),
-        //                               SwerveConstants.LEFT_Y_DEADBAND),
-        // () -> -MathUtil.applyDeadband(driverXbox.getLeftX(),
-        //                               SwerveConstants.LEFT_X_DEADBAND),
-        // () -> -driverXbox.getRawAxis(rotationXboxAxis));
         
-        swerve.setDefaultCommand(isFieldCentric ? driveFieldOriented : driveRobotOriented);
+        TeleopDrive teleopDrive = new TeleopDrive(swerve,
+        () -> -MathUtil.applyDeadband(driverXbox.getLeftY(),
+                                      SwerveConstants.LEFT_Y_DEADBAND),
+        () -> -MathUtil.applyDeadband(driverXbox.getLeftX(),
+                                      SwerveConstants.LEFT_X_DEADBAND),
+        () -> -driverXbox.getRightX(),
+        () -> driverXbox.povUp().getAsBoolean(),
+        () -> driverXbox.povLeft().getAsBoolean(),
+        () -> driverXbox.povDown().getAsBoolean(),
+        () -> driverXbox.povRight().getAsBoolean(),
+        () -> driverXbox.start().getAsBoolean()
+        );
+        swerve.setDefaultCommand(teleopDrive);
+    
+        
+        // swerve.setDefaultCommand(isFieldCentric ? driveFieldOriented : driveRobotOriented);
         
         configureNamedCommands();
         configureBindings();
