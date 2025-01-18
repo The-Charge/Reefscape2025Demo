@@ -1,4 +1,4 @@
-package main.java.frc.robot.subsystems;
+package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -7,10 +7,11 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import frc.robot.LimelightHelpers;
 import frc.robot.Constants.ApriltagConstants;
-import frc.robot.Constants.LimelightReefConstants;
+import frc.robot.Constants.LLReefConstants;
+import frc.robot.subsystems.SwerveSubsystem;
 
-public class LimelightReef extends SubsystemBase{
-    public String limelightname = LimelightReefConstants.REEF_LL_NAME;   //first camera initialiation
+public class VisionSubsystem extends SubsystemBase{
+    public String limelightname = LLReefConstants.REEF_LL_NAME;   //first camera initialiation
     public double tx;               //X-offset
     public double ty;               //Y-offset
     public double tv;               //Target Identification
@@ -24,7 +25,7 @@ public class LimelightReef extends SubsystemBase{
     public Pose2d robotpose;        //Robot in Fieldspace (blue side)
     public double prevtag;
 
-    public LimelightReef(){
+    public VisionSubsystem(){
     
     }
 
@@ -46,6 +47,16 @@ public class LimelightReef extends SubsystemBase{
         cl = NetworkTableInstance.getDefault().getTable(limelightname).getEntry("cl").getDouble(0);
         getpipe = NetworkTableInstance.getDefault().getTable(limelightname).getEntry("getpipe").getDouble(0);
 
+        
     }
 
+    public void setPipeline(double index){
+      NetworkTableInstance.getDefault().getTable(limelightname).getEntry("pipeline").setNumber(index);
+    }
+
+    public void setRobotOrientation(double robotYaw){
+      LimelightHelpers.SetRobotOrientation(limelightname, robotYaw, 0.0, 0.0, 0.0, 0.0, 0.0);
+    }
+
+    
 }
