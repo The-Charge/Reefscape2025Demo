@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.constants.SwerveConstants;
 
 /**
 * The VM is configured to automatically run this class, and to call the functions corresponding to each mode, as
@@ -84,7 +85,7 @@ public class Robot extends TimedRobot {
     @Override
     public void disabledPeriodic()
     {
-        if (disabledTimer.hasElapsed(Constants.DrivebaseConstants.WHEEL_LOCK_TIME))
+        if (disabledTimer.hasElapsed(SwerveConstants.WHEEL_LOCK_TIME))
         {
             m_robotContainer.setMotorBrake(false);
             disabledTimer.stop();
