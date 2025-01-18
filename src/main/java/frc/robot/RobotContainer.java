@@ -23,6 +23,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.swervedrive.drivebase.TeleopDrive;
 import frc.robot.constants.SwerveConstants;
+import frc.robot.subsystems.LEDSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
 import swervelib.SwerveInputStream;
 
@@ -35,6 +36,7 @@ public class RobotContainer {
     
     private final CommandXboxController driverXbox = new CommandXboxController(0);
     private final SwerveSubsystem swerve = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "swerve"));
+    private final LEDSubsystem leds = new LEDSubsystem();
     
     // int rotationXboxAxis = 4;
     
