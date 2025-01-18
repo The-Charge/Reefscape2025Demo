@@ -5,6 +5,7 @@
 package frc.robot;
 
 import java.io.File;
+import java.util.function.DoubleSupplier;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
@@ -64,6 +65,15 @@ public class RobotContainer {
     private final Command driveFieldOriented = swerve.driveFieldOriented(swerveInputFieldOriented);
     private final Command driveRobotOriented = swerve.driveFieldOriented(swereveInputRobotOriented);
     public boolean isFieldCentric = true;
+    private final DoubleSupplier speedShift = () -> {
+        if(driverXbox.getRightTriggerAxis() >= 0.1) {
+            return 0.25;
+        }
+        if(driverXbox.getLeftTriggerAxis() >= 0.1) {
+            return 0.5;
+        }
+        return 1;
+    };
     
     public RobotContainer() {
         // if (RobotBase.isSimulation()) {
@@ -99,6 +109,8 @@ public class RobotContainer {
 
             swerve.setDefaultCommand(isFieldCentric ? driveFieldOriented : driveRobotOriented);
         }));
+        driverXbox.leftTrigger(0.1).onChange(new InstantCommand(() -> updateSwerveShift()));
+        driverXbox.rightTrigger(0.1).onChange(new InstantCommand(() -> updateSwerveShift()));
         //driverXbox.b().whileTrue(
         //    drivebase.driveToPose(
         //        new Pose2d(new Translation2d(4, 4), Rotation2d.fromDegrees(0)))
@@ -116,5 +128,10 @@ public class RobotContainer {
     }
     public void setMotorBrake(boolean brake) {
         swerve.setMotorBrake(brake);
+    }
+    public void updateSwerveShift() {
+        double speed = SwerveConstants.DRIVE_SPEED * speedShift.getAsDouble();
+        swerveInputFieldOriented.scaleTranslation(speed).scaleRotation(speed);
+        swereveInputRobotOriented.scaleTranslation(speed).scaleRotation(speed);
     }
 }
