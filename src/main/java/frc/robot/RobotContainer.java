@@ -16,8 +16,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.swervedrive.drivebase.TeleopDrive;
+import frc.robot.constants.SwerveConstants;
 import frc.robot.subsystems.SwerveSubsystem;
 import swervelib.SwerveInputStream;
 
@@ -38,9 +38,9 @@ public class RobotContainer {
     () -> -driverXbox.getLeftY(),
     () -> -driverXbox.getLeftX()
     ).withControllerRotationAxis(() -> -driverXbox.getRightX())
-    .deadband(OperatorConstants.DEADBAND)
-    .scaleTranslation(OperatorConstants.DRIVE_SPEED)
-    .scaleRotation(OperatorConstants.DRIVE_SPEED)
+    .deadband(SwerveConstants.DEADBAND)
+    .scaleTranslation(SwerveConstants.DRIVE_SPEED)
+    .scaleRotation(SwerveConstants.DRIVE_SPEED)
     .allianceRelativeControl(true);
     private final SwerveInputStream swereveInputRobotOriented = swerveInputFieldOriented.copy()
     .robotRelative(true)
@@ -55,9 +55,9 @@ public class RobotContainer {
         
         // TeleopDrive teleopDrive = new TeleopDrive(drivebase,
         // () -> -MathUtil.applyDeadband(driverXbox.getLeftY(),
-        //                               OperatorConstants.LEFT_Y_DEADBAND),
+        //                               SwerveConstants.LEFT_Y_DEADBAND),
         // () -> -MathUtil.applyDeadband(driverXbox.getLeftX(),
-        //                               OperatorConstants.LEFT_X_DEADBAND),
+        //                               SwerveConstants.LEFT_X_DEADBAND),
         // () -> -driverXbox.getRawAxis(rotationXboxAxis));
         
         drivebase.setDefaultCommand(driveFieldOriented);

@@ -9,7 +9,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.Constants;
+import frc.robot.constants.SwerveConstants;
 import frc.robot.subsystems.SwerveSubsystem;
 import java.util.function.DoubleSupplier;
 import swervelib.SwerveController;
@@ -78,7 +78,7 @@ public class TeleopDrive extends Command {
     //SmartDashboard.putNumber("vyMetersPerSecond", desiredSpeeds.vyMetersPerSecond);
     
     //Translation2d translation = SwerveController.getTranslation2d(desiredSpeeds);
-    Translation2d translation = new Translation2d(vX.getAsDouble()*Constants.MAX_SPEED, vY.getAsDouble()*Constants.MAX_SPEED);
+    Translation2d translation = new Translation2d(vX.getAsDouble()*SwerveConstants.MAX_SPEED, vY.getAsDouble()*SwerveConstants.MAX_SPEED);
 
     SmartDashboard.putNumber("translation.getX", translation.getX());
     SmartDashboard.putNumber("translation.getY", translation.getY());
