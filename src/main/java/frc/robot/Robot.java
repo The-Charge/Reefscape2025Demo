@@ -29,7 +29,6 @@ public class Robot extends TimedRobot {
     private Timer disabledTimer;
 
     private PowerDistribution m_pdp = new PowerDistribution();
-    private static DriverStation DS = new DriverStation();
     
     public Robot() {
         instance = this;
@@ -146,9 +145,9 @@ public class Robot extends TimedRobot {
     {
         SmartDashboard.putNumber("Battery Voltage", m_pdp.getVoltage());
         SmartDashboard.putNumber("Total Amps", m_pdp.getTotalCurrent());
-        SmartDashboard.putNumber("Time Remaining", DS.getMatchTime());
-        // SmartDashboard.putNumber("velocity", Math.pow(m_robotContainer..getFieldVelocity().vxMetersPerSecond, 2)
-        // + Math.pow(m_SwerveSubsystem.getFieldVelocity().vyMetersPerSecond, 2));
+        SmartDashboard.putNumber("Time Remaining", DriverStation.getMatchTime());
+        SmartDashboard.putNumber("velocity", Math.sqrt(Math.pow(m_robotContainer.getSwerveSubsystem().getFieldVelocity().vxMetersPerSecond, 2)
+        + Math.pow(m_robotContainer.getSwerveSubsystem().getFieldVelocity().vyMetersPerSecond, 2)));
 
     }
     
