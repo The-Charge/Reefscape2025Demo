@@ -47,49 +47,24 @@ public class RobotContainer {
      */
     private SendableChooser<Command> autoChooser;
     
-    /*
-     * ======================
-     * Swerve
-     * ======================
-     */
-    private final SwerveInputStream swerveInputFieldOriented = SwerveInputStream.of(
-        swerve.getSwerveDrive(),
-        () -> -driverXbox.getLeftY(),
-        () -> -driverXbox.getLeftX()
-    ).withControllerRotationAxis(() -> -driverXbox.getRightX())
-        .deadband(SwerveConstants.DEADBAND)
-        .scaleTranslation(SwerveConstants.DRIVE_SPEED)
-        .scaleRotation(SwerveConstants.DRIVE_SPEED)
-        .allianceRelativeControl(true);
-    private final SwerveInputStream swereveInputRobotOriented = swerveInputFieldOriented.copy()
-        .robotRelative(true)
-        .allianceRelativeControl(false);
-    private final Command driveFieldOriented = swerve.driveFieldOriented(swerveInputFieldOriented);
-    private final Command driveRobotOriented = swerve.driveFieldOriented(swereveInputRobotOriented);
-    public boolean isFieldCentric = true;
-    private final DoubleSupplier speedShift = () -> {
-        if(driverXbox.getRightTriggerAxis() >= 0.1) {
-            return 0.25;
-        }
-        if(driverXbox.getLeftTriggerAxis() >= 0.1) {
-            return 0.5;
-        }
-        return 1;
-    };
-    
     public RobotContainer() {
         // if (RobotBase.isSimulation()) {
         //     rotationXboxAxis = 2;
         // }
         
-        // TeleopDrive teleopDrive = new TeleopDrive(drivebase,
-        // () -> -MathUtil.applyDeadband(driverXbox.getLeftY(),
-        //                               SwerveConstants.LEFT_Y_DEADBAND),
-        // () -> -MathUtil.applyDeadband(driverXbox.getLeftX(),
-        //                               SwerveConstants.LEFT_X_DEADBAND),
-        // () -> -driverXbox.getRawAxis(rotationXboxAxis));
-        
-        swerve.setDefaultCommand(isFieldCentric ? driveFieldOriented : driveRobotOriented);
+        TeleopDrive teleopDrive = new TeleopDrive(swerve,
+            () -> -MathUtil.applyDeadband(driverXbox.getLeftY(), SwerveConstants.LEFT_Y_DEADBAND),
+            () -> -MathUtil.applyDeadband(driverXbox.getLeftX(), SwerveConstants.LEFT_X_DEADBAND),
+            () -> -MathUtil.applyDeadband(driverXbox.getRightX(), SwerveConstants.RIGHT_X_DEADBAND),
+            () -> driverXbox.povUp().getAsBoolean(),
+            () -> driverXbox.povLeft().getAsBoolean(),
+            () -> driverXbox.povDown().getAsBoolean(),
+            () -> driverXbox.povRight().getAsBoolean(),
+            () -> driverXbox.back().getAsBoolean(),
+            () -> driverXbox.leftTrigger(SwerveConstants.TRIGGER_DEADBAND).getAsBoolean(),
+            () -> driverXbox.rightTrigger(SwerveConstants.TRIGGER_DEADBAND).getAsBoolean()
+        );
+        swerve.setDefaultCommand(teleopDrive);
         
         configureNamedCommands();
         configureBindings();
@@ -100,19 +75,9 @@ public class RobotContainer {
     }
 
     private void configureBindings() {
-        driverXbox.b().onTrue((Commands.runOnce(swerve::zeroGyroWithAlliance)));
+        driverXbox.b().onTrue(Commands.runOnce(swerve::zeroGyroWithAlliance));
         driverXbox.x().whileTrue(Commands.runOnce(swerve::lock, swerve).repeatedly());
-        driverXbox.back().onTrue(new InstantCommand(() -> {
-            isFieldCentric = !isFieldCentric;
 
-            Command curr = swerve.getCurrentCommand();
-            if(curr != null)
-                curr.cancel();
-
-            swerve.setDefaultCommand(isFieldCentric ? driveFieldOriented : driveRobotOriented);
-        }));
-        driverXbox.leftTrigger(0.1).onChange(new InstantCommand(() -> updateSwerveShift()));
-        driverXbox.rightTrigger(0.1).onChange(new InstantCommand(() -> updateSwerveShift()));
         //driverXbox.b().whileTrue(
         //    drivebase.driveToPose(
         //        new Pose2d(new Translation2d(4, 4), Rotation2d.fromDegrees(0)))
@@ -130,10 +95,5 @@ public class RobotContainer {
     }
     public void setMotorBrake(boolean brake) {
         swerve.setMotorBrake(brake);
-    }
-    public void updateSwerveShift() {
-        double speed = SwerveConstants.DRIVE_SPEED * speedShift.getAsDouble();
-        swerveInputFieldOriented.scaleTranslation(speed).scaleRotation(speed);
-        swereveInputRobotOriented.scaleTranslation(speed).scaleRotation(speed);
     }
 }
