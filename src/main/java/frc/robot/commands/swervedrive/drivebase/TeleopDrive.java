@@ -68,8 +68,6 @@ public class TeleopDrive extends Command {
     } else {
       rotationSpeed = 0;
     }
-    SmartDashboard.putNumber("velocity", Math.sqrt(Math.pow(swerve.getFieldVelocity().vxMetersPerSecond, 2)
-        + Math.pow(swerve.getFieldVelocity().vyMetersPerSecond, 2)));
     SmartDashboard.putNumber("time", Timer.getMatchTime());
 
     //ChassisSpeeds desiredSpeeds = swerve.getTargetSpeeds(vX.getAsDouble(), vY.getAsDouble(), 0, 0);

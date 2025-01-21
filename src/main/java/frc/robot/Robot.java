@@ -5,6 +5,7 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -27,7 +28,8 @@ public class Robot extends TimedRobot {
     
     private Timer disabledTimer;
 
-    private SwerveSubsystem m_SwerveSubsystem;
+    private PowerDistribution m_pdp = new PowerDistribution();
+    private static DriverStation DS = new DriverStation();
     
     public Robot() {
         instance = this;
@@ -142,6 +144,12 @@ public class Robot extends TimedRobot {
     @Override
     public void teleopPeriodic()
     {
+        SmartDashboard.putNumber("Battery Voltage", m_pdp.getVoltage());
+        SmartDashboard.putNumber("Total Amps", m_pdp.getTotalCurrent());
+        SmartDashboard.putNumber("Time Remaining", DS.getMatchTime());
+        // SmartDashboard.putNumber("velocity", Math.pow(m_robotContainer..getFieldVelocity().vxMetersPerSecond, 2)
+        // + Math.pow(m_SwerveSubsystem.getFieldVelocity().vyMetersPerSecond, 2));
+
     }
     
     @Override
