@@ -7,7 +7,7 @@ package frc.robot.commands.swervedrive.drivebase;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.Constants;
+import frc.robot.constants.SwerveConstants;
 import frc.robot.subsystems.SwerveSubsystem;
 import java.util.function.DoubleSupplier;
 import edu.wpi.first.wpilibj.Timer;
@@ -72,24 +72,13 @@ public class TeleopDrive extends Command {
         + Math.pow(swerve.getFieldVelocity().vyMetersPerSecond, 2)));
     SmartDashboard.putNumber("time", Timer.getMatchTime());
 
-    // ChassisSpeeds desiredSpeeds = swerve.getTargetSpeeds(vX.getAsDouble(),
-    // vY.getAsDouble(), 0, 0);
-
-    // ChassisSpeeds desiredSpeeds = swerve.getTargetSpeeds(vX.getAsDouble(),
-    // vY.getAsDouble(), 0, 0);
-
-    // SmartDashboard.putNumber("vxMetersPerSecond",
-    // desiredSpeeds.vxMetersPerSecond);
-    // SmartDashboard.putNumber("vyMetersPerSecond",
-    // desiredSpeeds.vyMetersPerSecond);
-
-    // SmartDashboard.putNumber("vxMetersPerSecond",
-    // desiredSpeeds.vxMetersPerSecond);
-    // SmartDashboard.putNumber("vyMetersPerSecond",
-    // desiredSpeeds.vyMetersPerSecond);
-
-    Translation2d translation = new Translation2d(vX.getAsDouble() * Constants.MAX_SPEED,
-        vY.getAsDouble() * Constants.MAX_SPEED);
+    //ChassisSpeeds desiredSpeeds = swerve.getTargetSpeeds(vX.getAsDouble(), vY.getAsDouble(), 0, 0);
+    
+    //SmartDashboard.putNumber("vxMetersPerSecond", desiredSpeeds.vxMetersPerSecond);
+    //SmartDashboard.putNumber("vyMetersPerSecond", desiredSpeeds.vyMetersPerSecond);
+    
+    //Translation2d translation = SwerveController.getTranslation2d(desiredSpeeds);
+    Translation2d translation = new Translation2d(vX.getAsDouble()*SwerveConstants.MAX_SPEED, vY.getAsDouble()*SwerveConstants.MAX_SPEED);
 
     SmartDashboard.putNumber("translation.getX", translation.getX());
     SmartDashboard.putNumber("translation.getY", translation.getY());
