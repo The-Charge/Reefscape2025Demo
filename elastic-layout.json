@@ -3,14 +3,14 @@
   "grid_size": 128,
   "tabs": [
     {
-      "name": "Teleoperated",
+      "name": "Swerve",
       "grid_layout": {
         "layouts": [],
         "containers": [
           {
             "title": "FL Raw Angle",
-            "x": 512.0,
-            "y": 128.0,
+            "x": 0.0,
+            "y": 0.0,
             "width": 128.0,
             "height": 128.0,
             "type": "Text Display",
@@ -23,8 +23,8 @@
           },
           {
             "title": "BR Raw Angle",
-            "x": 640.0,
-            "y": 256.0,
+            "x": 128.0,
+            "y": 128.0,
             "width": 128.0,
             "height": 128.0,
             "type": "Text Display",
@@ -37,8 +37,8 @@
           },
           {
             "title": "FR Raw Angle",
-            "x": 640.0,
-            "y": 128.0,
+            "x": 128.0,
+            "y": 0.0,
             "width": 128.0,
             "height": 128.0,
             "type": "Text Display",
@@ -51,13 +51,55 @@
           },
           {
             "title": "BL Raw Angle",
-            "x": 512.0,
-            "y": 256.0,
+            "x": 0.0,
+            "y": 128.0,
             "width": 128.0,
             "height": 128.0,
             "type": "Text Display",
             "properties": {
               "topic": "/SmartDashboard/swerve/modules/backleft/Raw Absolute Encoder",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "Adjusted Absolute Encoder",
+            "x": 0.0,
+            "y": 384.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/SmartDashboard/swerve/modules/backleft/Adjusted Absolute Encoder",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "IMU Adjusted",
+            "x": 384.0,
+            "y": 384.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/SmartDashboard/swerve/imu/adjusted",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "IMU Raw",
+            "x": 256.0,
+            "y": 384.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/SmartDashboard/swerve/imu/raw",
               "period": 0.06,
               "data_type": "double",
               "show_submit_button": false
@@ -70,7 +112,21 @@
       "name": "Autonomous",
       "grid_layout": {
         "layouts": [],
-        "containers": []
+        "containers": [
+          {
+            "title": "Auto Chooser",
+            "x": 0.0,
+            "y": 0.0,
+            "width": 384.0,
+            "height": 128.0,
+            "type": "ComboBox Chooser",
+            "properties": {
+              "topic": "/SmartDashboard/Auto Chooser",
+              "period": 0.06,
+              "sort_options": false
+            }
+          }
+        ]
       }
     }
   ]

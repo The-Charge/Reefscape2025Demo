@@ -5,15 +5,20 @@
 package frc.robot;
 
 import java.io.File;
+import java.util.function.DoubleSupplier;
 
+import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.constants.SwerveConstants;
@@ -30,47 +35,47 @@ public class RobotContainer {
     
     private final CommandXboxController driverXbox = new CommandXboxController(0);
     private final SwerveSubsystem swerve = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "swerve"));
-    private final VisionSubsystem m_limelight = new VisionSubsystem(swerve);
+    
     // int rotationXboxAxis = 4;
     
-    private final SwerveInputStream swerveInputFieldOriented = SwerveInputStream.of(
-    swerve.getSwerveDrive(),
-    () -> -driverXbox.getLeftY(),
-    () -> -driverXbox.getLeftX()
-    ).withControllerRotationAxis(() -> -driverXbox.getRightX())
-    .deadband(SwerveConstants.DEADBAND)
-    .scaleTranslation(SwerveConstants.DRIVE_SPEED)
-    .scaleRotation(SwerveConstants.DRIVE_SPEED)
-    .allianceRelativeControl(true);
-    private final SwerveInputStream swereveInputRobotOriented = swerveInputFieldOriented.copy()
-    .robotRelative(true)
-    .allianceRelativeControl(false);
-    private final Command driveFieldOriented = swerve.driveFieldOriented(swerveInputFieldOriented);
-    private final Command driveRobotOriented = swerve.driveFieldOriented(swereveInputRobotOriented);
+    /*
+     * ======================
+     * Auto
+     * ======================
+     */
+    private SendableChooser<Command> autoChooser;
     
     public RobotContainer() {
         // if (RobotBase.isSimulation()) {
         //     rotationXboxAxis = 2;
         // }
         
-        // TeleopDrive teleopDrive = new TeleopDrive(swerve,
-        // () -> -MathUtil.applyDeadband(driverXbox.getLeftY(),
-        //                               SwerveConstants.LEFT_Y_DEADBAND),
-        // () -> -MathUtil.applyDeadband(driverXbox.getLeftX(),
-        //                               SwerveConstants.LEFT_X_DEADBAND),
-        // () -> -driverXbox.getRawAxis(rotationXboxAxis));
-        
-        swerve.setDefaultCommand(driveFieldOriented);
+        TeleopDrive teleopDrive = new TeleopDrive(swerve,
+            () -> -MathUtil.applyDeadband(driverXbox.getLeftY(), SwerveConstants.LEFT_Y_DEADBAND),
+            () -> -MathUtil.applyDeadband(driverXbox.getLeftX(), SwerveConstants.LEFT_X_DEADBAND),
+            () -> -MathUtil.applyDeadband(driverXbox.getRightX(), SwerveConstants.RIGHT_X_DEADBAND),
+            () -> driverXbox.povUp().getAsBoolean(),
+            () -> driverXbox.povLeft().getAsBoolean(),
+            () -> driverXbox.povDown().getAsBoolean(),
+            () -> driverXbox.povRight().getAsBoolean(),
+            () -> driverXbox.back().getAsBoolean(),
+            () -> driverXbox.leftTrigger(SwerveConstants.TRIGGER_DEADBAND).getAsBoolean(),
+            () -> driverXbox.rightTrigger(SwerveConstants.TRIGGER_DEADBAND).getAsBoolean()
+        );
+        swerve.setDefaultCommand(teleopDrive);
         
         configureNamedCommands();
         configureBindings();
         DriverStation.silenceJoystickConnectionWarning(true);
+
+        autoChooser = AutoBuilder.buildAutoChooser();
+        SmartDashboard.putData("Auto Chooser", autoChooser);
     }
 
     private void configureBindings() {
-        driverXbox.b().onTrue((Commands.runOnce(swerve::zeroGyroWithAlliance)));
+        driverXbox.b().onTrue(Commands.runOnce(swerve::zeroGyroWithAlliance));
         driverXbox.x().whileTrue(Commands.runOnce(swerve::lock, swerve).repeatedly());
-        driverXbox.a().onTrue((Commands.runOnce(swerve::addFakeVisionReading)));
+
         //driverXbox.b().whileTrue(
         //    swerve.driveToPose(
         //        new Pose2d(new Translation2d(4, 4), Rotation2d.fromDegrees(0)))
@@ -84,7 +89,7 @@ public class RobotContainer {
         //Pathplanner named commands
     }
     public Command getAutonomousCommand() {
-        return swerve.getAutonomousCommand("New Auto");
+        return autoChooser.getSelected();
     }
     public void setMotorBrake(boolean brake) {
         swerve.setMotorBrake(brake);
