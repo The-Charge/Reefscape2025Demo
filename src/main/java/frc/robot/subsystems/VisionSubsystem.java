@@ -2,11 +2,13 @@ package frc.robot.subsystems;
 
 import static edu.wpi.first.units.Units.DegreesPerSecond;
 
+import java.util.List;
 import java.util.Optional;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.apriltag.AprilTag;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -29,13 +31,17 @@ import limelight.structures.Orientation3d;
 public class VisionSubsystem extends SubsystemBase{
     SwerveSubsystem swerve;
 
-    private final AprilTagFieldLayout aprilTagFieldLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2025Reefscape);
+   
 
     public Timer detectiontimer = new Timer();
     public boolean timerstarted = false;
 
     Limelight reeflimelight;
+    Limelight funnellimelight;
+    LimelightPoseEstimator funnelPoseEstimator;
     LimelightPoseEstimator reefPoseEstimator;
+
+    
     public double[] tx = new double[2];               //X-offset
     public double[] ty = new double[2];               //Y-offset
     public boolean[] tv = new boolean[2];               //Target Identification
@@ -49,14 +55,20 @@ public class VisionSubsystem extends SubsystemBase{
     public Pose2d[] robotpose = new Pose2d[2];        //Robot in Fieldspace (blue side)
     public double[] prevtag = new double[2];
     
+    
 
     public VisionSubsystem(SwerveSubsystem swerve){
+      this.swerve = swerve;
       
       //Setup YALL limelight object
       reeflimelight = new Limelight(LLReefConstants.LL_NAME);
       reeflimelight.getSettings().withLimelightLEDMode(LEDMode.PipelineControl).withCameraOffset(Pose3d.kZero).save();
       reefPoseEstimator = reeflimelight.getPoseEstimator(true);
-      this.swerve = swerve;
+
+      funnellimelight = new Limelight(LLFunnelConstants.LL_NAME);
+      funnellimelight.getSettings().withLimelightLEDMode(LEDMode.PipelineControl).withCameraOffset(Pose3d.kZero).save();
+      
+      
     }
 
     @Override
@@ -65,6 +77,7 @@ public class VisionSubsystem extends SubsystemBase{
       // This method will be called once per scheduler run
       updateLimelightTracking();
       UpdateLocalization();
+      
     }
   
     //updates limelight tracked values and puts on SmartDashboard
@@ -115,7 +128,7 @@ public class VisionSubsystem extends SubsystemBase{
       if (poseEstimate.avgTagDist < 4 && poseEstimate.tagCount > 0 && poseEstimate.getMinTagAmbiguity() < 0.3)
       {
         swerve.addVisionReading(poseEstimate.pose.toPose2d(),poseEstimate.timestampSeconds);
-        SmartDashboard.putNumber("Tagx", poseEstimate.pose.toPose2d().getX());
+        SmartDashboard.putNumber("TagX", poseEstimate.pose.toPose2d().getX());
         SmartDashboard.putNumber("TagY", poseEstimate.pose.toPose2d().getY());
         SmartDashboard.putNumber("Timestamp", poseEstimate.timestampSeconds);
         SmartDashboard.putNumber("Rotationtag", poseEstimate.pose.toPose2d().getRotation().getDegrees());
@@ -128,23 +141,10 @@ public class VisionSubsystem extends SubsystemBase{
       SmartDashboard.putNumber("Tag Ambig", poseEstimate.getMinTagAmbiguity());
 
     });
-
     }
-   
-    /*
-     
-    public boolean checkForContinuousTarget(){
-      if (tv[0] > 0){
-        if (!timerstarted){
-          detectiontimer = new Timer();
-          detectiontimer.start();
-          timerstarted = true;
-        }
-        else if (detectiontimer.hasElapsed(0.5)){
-
-        }
-      }
-        
+    
+    public boolean getTV(int index){
+      return tv[index];
     }
-      */
+    
 }

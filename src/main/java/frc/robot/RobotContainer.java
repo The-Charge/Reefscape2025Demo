@@ -21,6 +21,8 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.commands.swervedrive.drivebase.TeleopDrive;
+import frc.robot.commands.swervedrive.vision.DriveToTag;
 import frc.robot.constants.SwerveConstants;
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
@@ -35,6 +37,7 @@ public class RobotContainer {
     
     private final CommandXboxController driverXbox = new CommandXboxController(0);
     private final SwerveSubsystem swerve = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "swerve"));
+    private final VisionSubsystem m_limelight = new VisionSubsystem(swerve);
     
     // int rotationXboxAxis = 4;
     
@@ -75,6 +78,8 @@ public class RobotContainer {
     private void configureBindings() {
         driverXbox.b().onTrue(Commands.runOnce(swerve::zeroGyroWithAlliance));
         driverXbox.x().whileTrue(Commands.runOnce(swerve::lock, swerve).repeatedly());
+        driverXbox.a().onTrue(Commands.runOnce(swerve::addFakeVisionReading));
+        driverXbox.y().whileTrue(new DriveToTag(swerve, m_limelight, 18));
 
         //driverXbox.b().whileTrue(
         //    swerve.driveToPose(
