@@ -23,6 +23,7 @@ import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
@@ -36,6 +37,8 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Config;
 import frc.robot.constants.SwerveConstants;
+import frc.robot.LimelightHelpers;
+
 
 //import frc.robot.subsystems.swervedrive.Vision.Cameras;
 import java.io.File;
@@ -617,6 +620,9 @@ public class SwerveSubsystem extends SubsystemBase
     return getPose().getRotation();
   }
 
+  public Rotation3d getRotation3d(){
+    return swerveDrive.getGyroRotation3d();
+  }
   /**
    * Get the chassis speeds based on controller input of 2 joysticks. One for speeds in which direction. The other for
    * the angle of the robot.
@@ -714,6 +720,13 @@ public class SwerveSubsystem extends SubsystemBase
   public Rotation2d getPitch()
   {
     return swerveDrive.getPitch();
+  }
+
+  /*
+   * Add odometry readings using vision
+   */
+  public void addVisionReading(Pose2d pose, double timestampSeconds){
+    swerveDrive.addVisionMeasurement(new Pose2d(pose.getX(), pose.getY(), Rotation2d.fromDegrees(pose.getRotation().getDegrees())), timestampSeconds);
   }
 
   /**
