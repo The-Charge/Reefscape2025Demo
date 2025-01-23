@@ -5,19 +5,26 @@
 package frc.robot;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.json.simple.parser.ParseException;
 
+import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
+import com.pathplanner.lib.path.PathPoint;
+import com.pathplanner.lib.path.RotationTarget;
 import com.pathplanner.lib.util.PathPlannerLogging;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
+import edu.wpi.first.math.trajectory.constraint.TrajectoryConstraint;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PowerDistribution;
@@ -49,7 +56,7 @@ public class Robot extends TimedRobot {
     private PathPlannerPath path;
     
     public Robot() {
-        
+        try {path = PathPlannerPath.fromPathFile("path1");} catch (Exception e) {e.printStackTrace();}
 
         instance = this;
     }
@@ -65,7 +72,6 @@ public class Robot extends TimedRobot {
     @Override
     public void robotInit()
     {   
-        path = Main.path;
         // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
         // autonomous chooser on the dashboard.
         m_robotContainer = new RobotContainer();
@@ -81,22 +87,53 @@ public class Robot extends TimedRobot {
 
             // Create the trajectory to follow in autonomous. It is best to initialize
     // trajectories here to avoid wasting time in autonomous.
-    Trajectory m_trajectory = TrajectoryGenerator.generateTrajectory(path.getStartingDifferentialPose(), 
-        path.getPathPoses(),
-        new Pose2d(3, 0, Rotation2d.fromDegrees(0)),
-        new TrajectoryConfig(Units.feetToMeters(3.0), Units.feetToMeters(3.0)));
 
+    // all pathpoints to pose2d
+    // translations and roations
+    List<PathPoint> pathpoints = path.getAllPathPoints();
+
+    ArrayList<Translation2d> positions = new ArrayList<>();
+    for (PathPoint point : pathpoints) {
+        positions.add(point.position);
+    }
+    System.out.println("HI HI HI \n \n HI HI HI  \n \n \n HI H IH I\n \n \n\n \n \n \n ");
+    System.out.println(pathpoints.size());
+    System.out.println("\n \n \n \n \n \n \nHI HI HI \n \n HI HI HI  \n \n \n HI H IH I\n \n \n");
+
+//Pose2d(Translation2d, ROTATION2D: pathpoints.get(pathpoints.size()-1).rotationTarget.rotation())
+    ArrayList<Pose2d> poses = new ArrayList<>();
+    for (PathPoint point : pathpoints) {
+        if (point.rotationTarget == null) poses.add(new Pose2d(point.position, new Rotation2d()));
+        else poses.add(new Pose2d(point.position, point.rotationTarget.rotation()));
+    }
+    Pose2d endpose = new Pose2d(pathpoints.get(pathpoints.size()-1).position, new Rotation2d());
+    Pose2d startpose = new Pose2d(pathpoints.get(0).position, new Rotation2d());
+    TrajectoryConfig tc = new TrajectoryConfig(3,3);
+    PathConstraints pc = path.getGlobalConstraints();
+    
+    // change to reference pc instead of hard code
+    tc.setReversed(false);
+    tc.setStartVelocity(0);
+    tc.setEndVelocity(0);
+    tc.setKinematics(m_robotContainer.getSwerveSubsystem().getKinematics());
+    // TrajectoryConstraint tCons = new TrajectoryConstraint() {
+        
+    // };
+    // tc.addConstraints();
+    // System.out.println(startpose.)
+    path.getWaypoints();
+    // Trajectory m_trajectory = TrajectoryGenerator.generateTrajectory(startpose, positions, endpose, tc);
+    Trajectory m_trajectory = TrajectoryGenerator.generateTrajectory(poses, tc);
         // Create and push Field2d to SmartDashboard.
         Field2d m_field = new Field2d();
         m_field.getObject("traj").setTrajectory(m_trajectory);
-            if (path != null) {
-                // m_field.getObject("wow").setTrajectory(path.getIdealTrajectory));;
-            }
-    SmartDashboard.putData(m_field);
+     SmartDashboard.putData(m_field);
 
     // Push the trajectory to Field2d.
     }
-    
+    private Translation2d pointTranslation(PathPoint point) {
+        return point.position;
+    }
     /**
     * This function is called every 20 ms, no matter the mode. Use this for items like diagnostics that you want ran
     * during disabled, autonomous, teleoperated and test.

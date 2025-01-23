@@ -19,7 +19,6 @@ import edu.wpi.first.wpilibj.RobotBase;
  */
 public final class Main
 {
-  public static PathPlannerPath path;
   private Main()
   {
   }
@@ -34,7 +33,6 @@ public final class Main
    */
   public static void main(String... args) throws FileVersionException, IOException, ParseException
   {
-    path = PathPlannerPath.fromPathFile("path1");
     RobotBase.startRobot(Robot::new);
   }
 }
