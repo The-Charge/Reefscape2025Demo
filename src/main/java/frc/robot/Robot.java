@@ -4,10 +4,26 @@
 
 package frc.robot;
 
+import java.io.IOException;
+import java.util.List;
+
+import org.json.simple.parser.ParseException;
+
+import com.pathplanner.lib.path.PathPlannerPath;
+import com.pathplanner.lib.util.PathPlannerLogging;
+
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.trajectory.Trajectory;
+import edu.wpi.first.math.trajectory.TrajectoryConfig;
+import edu.wpi.first.math.trajectory.TrajectoryGenerator;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -29,8 +45,12 @@ public class Robot extends TimedRobot {
     private Timer disabledTimer;
 
     private PowerDistribution m_pdp = new PowerDistribution();
+
+    private PathPlannerPath path;
     
     public Robot() {
+        
+
         instance = this;
     }
     
@@ -44,7 +64,8 @@ public class Robot extends TimedRobot {
     */
     @Override
     public void robotInit()
-    {
+    {   
+        path = Main.path;
         // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
         // autonomous chooser on the dashboard.
         m_robotContainer = new RobotContainer();
@@ -57,6 +78,23 @@ public class Robot extends TimedRobot {
         {
             DriverStation.silenceJoystickConnectionWarning(true);
         }
+
+            // Create the trajectory to follow in autonomous. It is best to initialize
+    // trajectories here to avoid wasting time in autonomous.
+    Trajectory m_trajectory = TrajectoryGenerator.generateTrajectory(path.getStartingDifferentialPose(), 
+        path.getPathPoses(),
+        new Pose2d(3, 0, Rotation2d.fromDegrees(0)),
+        new TrajectoryConfig(Units.feetToMeters(3.0), Units.feetToMeters(3.0)));
+
+        // Create and push Field2d to SmartDashboard.
+        Field2d m_field = new Field2d();
+        m_field.getObject("traj").setTrajectory(m_trajectory);
+            if (path != null) {
+                // m_field.getObject("wow").setTrajectory(path.getIdealTrajectory));;
+            }
+    SmartDashboard.putData(m_field);
+
+    // Push the trajectory to Field2d.
     }
     
     /**
