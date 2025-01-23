@@ -5,11 +5,14 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.constants.SwerveConstants;
+import frc.robot.subsystems.SwerveSubsystem;
 
 /**
 * The VM is configured to automatically run this class, and to call the functions corresponding to each mode, as
@@ -24,6 +27,8 @@ public class Robot extends TimedRobot {
     private RobotContainer m_robotContainer;
     
     private Timer disabledTimer;
+
+    private PowerDistribution m_pdp = new PowerDistribution();
     
     public Robot() {
         instance = this;
@@ -133,11 +138,17 @@ public class Robot extends TimedRobot {
     }
     
     /**
-    * This function is called periodically during operator control.
-    */
+     * This function is called periodically during operator control.
+     */
     @Override
     public void teleopPeriodic()
     {
+        SmartDashboard.putNumber("Battery Voltage", m_pdp.getVoltage());
+        SmartDashboard.putNumber("Total Amps", m_pdp.getTotalCurrent());
+        SmartDashboard.putNumber("Time Remaining", DriverStation.getMatchTime());
+        SmartDashboard.putNumber("velocity", Math.sqrt(Math.pow(m_robotContainer.getSwerveSubsystem().getFieldVelocity().vxMetersPerSecond, 2)
+        + Math.pow(m_robotContainer.getSwerveSubsystem().getFieldVelocity().vyMetersPerSecond, 2)));
+
     }
     
     @Override
