@@ -77,15 +77,19 @@ public class RobotContainer {
         DriverStation.silenceJoystickConnectionWarning(true);
 
         autoChooser = AutoBuilder.buildAutoChooser();
+        //update the displayed auto path in smartdashboard when ever the selection is changed
+        autoChooser.onChange((selected) -> {
+            try {
+                AutoDisplayHelper.displayAutoPath(selected);
+            }
+            catch(Exception e) {
+                e.printStackTrace();
+            }
+        });
         SmartDashboard.putData("Auto Chooser", autoChooser);
 
         field = new Field2d();
         SmartDashboard.putData("Field", field);
-    
-        // Logging callback for the active path, this is sent as a list of poses
-        PathPlannerLogging.setLogActivePathCallback((poses) -> {
-          // Do whatever you want with the poses here
-          field.getObject("path").setPoses(poses);});    
     }
 
     private void configureBindings() {

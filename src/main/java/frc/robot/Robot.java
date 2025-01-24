@@ -53,17 +53,16 @@ public class Robot extends TimedRobot {
 
     private PowerDistribution m_pdp = new PowerDistribution();
 
-    private PathPlannerPath path;
-    
     public Robot() {
-        try {path = PathPlannerPath.fromPathFile("path1");} catch (Exception e) {e.printStackTrace();}
-
         instance = this;
     }
     
     public static Robot getInstance()
     {
         return instance;
+    }
+    public RobotContainer getContainer() {
+        return m_robotContainer;
     }
     
     /**
@@ -84,55 +83,6 @@ public class Robot extends TimedRobot {
         {
             DriverStation.silenceJoystickConnectionWarning(true);
         }
-
-            // Create the trajectory to follow in autonomous. It is best to initialize
-    // trajectories here to avoid wasting time in autonomous.
-
-    // all pathpoints to pose2d
-    // translations and roations
-    List<PathPoint> pathpoints = path.getAllPathPoints();
-
-    ArrayList<Translation2d> positions = new ArrayList<>();
-    for (PathPoint point : pathpoints) {
-        positions.add(point.position);
-    }
-    System.out.println("HI HI HI \n \n HI HI HI  \n \n \n HI H IH I\n \n \n\n \n \n \n ");
-    System.out.println(pathpoints.size());
-    System.out.println("\n \n \n \n \n \n \nHI HI HI \n \n HI HI HI  \n \n \n HI H IH I\n \n \n");
-
-//Pose2d(Translation2d, ROTATION2D: pathpoints.get(pathpoints.size()-1).rotationTarget.rotation())
-    ArrayList<Pose2d> poses = new ArrayList<>();
-    for (PathPoint point : pathpoints) {
-        if (point.rotationTarget == null) poses.add(new Pose2d(point.position, new Rotation2d()));
-        else poses.add(new Pose2d(point.position, point.rotationTarget.rotation()));
-    }
-    Pose2d endpose = new Pose2d(pathpoints.get(pathpoints.size()-1).position, new Rotation2d());
-    Pose2d startpose = new Pose2d(pathpoints.get(0).position, new Rotation2d());
-    TrajectoryConfig tc = new TrajectoryConfig(3,3);
-    PathConstraints pc = path.getGlobalConstraints();
-    
-    // change to reference pc instead of hard code
-    tc.setReversed(false);
-    tc.setStartVelocity(0);
-    tc.setEndVelocity(0);
-    tc.setKinematics(m_robotContainer.getSwerveSubsystem().getKinematics());
-    // TrajectoryConstraint tCons = new TrajectoryConstraint() {
-        
-    // };
-    // tc.addConstraints();
-    // System.out.println(startpose.)
-    path.getWaypoints();
-    // Trajectory m_trajectory = TrajectoryGenerator.generateTrajectory(startpose, positions, endpose, tc);
-    Trajectory m_trajectory = TrajectoryGenerator.generateTrajectory(poses, tc);
-        // Create and push Field2d to SmartDashboard.
-        Field2d m_field = new Field2d();
-        m_field.getObject("traj").setTrajectory(m_trajectory);
-     SmartDashboard.putData(m_field);
-
-    // Push the trajectory to Field2d.
-    }
-    private Translation2d pointTranslation(PathPoint point) {
-        return point.position;
     }
     /**
     * This function is called every 20 ms, no matter the mode. Use this for items like diagnostics that you want ran
