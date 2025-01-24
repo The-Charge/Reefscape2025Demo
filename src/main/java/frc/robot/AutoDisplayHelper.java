@@ -6,6 +6,7 @@ import java.util.List;
 
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.path.PathPlannerPath;
+import com.pathplanner.lib.path.PathPoint;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -19,58 +20,70 @@ import edu.wpi.first.wpilibj2.command.Command;
 public abstract class AutoDisplayHelper {
 
     public static void displayAutoPath(Command autoCommand) throws IOException, org.json.simple.parser.ParseException {
-        // SmartDashboard.clearPersistent("Field");
-        // Field2d field = new Field2d();
-        Field2d field;
-        // if(SmartDashboard.containsKey("Field")) {
-        //     field = (Field2d) SmartDashboard.getData("Field");
-        // }
-        // else {
-            field = new Field2d();
-        // }
+        Field2d field = new Field2d();
 
         //The name is "InstantCommand" when Command.none() is passed
         if(autoCommand == null || autoCommand.getName().equals("InstantCommand")) {
-            System.out.println("No auto");
-            //push field2d with no trajectory
-            // field.getObject("traj").setTrajectory(new Trajectory());
-            List<Pose2d> emptyPoses = new ArrayList<>();
-            emptyPoses.add(new Pose2d(0, 0, new Rotation2d()));
-            emptyPoses.add(new Pose2d(6, 9, new Rotation2d()));
-            field.getObject("traj").setTrajectory(
-                TrajectoryGenerator.generateTrajectory(
-                    emptyPoses,
-                    new TrajectoryConfig(3, 3)
-                )
-            );
+            /*
+             * Push field2d with no trajectory
+             * For a reason that not even god knows you have to push a blank field then set the trajectory after in order for it to update
+             */
             SmartDashboard.putData("Field", field);
+            field.getObject("traj").setTrajectory(new Trajectory());
             return;
         }
 
         List<PathPlannerPath> paths = PathPlannerAuto.getPathGroupFromAutoFile(autoCommand.getName());
 
-        List<Pose2d> poses = mergePaths(paths);
+        //generate each trajectory and merge them into one
+        Trajectory mergedTraj = null;
+        for(PathPlannerPath path : paths) {
+            List<Pose2d> poses = getPosesFromPath(path);
+            Trajectory traj = generateTrajectory(poses);
 
-        Trajectory traj = generateTrajectory(poses);
+            if(mergedTraj == null) {
+                mergedTraj = traj;
+                continue;
+            }
+            mergedTraj = mergedTraj.concatenate(traj);
+        }
         
         //push Field2d to SmartDashboard
-        field.getObject("traj").setTrajectory(traj);
         SmartDashboard.putData("Field", field);
+        field.getObject("traj").setTrajectory(mergedTraj);
     }
 
-    private static List<Pose2d> mergePaths(List<PathPlannerPath> paths) {
-        List<Pose2d> poses = new ArrayList<>();
-
-        //merge all of the Pose2ds from each path into one list
-        for(PathPlannerPath path : paths) {
-            poses.addAll(path.getPathPoses());
-        }
-
-        return poses;
-    }
     private static Trajectory generateTrajectory(List<Pose2d> poses) {
         TrajectoryConfig trajConfig = new TrajectoryConfig(3, 3); //values don't matter as long as they aren't zero
 
         return TrajectoryGenerator.generateTrajectory(poses, trajConfig);
+    }
+    private static Rotation2d calculatePoseRotation(PathPoint current, PathPoint next) {
+        //calculate rotation from current point to next point using atan2
+        double rad = Math.atan2(next.position.getY() - current.position.getY(), next.position.getX() - current.position.getX());
+        return new Rotation2d(rad);
+    }
+    private static List<Pose2d> getPosesFromPath(PathPlannerPath path) {
+        List<PathPoint> pathPoints = path.getAllPathPoints();
+        List<Pose2d> poses = new ArrayList<>();
+
+        for(int i = 0; i < pathPoints.size(); i++) {
+            PathPoint pp = pathPoints.get(i);
+
+            Rotation2d rot;
+            if(pp.rotationTarget != null) //if the point already has a rotation then use it
+                rot = pp.rotationTarget.rotation();
+            else if(i == pathPoints.size() - 1) //edge case for if the last point doesnt have a rotation then use a default of 0
+                rot = new Rotation2d();
+            else //calculate the angle from the current point to the next
+                rot = calculatePoseRotation(pp, pathPoints.get(i + 1));
+
+            poses.add(new Pose2d(
+                pp.position,
+                rot
+            ));
+        }
+
+        return poses;
     }
 }
