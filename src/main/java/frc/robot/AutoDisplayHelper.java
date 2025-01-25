@@ -1,6 +1,5 @@
 package frc.robot;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,27 +12,29 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 
 public abstract class AutoDisplayHelper {
 
-    public static void displayAutoPath(Command autoCommand) throws IOException, org.json.simple.parser.ParseException {
-        Field2d field = new Field2d();
+    public static void displayAutoPath(Command autoCommand) {
 
         //The name is "InstantCommand" when Command.none() is passed
         if(autoCommand == null || autoCommand.getName().equals("InstantCommand")) {
-            /*
-             * Push field2d with no trajectory
-             * For a reason that not even god knows you have to push a blank field then set the trajectory after in order for it to update
-             */
-            SmartDashboard.putData("Field", field);
-            field.getObject("traj").setTrajectory(new Trajectory());
+            DriverStation.reportError("Cannot display the path of a null/empty command, use clearAutoPath instead", true);
             return;
         }
 
-        List<PathPlannerPath> paths = PathPlannerAuto.getPathGroupFromAutoFile(autoCommand.getName());
+        List<PathPlannerPath> paths;
+        try {
+            paths = PathPlannerAuto.getPathGroupFromAutoFile(autoCommand.getName());
+        }
+        catch(Exception e) {
+            e.printStackTrace();
+            return;
+        }
 
         //generate each trajectory and merge them into one
         Trajectory mergedTraj = null;
@@ -47,10 +48,27 @@ public abstract class AutoDisplayHelper {
             }
             mergedTraj = mergedTraj.concatenate(traj);
         }
+
+        if(mergedTraj == null) {
+            DriverStation.reportWarning("AutoDisplayHelper::displayAutoPath -> Auto has no paths, redirecting to clearAutoPath", false);
+            clearAutoPath();
+            return;
+        }
         
-        //push Field2d to SmartDashboard
+        /*
+         * Push field2d
+         * For a reason that not even god knows you have to push a blank field then set the trajectory after in order for it to update
+         */
+        Field2d field = new Field2d();
+        
         SmartDashboard.putData("Field", field);
         field.getObject("traj").setTrajectory(mergedTraj);
+    }
+    public static void clearAutoPath() {
+        Field2d field = new Field2d();
+
+        SmartDashboard.putData("Field", field);
+        field.getObject("traj").setTrajectory(new Trajectory());
     }
 
     private static Trajectory generateTrajectory(List<Pose2d> poses) {
