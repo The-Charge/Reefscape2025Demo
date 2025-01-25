@@ -4,6 +4,13 @@
 
 package frc.robot;
 
+import java.io.IOException;
+
+import org.json.simple.parser.ParseException;
+
+import com.pathplanner.lib.path.PathPlannerPath;
+import com.pathplanner.lib.util.FileVersionException;
+
 import edu.wpi.first.wpilibj.RobotBase;
 
 /**
@@ -12,7 +19,6 @@ import edu.wpi.first.wpilibj.RobotBase;
  */
 public final class Main
 {
-
   private Main()
   {
   }
@@ -21,8 +27,11 @@ public final class Main
    * Main initialization function. Do not perform any initialization here.
    *
    * <p>If you change your main robot class, change the parameter type.
+   * @throws ParseException 
+   * @throws IOException 
+   * @throws FileVersionException 
    */
-  public static void main(String... args)
+  public static void main(String... args) throws FileVersionException, IOException, ParseException
   {
     RobotBase.startRobot(Robot::new);
   }
