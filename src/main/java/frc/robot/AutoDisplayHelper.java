@@ -19,7 +19,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 
 public abstract class AutoDisplayHelper {
 
-    public static void displayAutoPath(Command autoCommand) {
+    public static void displayAutoPath(Command autoCommand, boolean isRedAlliance) {
 
         //The name is "InstantCommand" when Command.none() is passed
         if(autoCommand == null || autoCommand.getName().equals("InstantCommand")) {
@@ -39,6 +39,9 @@ public abstract class AutoDisplayHelper {
         //generate each trajectory and merge them into one
         Trajectory mergedTraj = null;
         for(PathPlannerPath path : paths) {
+            if(isRedAlliance)
+                path = path.flipPath();
+
             List<Pose2d> poses = getPosesFromPath(path);
             Trajectory traj = generateTrajectory(poses);
 
