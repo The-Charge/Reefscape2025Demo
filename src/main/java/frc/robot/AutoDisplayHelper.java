@@ -88,6 +88,8 @@ public abstract class AutoDisplayHelper {
         List<PathPoint> pathPoints = path.getAllPathPoints();
         List<Pose2d> poses = new ArrayList<>();
 
+        // poses.add(path.getStartingHolonomicPose().get());
+
         for(int i = 0; i < pathPoints.size(); i++) {
             PathPoint pp = pathPoints.get(i);
 
@@ -104,6 +106,8 @@ public abstract class AutoDisplayHelper {
                 rot
             ));
         }
+
+        // poses.add(path.getPathPoses().get(path.getPathPoses().size() - 1));
 
         return poses;
     }
