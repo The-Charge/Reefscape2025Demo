@@ -5,11 +5,13 @@
 package frc.robot;
 
 import java.io.File;
+import java.util.Optional;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -69,19 +71,8 @@ public class RobotContainer {
         DriverStation.silenceJoystickConnectionWarning(true);
 
         autoChooser = AutoBuilder.buildAutoChooser();
-        //update the displayed auto path in smartdashboard when ever the selection is changed
-        //is cleared in teleopInit
-        autoChooser.onChange((selected) -> {
-            if(DriverStation.isTeleopEnabled()) //don't display auton path in teleop
-                return;
-
-            displayAuto(selected);
-        });
+        setupAutoDisplay();
         SmartDashboard.putData("Auto Chooser", autoChooser);
-
-        new Trigger(() -> DriverStation.isAutonomousEnabled()).onTrue(new InstantCommand(() -> {
-            displayAuto(autoChooser.getSelected());
-        }));
 
         field = new Field2d();
         SmartDashboard.putData("Field", field);
@@ -112,12 +103,35 @@ public class RobotContainer {
     public void setMotorBrake(boolean brake) {
         swerve.setMotorBrake(brake);
     }
-    private void displayAuto(Command auto) {
+    public void displayAuto() {
+        Command auto = autoChooser.getSelected();
+
         if(auto.getName().equals("InstantCommand")) {
             AutoDisplayHelper.clearAutoPath();
             return;
         }
 
-        AutoDisplayHelper.displayAutoPath(auto);
+        boolean isRed = false;
+        Optional<Alliance> alliance = DriverStation.getAlliance();
+
+        if(alliance.isPresent() && alliance.get() == Alliance.Red)
+            isRed = true;
+
+        AutoDisplayHelper.displayAutoPath(auto, isRed);
+    }
+    private void setupAutoDisplay() {
+        //update the displayed auto path in smartdashboard when ever the selection is changed
+        //display is cleared in teleopInit
+        autoChooser.onChange((selected) -> {
+            if(DriverStation.isTeleopEnabled()) //don't display auton path in teleop
+                return;
+
+            displayAuto();
+        });
+
+        /*
+         * Robot.teleopInit clears the display
+         * Robot.autonomousInit redraws the display
+         */
     }
 }
