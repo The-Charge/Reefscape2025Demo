@@ -75,6 +75,9 @@ public class Robot extends TimedRobot {
         // and running subsystem periodic() methods.  This must be called from the robot's periodic
         // block in order for anything in the Command-based framework to work.
         CommandScheduler.getInstance().run();
+
+        SmartDashboard.putNumber("Battery Voltage", m_pdp.getVoltage());
+        SmartDashboard.putNumber("Total Amps", m_pdp.getTotalCurrent());
     }
     
     /**
@@ -132,10 +135,11 @@ public class Robot extends TimedRobot {
         if (m_autonomousCommand != null)
         {
             m_autonomousCommand.cancel();
-        } else
-        {
+        }
+        else {
             CommandScheduler.getInstance().cancelAll();
         }
+        
         AutoDisplayHelper.clearAutoPath();
     }
     
@@ -145,12 +149,11 @@ public class Robot extends TimedRobot {
     @Override
     public void teleopPeriodic()
     {
-        SmartDashboard.putNumber("Battery Voltage", m_pdp.getVoltage());
-        SmartDashboard.putNumber("Total Amps", m_pdp.getTotalCurrent());
         SmartDashboard.putNumber("Time Remaining", DriverStation.getMatchTime());
-        SmartDashboard.putNumber("velocity", Math.sqrt(Math.pow(m_robotContainer.getSwerveSubsystem().getFieldVelocity().vxMetersPerSecond, 2)
-        + Math.pow(m_robotContainer.getSwerveSubsystem().getFieldVelocity().vyMetersPerSecond, 2)));
-
+        SmartDashboard.putNumber("velocity", Math.hypot(
+            m_robotContainer.getSwerveSubsystem().getFieldVelocity().vxMetersPerSecond,
+            m_robotContainer.getSwerveSubsystem().getFieldVelocity().vyMetersPerSecond
+        ));
     }
     
     @Override
