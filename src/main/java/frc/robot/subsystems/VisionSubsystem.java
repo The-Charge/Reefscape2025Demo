@@ -52,8 +52,6 @@ public class VisionSubsystem extends SubsystemBase{
     public double[] getpipe = new double[2];          //get current pipeline
     public double[] limelightlatency = new double[2]; //tl + cl
     public double[] distance = new double[2];         //distance to target
-    public Pose2d[] robotpose = new Pose2d[2];        //Robot in Fieldspace (blue side)
-    public double[] prevtag = new double[2];
     
     
 
@@ -62,12 +60,15 @@ public class VisionSubsystem extends SubsystemBase{
       
       //Setup YALL limelight object
       reeflimelight = new Limelight(LLReefConstants.LL_NAME);
-      reeflimelight.getSettings().withLimelightLEDMode(LEDMode.PipelineControl).withCameraOffset(Pose3d.kZero).save();
+      reeflimelight.getSettings().withLimelightLEDMode(LEDMode.PipelineControl).withCameraOffset(LLReefConstants.CAMERA_OFFSET).save();
       reefPoseEstimator = reeflimelight.getPoseEstimator(true);
 
-      funnellimelight = new Limelight(LLFunnelConstants.LL_NAME);
+      /*funnellimelight = new Limelight(LLFunnelConstants.LL_NAME);
       funnellimelight.getSettings().withLimelightLEDMode(LEDMode.PipelineControl).withCameraOffset(Pose3d.kZero).save();
+       * 
+       */
       
+    
       
     }
 
@@ -107,6 +108,14 @@ public class VisionSubsystem extends SubsystemBase{
       NetworkTableInstance.getDefault().getTable(LLReefConstants.LL_NAME).getEntry("pipeline").setNumber(index);
     }
 
+    public void adjustDriverPipeline(){
+      if (getpipe[0] == 1) 
+        NetworkTableInstance.getDefault().getTable(LLReefConstants.LL_NAME).getEntry("pipeline").setNumber(0);
+      else
+        NetworkTableInstance.getDefault().getTable(LLReefConstants.LL_NAME).getEntry("pipeline").setNumber(1);
+    }
+    
+    
     public void setRobotOrientation(double robotYaw){
       LimelightHelpers.SetRobotOrientation(LLReefConstants.LL_NAME, robotYaw, 0.0, 0.0, 0.0, 0.0, 0.0);
     }
@@ -125,7 +134,7 @@ public class VisionSubsystem extends SubsystemBase{
       // If the average tag distance is less than 4 meters,
       // there are more than 0 tags in view,
       // and the average ambiguity between tags is less than 30% then we update the pose estimation.
-      if (poseEstimate.avgTagDist < 4 && poseEstimate.tagCount > 0 && poseEstimate.getMinTagAmbiguity() < 0.3)
+      if (poseEstimate.avgTagDist < 4 && poseEstimate.tagCount > 0 && poseEstimate.getMinTagAmbiguity() < 0.5)
       {
         swerve.addVisionReading(poseEstimate.pose.toPose2d(),poseEstimate.timestampSeconds);
         SmartDashboard.putNumber("TagX", poseEstimate.pose.toPose2d().getX());
@@ -143,8 +152,27 @@ public class VisionSubsystem extends SubsystemBase{
     });
     }
     
+    public boolean robotPoseWithinThreshold(int tagid){
+      return 
+        Math.abs(ApriltagConstants.TAG_POSES[tagid].getRotation().getAngle() * 180 / Math.PI
+        - reefPoseEstimator.getPoseEstimate().get().pose.toPose2d().getRotation().getDegrees())
+        < ApriltagConstants.ANGLE_POSE_TOLERANCE;
+    }
     public boolean getTV(int index){
       return tv[index];
     }
+    public double getTagID(int index){
+      return tid[index];
+    }
+    public double getTX(int index){
+      return tx[index];
+    }
+    public double getTY(int index){
+      return ty[index];
+    }
+    public double getTA(int index){
+      return ta[index];
+    }
     
+
 }

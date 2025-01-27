@@ -41,7 +41,6 @@ import swervelib.SwerveInputStream;
 */
 public class RobotContainer {
   private final Field2d field;
-
     
     private final CommandXboxController driverXbox = new CommandXboxController(0);
     private final SwerveSubsystem swerve = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "swerve"));
@@ -55,7 +54,7 @@ public class RobotContainer {
      */
     private SendableChooser<Command> autoChooser;
     
-    public RobotContainer() {
+    public RobotContainer() {       
         // if (RobotBase.isSimulation()) {
         //     rotationXboxAxis = 2;
         // }
@@ -94,7 +93,8 @@ public class RobotContainer {
         driverXbox.b().onTrue(Commands.runOnce(swerve::zeroGyroWithAlliance));
         driverXbox.x().whileTrue(Commands.runOnce(swerve::lock, swerve).repeatedly());
         driverXbox.a().onTrue(Commands.runOnce(swerve::addFakeVisionReading));
-        driverXbox.y().whileTrue(new DriveToTag(swerve, m_limelight, 18));
+        driverXbox.y().whileTrue(new DriveToTag(swerve, m_limelight, (int) m_limelight.getTagID(0)));
+        driverXbox.leftBumper().onTrue(Commands.runOnce(m_limelight::adjustDriverPipeline));
 
         //driverXbox.b().whileTrue(
         //    swerve.driveToPose(

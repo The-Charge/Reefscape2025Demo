@@ -2,6 +2,7 @@ package frc.robot.constants;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 
@@ -50,7 +51,9 @@ public abstract class VisionConstants {
   public static class ApriltagConstants
   {
     public static final AprilTagFieldLayout aprilTagFieldLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2025Reefscape);
-    
+  
+
+    public static final double ANGLE_POSE_TOLERANCE = 5; //degrees
     public static final double APRILTAG_POSE_OFFSET = 1; //meters
 
     //Tag ids for each tag
