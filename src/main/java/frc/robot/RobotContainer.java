@@ -5,18 +5,14 @@
 package frc.robot;
 
 import java.io.File;
-import java.util.function.DoubleSupplier;
+import java.util.Optional;
 
 import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.auto.NamedCommands;
-import com.pathplanner.lib.util.PathPlannerLogging;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Filesystem;
-import edu.wpi.first.wpilibj.PowerDistribution;
-import edu.wpi.first.wpilibj.RobotBase;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -31,8 +27,6 @@ import frc.robot.commands.swervedrive.drivebase.TeleopDrive;
 import frc.robot.constants.SwerveConstants;
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
-import swervelib.SwerveDrive;
-import swervelib.SwerveInputStream;
 
 /**
 * This class is where the bulk of the robot should be declared. Since Command-based is a "declarative" paradigm, very
@@ -78,15 +72,11 @@ public class RobotContainer {
         DriverStation.silenceJoystickConnectionWarning(true);
 
         autoChooser = AutoBuilder.buildAutoChooser();
+        setupAutoDisplay();
         SmartDashboard.putData("Auto Chooser", autoChooser);
 
         field = new Field2d();
         SmartDashboard.putData("Field", field);
-    
-        // Logging callback for the active path, this is sent as a list of poses
-        PathPlannerLogging.setLogActivePathCallback((poses) -> {
-          // Do whatever you want with the poses here
-          field.getObject("path").setPoses(poses);});    
     }
 
     private void configureBindings() {
@@ -116,5 +106,36 @@ public class RobotContainer {
     }
     public void setMotorBrake(boolean brake) {
         swerve.setMotorBrake(brake);
+    }
+    public void displayAuto() {
+        Command auto = autoChooser.getSelected();
+
+        if(auto.getName().equals("InstantCommand")) {
+            AutoDisplayHelper.clearAutoPath();
+            return;
+        }
+
+        boolean isRed = false;
+        Optional<Alliance> alliance = DriverStation.getAlliance();
+
+        if(alliance.isPresent() && alliance.get() == Alliance.Red)
+            isRed = true;
+
+        AutoDisplayHelper.displayAutoPath(auto, isRed);
+    }
+    private void setupAutoDisplay() {
+        //update the displayed auto path in smartdashboard when ever the selection is changed
+        //display is cleared in teleopInit
+        autoChooser.onChange((selected) -> {
+            if(DriverStation.isTeleopEnabled()) //don't display auton path in teleop
+                return;
+
+            displayAuto();
+        });
+
+        /*
+         * Robot.teleopInit clears the display
+         * Robot.autonomousInit redraws the display
+         */
     }
 }
