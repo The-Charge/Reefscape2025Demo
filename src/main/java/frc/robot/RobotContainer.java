@@ -79,7 +79,7 @@ public class RobotContainer {
     }
 
     private void configureBindings() {
-        driverXbox.b().onTrue(Commands.runOnce(swerve::zeroGyroWithAlliance));
+        driverXbox.b().onTrue(Commands.runOnce(swerve::zeroGyro));
         driverXbox.x().whileTrue(Commands.runOnce(swerve::lock, swerve).repeatedly());
 
         //driverXbox.b().whileTrue(
