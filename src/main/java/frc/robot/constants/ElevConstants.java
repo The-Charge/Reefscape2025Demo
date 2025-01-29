@@ -7,7 +7,7 @@ public abstract class ElevConstants {
     public static final int motorID = 5;
     public static final double maxVBus = 1;
     public static final double maxCurrent = 20;
-    public static final PIDFConfig pidf = new PIDFConfig(0.01, 0, 0, 0);
+    public static final PIDFConfig pidf = new PIDFConfig(0.05, 0.002, 0, 0);
     public static final double minPosTicks = 0;
     public static final double maxPosTicks = Integer.MAX_VALUE;
     public static final double tickToInCoversion = 1;

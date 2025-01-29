@@ -172,7 +172,7 @@ public class ElevSubsystem extends SubsystemBase {
      * ONLY RUN ONCE PER UPDATE!!
      */
     private void targetCheck() {
-        double err = Math.abs(targetCounter - getPositionTicks());
+        double err = Math.abs(targetTicks - getPositionTicks());
         if(err <= ElevConstants.targetThresholdInches / ElevConstants.tickToInCoversion)
             targetCounter++;
         else

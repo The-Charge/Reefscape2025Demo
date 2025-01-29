@@ -312,7 +312,7 @@
               "topic": "/SmartDashboard/Elev Target Override (In)",
               "period": 0.06,
               "data_type": "double",
-              "show_submit_button": false
+              "show_submit_button": true
             }
           },
           {
@@ -326,7 +326,7 @@
               "topic": "/SmartDashboard/Elev Target Override (Ticks)",
               "period": 0.06,
               "data_type": "double",
-              "show_submit_button": false
+              "show_submit_button": true
             }
           },
           {
