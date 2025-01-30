@@ -93,18 +93,15 @@ public abstract class AutoDisplayHelper {
             PathPoint pp = pathPoints.get(i);
 
             Rotation2d rot;
-            if (i == 0) {
-                // For the first point, use the heading towards the second point
-                if (pathPoints.size() > 1) {
-                    rot = calculatePoseRotation(pp, pathPoints.get(i + 1));
-                } else {
-                    // If there's only one point, use a default rotation
-                    rot = new Rotation2d();
-                }
-            } else if (i == pathPoints.size() - 1) {
-                // For the last point, use the heading from the second-to-last point
-                rot = calculatePoseRotation(pathPoints.get(i - 1), pp);
-            } else {
+            if(i == 0) {
+                if(pathPoints.size() > 1)
+                    rot = calculatePoseRotation(pp, pathPoints.get(i + 1)); //For the first point, use the heading towards the second point
+                else
+                    rot = new Rotation2d(); //If there's only one point, use a default rotation
+            }
+            else if(i == pathPoints.size() - 1)
+                rot = calculatePoseRotation(pathPoints.get(i - 1), pp); //For the last point, use the heading from the second-to-last point
+            else {
                 // For intermediate points, calculate the heading as the average of the direction to the next and previous points
                 Rotation2d toNext = calculatePoseRotation(pp, pathPoints.get(i + 1));
                 Rotation2d fromPrev = calculatePoseRotation(pathPoints.get(i - 1), pp);
