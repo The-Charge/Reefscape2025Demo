@@ -90,12 +90,12 @@ public class RobotContainer {
         driverXbox.b().onTrue(Commands.runOnce(swerve::zeroGyro));
         driverXbox.x().whileTrue(Commands.runOnce(swerve::lock, swerve).repeatedly());
 
-        new Trigger(() -> buttonBox.getRawButton(1)).onTrue(new InstantCommand(elev::stop));
-        new Trigger(() -> buttonBox.getRawButton(2)).onTrue(new MoveToInches(elev, 0));
-        new Trigger(() -> buttonBox.getRawButton(3)).onTrue(new MoveToLevel(elev, ElevSubsystem.Level.LVL1));
-        new Trigger(() -> buttonBox.getRawButton(4)).onTrue(new MoveToLevel(elev, ElevSubsystem.Level.LVL2));
-        new Trigger(() -> buttonBox.getRawButton(5)).onTrue(new MoveToLevel(elev, ElevSubsystem.Level.LVL3));
-        new Trigger(() -> buttonBox.getRawButton(6)).onTrue(new MoveToLevel(elev, ElevSubsystem.Level.LVL4));
+        // new Trigger(() -> buttonBox.getRawButton(1)).onTrue(new InstantCommand(elev::stop));
+        // new Trigger(() -> buttonBox.getRawButton(2)).onTrue(new MoveToInches(elev, 0));
+        // new Trigger(() -> buttonBox.getRawButton(3)).onTrue(new MoveToLevel(elev, ElevSubsystem.Level.LVL1));
+        // new Trigger(() -> buttonBox.getRawButton(4)).onTrue(new MoveToLevel(elev, ElevSubsystem.Level.LVL2));
+        // new Trigger(() -> buttonBox.getRawButton(5)).onTrue(new MoveToLevel(elev, ElevSubsystem.Level.LVL3));
+        // new Trigger(() -> buttonBox.getRawButton(6)).onTrue(new MoveToLevel(elev, ElevSubsystem.Level.LVL4));
 
         //driverXbox.b().whileTrue(
         //    swerve.driveToPose(
