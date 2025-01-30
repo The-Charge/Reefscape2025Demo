@@ -45,7 +45,7 @@ public class RobotContainer {
     private final SwerveSubsystem swerve = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "swerve"));
     private final VisionSubsystem m_limelight = new VisionSubsystem(swerve);
     // private final ElevSubsystem elev = new ElevSubsystem();
-    private final ClimbSubsystem climb = new ClimbSubsystem();
+    // private final ClimbSubsystem climb = new ClimbSubsystem();
     
     /*
      * ======================
@@ -97,9 +97,9 @@ public class RobotContainer {
         // new Trigger(() -> buttonBox.getRawButton(5)).onTrue(new MoveToLevel(elev, ElevSubsystem.Level.LVL3));
         // new Trigger(() -> buttonBox.getRawButton(6)).onTrue(new MoveToLevel(elev, ElevSubsystem.Level.LVL4));
 
-        new Trigger(() -> buttonBox.getRawButton(1)).onTrue(new InstantCommand(climb::stop));
-        new Trigger(() -> buttonBox.getRawButton(2)).onTrue(new Climb(climb));
-        new Trigger(() -> buttonBox.getRawButton(3)).onTrue(new Declimb(climb));
+        // new Trigger(() -> buttonBox.getRawButton(1)).onTrue(new InstantCommand(climb::stop));
+        // new Trigger(() -> buttonBox.getRawButton(2)).onTrue(new Climb(climb));
+        // new Trigger(() -> buttonBox.getRawButton(3)).onTrue(new Declimb(climb));
 
         //driverXbox.b().whileTrue(
         //    swerve.driveToPose(
@@ -119,10 +119,10 @@ public class RobotContainer {
         // SmartDashboard.putData("Elev Manual Move (TICKS)", new MoveToTicksManual(elev));
         // SmartDashboard.putData("Elev Manual Move (LVL)", new MoveToLevelManual(elev));
 
-        SmartDashboard.putData("Climb Manual Climb (DEG)", new ClimbToDegreesManual(climb));
-        SmartDashboard.putData("Climb Manual Climb (TICKS)", new ClimbToTicksManual(climb));
-        SmartDashboard.putData("Climb Manual", new Climb(climb));
-        SmartDashboard.putData("Declimb Manual", new Declimb(climb));
+        // SmartDashboard.putData("Climb Manual Climb (DEG)", new ClimbToDegreesManual(climb));
+        // SmartDashboard.putData("Climb Manual Climb (TICKS)", new ClimbToTicksManual(climb));
+        // SmartDashboard.putData("Climb Manual", new Climb(climb));
+        // SmartDashboard.putData("Declimb Manual", new Declimb(climb));
     }
     private void setupAutoDisplay() {
         //update the displayed auto path in smartdashboard when ever the selection is changed
