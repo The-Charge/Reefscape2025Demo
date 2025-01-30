@@ -15,7 +15,7 @@ public class MoveToInchesManual extends Command {
 
     @Override
     public void initialize() {
-        new MoveToInches(elev, SmartDashboard.getNumber(ElevConstants.overrideInName, ElevConstants.minPosTicks * ElevConstants.tickToInCoversion), false).schedule();
+        new MoveToInches(elev, SmartDashboard.getNumber(ElevConstants.overrideInName, ElevConstants.minPosTicks * ElevConstants.tickToInConversion), false).schedule();
     }
 
     @Override
