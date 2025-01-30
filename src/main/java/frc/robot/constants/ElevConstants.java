@@ -10,7 +10,7 @@ public abstract class ElevConstants {
     public static final PIDFConfig pidf = new PIDFConfig(0.05, 0.002, 0, 0);
     public static final double minPosTicks = 0;
     public static final double maxPosTicks = Integer.MAX_VALUE;
-    public static final double tickToInCoversion = 1;
+    public static final double tickToInConversion = 1;
     public static final double targetThresholdInches = 0.3;
     public static final double targetThresholdSeconds = 0.1;
 

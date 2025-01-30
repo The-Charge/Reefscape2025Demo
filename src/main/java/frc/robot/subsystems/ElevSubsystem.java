@@ -56,16 +56,16 @@ public class ElevSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("Elev Pos (In)", getPositionInches());
         SmartDashboard.putNumber("Elev Pos (Ticks)", getPositionTicks());
         SmartDashboard.putString("Elev Pos (LVL)", getPositionLevel().name());
-        SmartDashboard.putNumber("Elev Err (In)", (targetTicks - getPositionTicks()) * ElevConstants.tickToInCoversion);
+        SmartDashboard.putNumber("Elev Err (In)", (targetTicks - getPositionTicks()) * ElevConstants.tickToInConversion);
         SmartDashboard.putNumber("Elev Err (Ticks)", targetTicks - getPositionTicks());
-        SmartDashboard.putNumber("Elev Target (In)", targetTicks * ElevConstants.tickToInCoversion);
+        SmartDashboard.putNumber("Elev Target (In)", targetTicks * ElevConstants.tickToInConversion);
         SmartDashboard.putNumber("Elev Target (Ticks)", targetTicks);
         SmartDashboard.putString("Elev Target (LVL)", getTargetLevel().name());
         SmartDashboard.putBoolean("Elev isAtTarget", isAtTarget());
     }
 
     public void setTargetPositionInches(double inches) {
-        setTargetPositionTicks(inches * ElevConstants.tickToInCoversion);
+        setTargetPositionTicks(inches * ElevConstants.tickToInConversion);
     }
     public void setTargetPositionTicks(double ticks) {
         targetTicks = MathUtil.clamp(ticks, ElevConstants.minPosTicks, ElevConstants.maxPosTicks);
@@ -108,7 +108,7 @@ public class ElevSubsystem extends SubsystemBase {
     }
 
     public double getPositionInches() {
-        return getPositionTicks() * ElevConstants.tickToInCoversion;
+        return getPositionTicks() * ElevConstants.tickToInConversion;
     }
     public double getPositionTicks() {
         return motor.getPosition().getValueAsDouble();
@@ -139,7 +139,6 @@ public class ElevSubsystem extends SubsystemBase {
         slotConfigs.kD = ElevConstants.pidf.d;
         slotConfigs.kG = ElevConstants.pidf.f;
         slotConfigs.GravityType = GravityTypeValue.Elevator_Static;
-        // m.getConfigurator().apply(slotConfigs);
         
         m.getConfigurator().apply(motorConfig);
         
@@ -166,14 +165,14 @@ public class ElevSubsystem extends SubsystemBase {
         return Level.UNKNOWN;
     }
     private Level getTargetLevel() {
-        return getCurrentLevel(targetTicks * ElevConstants.tickToInCoversion);
+        return getCurrentLevel(targetTicks * ElevConstants.tickToInConversion);
     }
     /**
      * ONLY RUN ONCE PER UPDATE!!
      */
     private void targetCheck() {
         double err = Math.abs(targetTicks - getPositionTicks());
-        if(err <= ElevConstants.targetThresholdInches / ElevConstants.tickToInCoversion)
+        if(err <= ElevConstants.targetThresholdInches / ElevConstants.tickToInConversion)
             targetCounter++;
         else
             resetTargetCounter();

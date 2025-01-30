@@ -22,14 +22,13 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.commands.elev.MoveToInches;
-import frc.robot.commands.elev.MoveToInchesManual;
-import frc.robot.commands.elev.MoveToLevel;
-import frc.robot.commands.elev.MoveToLevelManual;
-import frc.robot.commands.elev.MoveToTicksManual;
+import frc.robot.commands.climb.Climb;
+import frc.robot.commands.climb.ClimbToDegreesManual;
+import frc.robot.commands.climb.ClimbToTicksManual;
+import frc.robot.commands.climb.Declimb;
 import frc.robot.commands.swervedrive.drivebase.TeleopDrive;
 import frc.robot.constants.SwerveConstants;
-import frc.robot.subsystems.ElevSubsystem;
+import frc.robot.subsystems.ClimbSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
 
@@ -45,7 +44,8 @@ public class RobotContainer {
 
     private final SwerveSubsystem swerve = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "swerve"));
     private final VisionSubsystem m_limelight = new VisionSubsystem(swerve);
-    private final ElevSubsystem elev = new ElevSubsystem();
+    // private final ElevSubsystem elev = new ElevSubsystem();
+    private final ClimbSubsystem climb = new ClimbSubsystem();
     
     /*
      * ======================
@@ -97,6 +97,10 @@ public class RobotContainer {
         // new Trigger(() -> buttonBox.getRawButton(5)).onTrue(new MoveToLevel(elev, ElevSubsystem.Level.LVL3));
         // new Trigger(() -> buttonBox.getRawButton(6)).onTrue(new MoveToLevel(elev, ElevSubsystem.Level.LVL4));
 
+        new Trigger(() -> buttonBox.getRawButton(1)).onTrue(new InstantCommand(climb::stop));
+        new Trigger(() -> buttonBox.getRawButton(2)).onTrue(new Climb(climb));
+        new Trigger(() -> buttonBox.getRawButton(3)).onTrue(new Declimb(climb));
+
         //driverXbox.b().whileTrue(
         //    swerve.driveToPose(
         //        new Pose2d(new Translation2d(4, 4), Rotation2d.fromDegrees(0)))
@@ -111,9 +115,14 @@ public class RobotContainer {
     }
     private void addTelemetry() {
         //one time telemetry values, such as dashboard commands
-        SmartDashboard.putData("Elev Manual Move (IN)", new MoveToInchesManual(elev));
-        SmartDashboard.putData("Elev Manual Move (TICKS)", new MoveToTicksManual(elev));
-        SmartDashboard.putData("Elev Manual Move (LVL)", new MoveToLevelManual(elev));
+        // SmartDashboard.putData("Elev Manual Move (IN)", new MoveToInchesManual(elev));
+        // SmartDashboard.putData("Elev Manual Move (TICKS)", new MoveToTicksManual(elev));
+        // SmartDashboard.putData("Elev Manual Move (LVL)", new MoveToLevelManual(elev));
+
+        SmartDashboard.putData("Climb Manual Climb (DEG)", new ClimbToDegreesManual(climb));
+        SmartDashboard.putData("Climb Manual Climb (TICKS)", new ClimbToTicksManual(climb));
+        SmartDashboard.putData("Climb Manual", new Climb(climb));
+        SmartDashboard.putData("Declimb Manual", new Declimb(climb));
     }
     private void setupAutoDisplay() {
         //update the displayed auto path in smartdashboard when ever the selection is changed
