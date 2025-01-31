@@ -10,6 +10,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.RepeatCommand;
 import frc.robot.constants.VisionConstants.ApriltagConstants;
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
@@ -19,7 +20,7 @@ import frc.robot.subsystems.VisionSubsystem;
  * An example command that uses an example subsystem.
  */
 
-public class DriveToTag extends InstantCommand {
+public class DriveToTag extends Command {
     private final SwerveSubsystem swerve;
     private Command drivetoPose;
     private VisionSubsystem limelight;
@@ -38,24 +39,31 @@ public class DriveToTag extends InstantCommand {
 
 @Override
   public void initialize() {
-     
       intendedPose = new Pose2d(
         ApriltagConstants.TAG_POSES[tagid].getX() + ApriltagConstants.APRILTAG_POSE_OFFSET * Math.cos(ApriltagConstants.TAG_POSES[tagid].getRotation().getZ()),
         ApriltagConstants.TAG_POSES[tagid].getY() + ApriltagConstants.APRILTAG_POSE_OFFSET * Math.sin(ApriltagConstants.TAG_POSES[tagid].getRotation().getZ()), 
         new Rotation2d(ApriltagConstants.TAG_POSES[tagid].getZ())
       );
       drivetoPose = swerve.driveToPose(intendedPose);
-        drivetoPose.schedule();
+      drivetoPose.schedule();
 }
 
   @Override 
   public void execute() {
-    SmartDashboard.putNumber("Tag to drive to", (double) tagid);
+    if (limelight.getTagID(0) == tagid && limelight.robotRotationWithinThreshold(tagid)){
+      
+
+
+
+    }
   }
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {}
+  public void end(boolean interrupted) {
+    drivetoPose.cancel();
+    SmartDashboard.putBoolean("DriveToTag Scheduled", false);
+  }
 
   // Returns true when the command should end.
   @Override

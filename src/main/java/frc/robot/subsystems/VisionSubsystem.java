@@ -77,7 +77,7 @@ public class VisionSubsystem extends SubsystemBase{
       
       // This method will be called once per scheduler run
       updateLimelightTracking();
-      UpdateLocalization();
+      //UpdateLocalization();
       
     }
   
@@ -152,7 +152,7 @@ public class VisionSubsystem extends SubsystemBase{
     });
     }
     
-    public boolean robotPoseWithinThreshold(int tagid){
+    public boolean robotRotationWithinThreshold(int tagid){
       return 
         Math.abs(ApriltagConstants.TAG_POSES[tagid].getRotation().getAngle() * 180 / Math.PI
         - reefPoseEstimator.getPoseEstimate().get().pose.toPose2d().getRotation().getDegrees())
@@ -173,6 +173,8 @@ public class VisionSubsystem extends SubsystemBase{
     public double getTA(int index){
       return ta[index];
     }
-    
+    public double getTargetRotation(int index){
+        return LimelightHelpers.getTargetPose3d_RobotSpace(LLReefConstants.LL_NAME).getRotation().getY(); //This is yaw
+    }
 
 }

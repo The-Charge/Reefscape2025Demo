@@ -1,28 +1,38 @@
 package frc.robot.commands.swervedrive.drivebase;
 
+import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.*;
 import frc.robot.constants.SwerveConstants;
+import frc.robot.constants.VisionConstants.ApriltagConstants;
 import frc.robot.subsystems.SwerveSubsystem;
+import frc.robot.subsystems.VisionSubsystem;
+
 import java.util.function.*;
 
 public class TeleopDrive extends Command {
     
     private final SwerveSubsystem swerve;
+    private final VisionSubsystem limelight;
+
     private final DoubleSupplier vX, vY;
     private final DoubleSupplier heading;
     private final BooleanSupplier povUp, povLeft, povDown, povRight;
     private final BooleanSupplier centricToggle;
     private final BooleanSupplier shiftHalf, shiftQuarter;
+    private final BooleanSupplier reefLock;
 
     private boolean usePOV = false;
+    
     private boolean isFieldCentric = true;
     private boolean centricToggleLast = false;
     
-    public TeleopDrive(SwerveSubsystem swerve, DoubleSupplier vX, DoubleSupplier vY, DoubleSupplier heading, BooleanSupplier povUp, BooleanSupplier povLeft, BooleanSupplier povDown, BooleanSupplier povRight, BooleanSupplier centricToggle, BooleanSupplier shiftHalf, BooleanSupplier shiftQuarter) {
+    public TeleopDrive(SwerveSubsystem swerve, VisionSubsystem limelight, DoubleSupplier vX, DoubleSupplier vY, DoubleSupplier heading, BooleanSupplier povUp, BooleanSupplier povLeft, BooleanSupplier povDown, BooleanSupplier povRight, BooleanSupplier centricToggle, BooleanSupplier shiftHalf, BooleanSupplier shiftQuarter, BooleanSupplier useReefLock) {
         this.swerve = swerve;
+        this.limelight = limelight;
         this.vX = vX;
         this.vY = vY;
         this.heading = heading;
@@ -33,7 +43,8 @@ public class TeleopDrive extends Command {
         this.centricToggle = centricToggle;
         this.shiftHalf = shiftHalf;
         this.shiftQuarter = shiftQuarter;
-        
+        reefLock = useReefLock;
+        addRequirements(limelight);
         addRequirements(swerve);
     }
     
@@ -44,7 +55,8 @@ public class TeleopDrive extends Command {
     public void execute() {
         double headingX = 0;
         double headingY = 0;
-        
+        double tagYaw = 0;
+    
         if(povUp.getAsBoolean())  {
             usePOV = true;
             headingY = 1;
@@ -87,20 +99,40 @@ public class TeleopDrive extends Command {
             .times(shiftScalar) //trigger shifting scalar
             .times(SwerveConstants.DRIVE_SPEED); //scale by drive speed percentage
 
+
         //pov is not effected by drive speed percentage or trigger shifting
         ChassisSpeeds povSpeeds = swerve.getTargetSpeeds(vX.getAsDouble(), vY.getAsDouble(), headingX, headingY);
 
         //translation = SwerveMath.limitVelocity(translation, swerve.getFieldVelocity(), swerve.getPose(), Constants.LOOP_TIME, Constants.ROBOT_MASS, List.of(Constants.CHASSIS), swerve.getSwerveDriveConfiguration());
         //SmartDashboard.putNumber("LimitedTranslation", translation.getX());
         //SmartDashboard.putString("Translation", translation.toString());
+        ChassisSpeeds reefLockSpeeds = new ChassisSpeeds();
+        if (limelight.getTV(0)){ 
+            // reefLockSpeeds = swerve.getTargetSpeeds(vX.getAsDouble(), vY.getAsDouble(), new Rotation2d(swerve.getHeading().getRadians() - limelight.getTargetRotation(0)));
+            // reefLockSpeeds = swerve.getTargetSpeeds(vX.getAsDouble(), vY.getAsDouble(), new Rotation2d(-swerve.getHeading().getRadians()));
+            reefLockSpeeds = swerve.getTargetSpeeds(vX.getAsDouble(), vY.getAsDouble(), new Rotation2d(-limelight.getTargetRotation(0)));
+            SmartDashboard.putNumber("Rotation to Target", limelight.getTargetRotation(0));
+            SmartDashboard.putNumber("Swerve Heading", swerve.getHeading().getRadians());
+            SmartDashboard.putNumber("omegaRadiansPerSecond", reefLockSpeeds.omegaRadiansPerSecond);
+        }
         
         // Make the robot move
         if(usePOV) {
             swerve.drive(translation, povSpeeds.omegaRadiansPerSecond, isFieldCentric);
         }
+        else if (reefLock.getAsBoolean()){
+            double rotSpeed = reefLockSpeeds.omegaRadiansPerSecond;
+            rotSpeed = MathUtil.clamp(rotSpeed, -1, 1);
+            if (Math.abs(limelight.getTargetRotation(0)) >= 0.2) {
+                swerve.drive(translation, rotSpeed, isFieldCentric);
+            } else {
+                swerve.drive(translation, 0, isFieldCentric);
+            }
+        }
         else {
             swerve.drive(translation, rotationSpeed, isFieldCentric);
         }
+
     }
     
     // Called once the command ends or is interrupted.

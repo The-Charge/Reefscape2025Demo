@@ -33,17 +33,21 @@ public class LockOnReef extends InstantCommand {
 
   @Override 
   public void execute(){
-    
+    if (limelight.robotRotationWithinThreshold((int) limelight.getTagID(0))){
+      
+    }
   }
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {}
+  public void end(boolean interrupted) {
+
+  }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return drivetoPose != null;
+    return false;
   }
 
 }
