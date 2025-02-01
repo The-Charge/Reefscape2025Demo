@@ -19,16 +19,13 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.commands.climb.Climb;
-import frc.robot.commands.climb.ClimbToDegreesManual;
-import frc.robot.commands.climb.ClimbToTicksManual;
-import frc.robot.commands.climb.Declimb;
+import frc.robot.commands.head.Intake;
+import frc.robot.commands.head.Shoot;
 import frc.robot.commands.swervedrive.drivebase.TeleopDrive;
 import frc.robot.constants.SwerveConstants;
-import frc.robot.subsystems.ClimbSubsystem;
+import frc.robot.subsystems.HeadSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
 
@@ -46,6 +43,7 @@ public class RobotContainer {
     private final VisionSubsystem m_limelight = new VisionSubsystem(swerve);
     // private final ElevSubsystem elev = new ElevSubsystem();
     // private final ClimbSubsystem climb = new ClimbSubsystem();
+    // private final HeadSubsystem head = new HeadSubsystem();
     
     /*
      * ======================
@@ -55,10 +53,6 @@ public class RobotContainer {
     private SendableChooser<Command> autoChooser;
     
     public RobotContainer() {
-        // if (RobotBase.isSimulation()) {
-        //     rotationXboxAxis = 2;
-        // }
-        
         TeleopDrive teleopDrive = new TeleopDrive(swerve,
             () -> -MathUtil.applyDeadband(driverXbox.getLeftY(), SwerveConstants.LEFT_Y_DEADBAND),
             () -> -MathUtil.applyDeadband(driverXbox.getLeftX(), SwerveConstants.LEFT_X_DEADBAND),
@@ -101,6 +95,9 @@ public class RobotContainer {
         // new Trigger(() -> buttonBox.getRawButton(2)).onTrue(new Climb(climb));
         // new Trigger(() -> buttonBox.getRawButton(3)).onTrue(new Declimb(climb));
 
+        // new Trigger(() -> buttonBox.getRawButton(1)).onTrue(new Intake(head));
+        // new Trigger(() -> buttonBox.getRawButton(2)).onTrue(new Shoot(head));
+
         //driverXbox.b().whileTrue(
         //    swerve.driveToPose(
         //        new Pose2d(new Translation2d(4, 4), Rotation2d.fromDegrees(0)))
@@ -123,6 +120,9 @@ public class RobotContainer {
         // SmartDashboard.putData("Climb Manual Climb (TICKS)", new ClimbToTicksManual(climb));
         // SmartDashboard.putData("Climb Manual", new Climb(climb));
         // SmartDashboard.putData("Declimb Manual", new Declimb(climb));
+
+        // SmartDashboard.putData("Head Intake", new Intake(head));
+        // SmartDashboard.putData("Head Shoot", new Shoot(head));
     }
     private void setupAutoDisplay() {
         //update the displayed auto path in smartdashboard when ever the selection is changed
