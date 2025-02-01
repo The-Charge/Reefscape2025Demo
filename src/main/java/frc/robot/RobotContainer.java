@@ -43,7 +43,7 @@ public class RobotContainer {
     private final VisionSubsystem m_limelight = new VisionSubsystem(swerve);
     // private final ElevSubsystem elev = new ElevSubsystem();
     // private final ClimbSubsystem climb = new ClimbSubsystem();
-    private final HeadSubsystem head = new HeadSubsystem();
+    // private final HeadSubsystem head = new HeadSubsystem();
     
     /*
      * ======================
@@ -95,8 +95,8 @@ public class RobotContainer {
         // new Trigger(() -> buttonBox.getRawButton(2)).onTrue(new Climb(climb));
         // new Trigger(() -> buttonBox.getRawButton(3)).onTrue(new Declimb(climb));
 
-        new Trigger(() -> buttonBox.getRawButton(1)).onTrue(new Intake(head));
-        new Trigger(() -> buttonBox.getRawButton(2)).onTrue(new Shoot(head));
+        // new Trigger(() -> buttonBox.getRawButton(1)).onTrue(new Intake(head));
+        // new Trigger(() -> buttonBox.getRawButton(2)).onTrue(new Shoot(head));
 
         //driverXbox.b().whileTrue(
         //    swerve.driveToPose(
@@ -121,8 +121,8 @@ public class RobotContainer {
         // SmartDashboard.putData("Climb Manual", new Climb(climb));
         // SmartDashboard.putData("Declimb Manual", new Declimb(climb));
 
-        SmartDashboard.putData("Head Intake", new Intake(head));
-        SmartDashboard.putData("Head Shoot", new Shoot(head));
+        // SmartDashboard.putData("Head Intake", new Intake(head));
+        // SmartDashboard.putData("Head Shoot", new Shoot(head));
     }
     private void setupAutoDisplay() {
         //update the displayed auto path in smartdashboard when ever the selection is changed
