@@ -7,6 +7,7 @@ import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.*;
 import frc.robot.constants.SwerveConstants;
@@ -105,7 +106,7 @@ public class TeleopDrive extends Command {
         }
         
         Translation2d translation = new Translation2d(vX.getAsDouble(), vY.getAsDouble())
-            .times(14.5) //Limit velocity
+            .times(SwerveConstants.MAX_SPEED) //Limit velocity
             .times(shiftScalar) //trigger shifting scalar
             .times(SwerveConstants.DRIVE_SPEED); //scale by drive speed percentage
 

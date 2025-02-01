@@ -13,6 +13,7 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Filesystem;
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -21,10 +22,15 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.commands.climb.Climb;
+import frc.robot.commands.climb.ClimbToDegreesManual;
+import frc.robot.commands.climb.ClimbToTicksManual;
+import frc.robot.commands.climb.Declimb;
 import frc.robot.commands.swervedrive.drivebase.TeleopDrive;
 import frc.robot.commands.swervedrive.vision.DriveToTag;
 import frc.robot.commands.swervedrive.drivebase.TeleopDrive;
 import frc.robot.constants.SwerveConstants;
+import frc.robot.subsystems.ClimbSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
 
@@ -34,12 +40,14 @@ import frc.robot.subsystems.VisionSubsystem;
 * Instead, the structure of the robot (including subsystems, commands, and trigger mappings) should be declared here.
 */
 public class RobotContainer {
-  private final Field2d field;
-    
+
     private final CommandXboxController driverXbox = new CommandXboxController(0);
+    private final Joystick buttonBox = new Joystick(1);
+
     private final SwerveSubsystem swerve = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "swerve"));
     private final VisionSubsystem m_limelight = new VisionSubsystem(swerve);
-    // int rotationXboxAxis = 4;
+    // private final ElevSubsystem elev = new ElevSubsystem();
+    // private final ClimbSubsystem climb = new ClimbSubsystem();
     
     /*
      * ======================
@@ -70,19 +78,31 @@ public class RobotContainer {
             
         configureNamedCommands();
         configureBindings();
+        addTelemetry();
         DriverStation.silenceJoystickConnectionWarning(true);
 
         autoChooser = AutoBuilder.buildAutoChooser();
         setupAutoDisplay();
         SmartDashboard.putData("Auto Chooser", autoChooser);
 
-        field = new Field2d();
+        Field2d field = new Field2d();
         SmartDashboard.putData("Field", field);
     }
 
     private void configureBindings() {
-        driverXbox.b().onTrue(Commands.runOnce(swerve::zeroGyroWithAlliance));
+        driverXbox.b().onTrue(Commands.runOnce(swerve::zeroGyro));
         driverXbox.x().whileTrue(Commands.runOnce(swerve::lock, swerve).repeatedly());
+
+        // new Trigger(() -> buttonBox.getRawButton(1)).onTrue(new InstantCommand(elev::stop));
+        // new Trigger(() -> buttonBox.getRawButton(2)).onTrue(new MoveToInches(elev, 0));
+        // new Trigger(() -> buttonBox.getRawButton(3)).onTrue(new MoveToLevel(elev, ElevSubsystem.Level.LVL1));
+        // new Trigger(() -> buttonBox.getRawButton(4)).onTrue(new MoveToLevel(elev, ElevSubsystem.Level.LVL2));
+        // new Trigger(() -> buttonBox.getRawButton(5)).onTrue(new MoveToLevel(elev, ElevSubsystem.Level.LVL3));
+        // new Trigger(() -> buttonBox.getRawButton(6)).onTrue(new MoveToLevel(elev, ElevSubsystem.Level.LVL4));
+
+        // new Trigger(() -> buttonBox.getRawButton(1)).onTrue(new InstantCommand(climb::stop));
+        // new Trigger(() -> buttonBox.getRawButton(2)).onTrue(new Climb(climb));
+        // new Trigger(() -> buttonBox.getRawButton(3)).onTrue(new Declimb(climb));
         driverXbox.a().onTrue(Commands.runOnce(swerve::addFakeVisionReading));
         driverXbox.y().whileTrue(new DriveToTag(swerve, m_limelight, 7));
         driverXbox.leftBumper().onTrue(Commands.runOnce(m_limelight::adjustDriverPipeline));
@@ -99,12 +119,33 @@ public class RobotContainer {
     private void configureNamedCommands() {
         //Pathplanner named commands
     }
-    public Command getAutonomousCommand() {
-        return autoChooser.getSelected();
+    private void addTelemetry() {
+        //one time telemetry values, such as dashboard commands
+        // SmartDashboard.putData("Elev Manual Move (IN)", new MoveToInchesManual(elev));
+        // SmartDashboard.putData("Elev Manual Move (TICKS)", new MoveToTicksManual(elev));
+        // SmartDashboard.putData("Elev Manual Move (LVL)", new MoveToLevelManual(elev));
+
+        // SmartDashboard.putData("Climb Manual Climb (DEG)", new ClimbToDegreesManual(climb));
+        // SmartDashboard.putData("Climb Manual Climb (TICKS)", new ClimbToTicksManual(climb));
+        // SmartDashboard.putData("Climb Manual", new Climb(climb));
+        // SmartDashboard.putData("Declimb Manual", new Declimb(climb));
     }
-    public SwerveSubsystem getSwerveSubsystem() {
-      return swerve;
+    private void setupAutoDisplay() {
+        //update the displayed auto path in smartdashboard when ever the selection is changed
+        //display is cleared in teleopInit
+        autoChooser.onChange((selected) -> {
+            if(DriverStation.isTeleopEnabled()) //don't display auton path in teleop
+                return;
+
+            displayAuto();
+        });
+
+        /*
+         * Robot.teleopInit clears the display
+         * Robot.autonomousInit redraws the display
+         */
     }
+
     public void setMotorBrake(boolean brake) {
         swerve.setMotorBrake(brake);
     }
@@ -124,19 +165,11 @@ public class RobotContainer {
 
         AutoDisplayHelper.displayAutoPath(auto, isRed);
     }
-    private void setupAutoDisplay() {
-        //update the displayed auto path in smartdashboard when ever the selection is changed
-        //display is cleared in teleopInit
-        autoChooser.onChange((selected) -> {
-            if(DriverStation.isTeleopEnabled()) //don't display auton path in teleop
-                return;
 
-            displayAuto();
-        });
-
-        /*
-         * Robot.teleopInit clears the display
-         * Robot.autonomousInit redraws the display
-         */
+    public Command getAutonomousCommand() {
+        return autoChooser.getSelected();
+    }
+    public SwerveSubsystem getSwerveSubsystem() {
+      return swerve;
     }
 }
