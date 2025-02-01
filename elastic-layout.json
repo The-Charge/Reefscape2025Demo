@@ -604,6 +604,101 @@
           }
         ]
       }
+    },
+    {
+      "name": "Head",
+      "grid_layout": {
+        "layouts": [],
+        "containers": [
+          {
+            "title": "VBus L",
+            "x": 0.0,
+            "y": 0.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/SmartDashboard/Head VBus L",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "Sensor 1",
+            "x": 192.0,
+            "y": 0.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Boolean Box",
+            "properties": {
+              "topic": "/SmartDashboard/Head Sensor 1",
+              "period": 0.06,
+              "data_type": "boolean",
+              "true_color": 4283215696,
+              "false_color": 4294198070,
+              "true_icon": "None",
+              "false_icon": "None"
+            }
+          },
+          {
+            "title": "Sensor 2",
+            "x": 192.0,
+            "y": 128.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Boolean Box",
+            "properties": {
+              "topic": "/SmartDashboard/Head Sensor 2",
+              "period": 0.06,
+              "data_type": "boolean",
+              "true_color": 4283215696,
+              "false_color": 4294198070,
+              "true_icon": "None",
+              "false_icon": "None"
+            }
+          },
+          {
+            "title": "VBus R",
+            "x": 0.0,
+            "y": 128.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/SmartDashboard/Head VBus R",
+              "period": 0.06,
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "Intake",
+            "x": 0.0,
+            "y": 576.0,
+            "width": 256.0,
+            "height": 128.0,
+            "type": "Command",
+            "properties": {
+              "topic": "/SmartDashboard/Head Intake",
+              "period": 0.06,
+              "show_type": false
+            }
+          },
+          {
+            "title": "Shoot",
+            "x": 256.0,
+            "y": 576.0,
+            "width": 256.0,
+            "height": 128.0,
+            "type": "Command",
+            "properties": {
+              "topic": "/SmartDashboard/Head Shoot",
+              "period": 0.06,
+              "show_type": false
+            }
+          }
+        ]
+      }
     }
   ]
 }
