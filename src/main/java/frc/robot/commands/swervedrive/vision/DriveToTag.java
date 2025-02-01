@@ -4,6 +4,8 @@
 
 package frc.robot.commands.swervedrive.vision;
 
+import org.dyn4j.geometry.Rotation;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -35,15 +37,15 @@ public class DriveToTag extends Command {
         
     }
  
-
-
 @Override
   public void initialize() {
       intendedPose = new Pose2d(
         ApriltagConstants.TAG_POSES[tagid].getX() + ApriltagConstants.APRILTAG_POSE_OFFSET * Math.cos(ApriltagConstants.TAG_POSES[tagid].getRotation().getZ()),
         ApriltagConstants.TAG_POSES[tagid].getY() + ApriltagConstants.APRILTAG_POSE_OFFSET * Math.sin(ApriltagConstants.TAG_POSES[tagid].getRotation().getZ()), 
-        new Rotation2d(ApriltagConstants.TAG_POSES[tagid].getZ())
+        new Rotation2d(ApriltagConstants.TAG_POSES[tagid].toPose2d().getRotation().getRadians() - Math.PI)
       );
+      SmartDashboard.putNumber("DTP Rotation", new Rotation2d(ApriltagConstants.TAG_POSES[tagid].getZ()).minus(new Rotation2d(Math.PI)).getDegrees());
+      SmartDashboard.putNumber("DTP RAW TAG ROTATION", ApriltagConstants.TAG_POSES[tagid].getZ());
       drivetoPose = swerve.driveToPose(intendedPose);
       drivetoPose.schedule();
 }
@@ -51,10 +53,6 @@ public class DriveToTag extends Command {
   @Override 
   public void execute() {
     if (limelight.getTagID(0) == tagid && limelight.robotRotationWithinThreshold(tagid)){
-      
-
-
-
     }
   }
 

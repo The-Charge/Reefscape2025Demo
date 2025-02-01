@@ -42,6 +42,7 @@ public class VisionSubsystem extends SubsystemBase{
     LimelightPoseEstimator reefPoseEstimator;
 
     
+
     public double[] tx = new double[2];               //X-offset
     public double[] ty = new double[2];               //Y-offset
     public boolean[] tv = new boolean[2];               //Target Identification
@@ -85,6 +86,7 @@ public class VisionSubsystem extends SubsystemBase{
     public void updateLimelightTracking(){ 
         //LimelightHepers.setPipelineIndex(VisionConstants.LLReefConstants.LL_NAME, 1);
         //Read general target values
+        
         tv[0] = LimelightHelpers.getTV(LLReefConstants.LL_NAME);
         tx[0] = LimelightHelpers.getTX(LLReefConstants.LL_NAME);
         ty[0] = LimelightHelpers.getTY(LLReefConstants.LL_NAME);
@@ -154,7 +156,7 @@ public class VisionSubsystem extends SubsystemBase{
     
     public boolean robotRotationWithinThreshold(int tagid){
       return 
-        Math.abs(ApriltagConstants.TAG_POSES[tagid].getRotation().getAngle() * 180 / Math.PI
+        Math.abs(ApriltagConstants.TAG_POSES[tagid].getRotation().getAngle() * 180 / Math.PI - 180
         - reefPoseEstimator.getPoseEstimate().get().pose.toPose2d().getRotation().getDegrees())
         < ApriltagConstants.ANGLE_POSE_TOLERANCE;
     }
@@ -173,8 +175,10 @@ public class VisionSubsystem extends SubsystemBase{
     public double getTA(int index){
       return ta[index];
     }
+
     public double getTargetRotation(int index){
         return LimelightHelpers.getTargetPose3d_RobotSpace(LLReefConstants.LL_NAME).getRotation().getY(); //This is yaw
     }
 
+    
 }
