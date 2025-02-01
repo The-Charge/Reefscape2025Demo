@@ -1,17 +1,27 @@
 package frc.robot.commands.swervedrive.drivebase;
 
+import edu.wpi.first.apriltag.AprilTag;
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.*;
 import frc.robot.constants.SwerveConstants;
+import frc.robot.constants.VisionConstants;
 import frc.robot.constants.VisionConstants.ApriltagConstants;
+import frc.robot.constants.VisionConstants.LLReefConstants;
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.function.*;
+
+import org.dyn4j.geometry.Rotation;
 
 public class TeleopDrive extends Command {
     
@@ -106,30 +116,27 @@ public class TeleopDrive extends Command {
         //translation = SwerveMath.limitVelocity(translation, swerve.getFieldVelocity(), swerve.getPose(), Constants.LOOP_TIME, Constants.ROBOT_MASS, List.of(Constants.CHASSIS), swerve.getSwerveDriveConfiguration());
         //SmartDashboard.putNumber("LimitedTranslation", translation.getX());
         //SmartDashboard.putString("Translation", translation.toString());
-        ChassisSpeeds reefLockSpeeds = new ChassisSpeeds();
-        if (limelight.getTV(0)){ 
-            // reefLockSpeeds = swerve.getTargetSpeeds(vX.getAsDouble(), vY.getAsDouble(), new Rotation2d(swerve.getHeading().getRadians() - limelight.getTargetRotation(0)));
-            // reefLockSpeeds = swerve.getTargetSpeeds(vX.getAsDouble(), vY.getAsDouble(), new Rotation2d(-swerve.getHeading().getRadians()));
-            reefLockSpeeds = swerve.getTargetSpeeds(vX.getAsDouble(), vY.getAsDouble(), new Rotation2d(-limelight.getTargetRotation(0)));
-            SmartDashboard.putNumber("Rotation to Target", limelight.getTargetRotation(0));
-            SmartDashboard.putNumber("Swerve Heading", swerve.getHeading().getRadians());
-            SmartDashboard.putNumber("omegaRadiansPerSecond", reefLockSpeeds.omegaRadiansPerSecond);
-        }
         
         // Make the robot move
         if(usePOV) {
             swerve.drive(translation, povSpeeds.omegaRadiansPerSecond, isFieldCentric);
-        }
-        else if (reefLock.getAsBoolean()){
-            double rotSpeed = reefLockSpeeds.omegaRadiansPerSecond;
-            rotSpeed = MathUtil.clamp(rotSpeed, -1, 1);
-            if (Math.abs(limelight.getTargetRotation(0)) >= 0.2) {
-                swerve.drive(translation, rotSpeed, isFieldCentric);
-            } else {
-                swerve.drive(translation, 0, isFieldCentric);
+        } else if (reefLock.getAsBoolean()) {
+            List<Pose2d> tagposes = new ArrayList<Pose2d>();
+            for (int i = 1; i <= 22; i++) {
+                if (i == 4 || i == 5 || i == 14 || i == 15 || i == 3 || i == 16)
+                    continue;
+                tagposes.add(ApriltagConstants.TAG_POSES[i].toPose2d());
             }
-        }
-        else {
+
+            ChassisSpeeds reefLockSpeeds = new ChassisSpeeds();
+            reefLockSpeeds = swerve.getTargetSpeeds(vX.getAsDouble(), vY.getAsDouble(), swerve.getPose().nearest(tagposes).getRotation().minus(new Rotation2d(Math.PI)).getSin(), swerve.getPose().nearest(tagposes).getRotation().minus(new Rotation2d(Math.PI)).getCos());
+
+            SmartDashboard.putNumber("Swerve Heading", swerve.getHeading().getRadians());
+            SmartDashboard.putNumber("omegaRadiansPerSecond", reefLockSpeeds.omegaRadiansPerSecond);
+            SmartDashboard.putNumber("CLosest Tag", swerve.getPose().nearest(tagposes).getRotation().getRadians());
+            swerve.drive(translation, reefLockSpeeds.omegaRadiansPerSecond, isFieldCentric);
+
+        } else {
             swerve.drive(translation, rotationSpeed, isFieldCentric);
         }
 

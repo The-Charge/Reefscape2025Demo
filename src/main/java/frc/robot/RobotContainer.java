@@ -84,7 +84,7 @@ public class RobotContainer {
         driverXbox.b().onTrue(Commands.runOnce(swerve::zeroGyroWithAlliance));
         driverXbox.x().whileTrue(Commands.runOnce(swerve::lock, swerve).repeatedly());
         driverXbox.a().onTrue(Commands.runOnce(swerve::addFakeVisionReading));
-        driverXbox.y().whileTrue(new DriveToTag(swerve, m_limelight, 19));
+        driverXbox.y().whileTrue(new DriveToTag(swerve, m_limelight, 7));
         driverXbox.leftBumper().onTrue(Commands.runOnce(m_limelight::adjustDriverPipeline));
 
         //driverXbox.b().whileTrue(
