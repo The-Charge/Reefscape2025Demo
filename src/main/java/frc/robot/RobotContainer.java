@@ -87,7 +87,7 @@ public class RobotContainer {
     }
 
     private void configureBindings() {
-        driverXbox.b().onTrue(Commands.runOnce(swerve::zeroGyro));
+        driverXbox.b().onTrue(Commands.runOnce(swerve::zeroGyroWithAlliance));
         driverXbox.x().whileTrue(Commands.runOnce(swerve::lock, swerve).repeatedly());
 
         // new Trigger(() -> buttonBox.getRawButton(1)).onTrue(new InstantCommand(elev::stop));

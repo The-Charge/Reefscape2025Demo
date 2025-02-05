@@ -86,18 +86,20 @@ public class TeleopDrive extends Command {
         Translation2d translation = new Translation2d(vX.getAsDouble(), vY.getAsDouble())
             .times(SwerveConstants.MAX_SPEED) //Limit velocity
             .times(shiftScalar) //trigger shifting scalar
-            .times(SwerveConstants.DRIVE_SPEED); //scale by drive speed percentage
+            .times(SwerveConstants.DRIVE_SPEED) //scale by drive speed percentage
+            .times(swerve.isRedAlliance() ? -1 : 1); //switch for red alliance
 
-        //pov is not effected by drive speed percentage or trigger shifting
-        ChassisSpeeds povSpeeds = swerve.getTargetSpeeds(vX.getAsDouble(), vY.getAsDouble(), headingX, headingY);
-
-        //translation = SwerveMath.limitVelocity(translation, swerve.getFieldVelocity(), swerve.getPose(), Constants.LOOP_TIME, Constants.ROBOT_MASS, List.of(Constants.CHASSIS), swerve.getSwerveDriveConfiguration());
-        //SmartDashboard.putNumber("LimitedTranslation", translation.getX());
-        //SmartDashboard.putString("Translation", translation.toString());
-        
-        // Make the robot move
-        if(usePOV) {
-            swerve.drive(translation, povSpeeds.omegaRadiansPerSecond, isFieldCentric);
+            
+            //translation = SwerveMath.limitVelocity(translation, swerve.getFieldVelocity(), swerve.getPose(), Constants.LOOP_TIME, Constants.ROBOT_MASS, List.of(Constants.CHASSIS), swerve.getSwerveDriveConfiguration());
+            //SmartDashboard.putNumber("LimitedTranslation", translation.getX());
+            //SmartDashboard.putString("Translation", translation.toString());
+            
+            // Make the robot move
+            if(usePOV) {
+                //pov is not effected by drive speed percentage or trigger shifting
+                double isRedAlliance = swerve.isRedAlliance() ? -1 : 1;
+                ChassisSpeeds povSpeeds = swerve.getTargetSpeeds(vX.getAsDouble(), vY.getAsDouble(), headingX * isRedAlliance, headingY * isRedAlliance);
+                swerve.drive(translation, povSpeeds.omegaRadiansPerSecond, isFieldCentric);
         }
         else {
             swerve.drive(translation, rotationSpeed, isFieldCentric);
