@@ -5,9 +5,11 @@
 package frc.robot;
 
 import java.io.File;
+import java.util.Map;
 import java.util.Optional;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -20,11 +22,12 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.commands.elev.MoveToLevel;
 import frc.robot.commands.head.Intake;
 import frc.robot.commands.head.Shoot;
 import frc.robot.commands.swervedrive.drivebase.TeleopDrive;
 import frc.robot.constants.SwerveConstants;
+import frc.robot.subsystems.ElevSubsystem;
 import frc.robot.subsystems.HeadSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
@@ -41,9 +44,9 @@ public class RobotContainer {
 
     private final SwerveSubsystem swerve = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "swerve"));
     private final VisionSubsystem m_limelight = new VisionSubsystem(swerve);
-    // private final ElevSubsystem elev = new ElevSubsystem();
+    private final ElevSubsystem elev = new ElevSubsystem();
     // private final ClimbSubsystem climb = new ClimbSubsystem();
-    // private final HeadSubsystem head = new HeadSubsystem();
+    private final HeadSubsystem head = new HeadSubsystem();
     
     /*
      * ======================
@@ -109,6 +112,20 @@ public class RobotContainer {
     }
     private void configureNamedCommands() {
         //Pathplanner named commands
+
+        /*
+         * Please use consitent naming conventions!!
+         * <Subsytem><Action>
+         * Use PascalCase
+         */
+        NamedCommands.registerCommand("ElevHome", new MoveToLevel(elev, ElevSubsystem.Level.HOME));
+        NamedCommands.registerCommand("ElevLevel1", new MoveToLevel(elev, ElevSubsystem.Level.LVL1));
+        NamedCommands.registerCommand("ElevLevel2", new MoveToLevel(elev, ElevSubsystem.Level.LVL2));
+        NamedCommands.registerCommand("ElevLevel3", new MoveToLevel(elev, ElevSubsystem.Level.LVL3));
+        NamedCommands.registerCommand("ElevLevel4", new MoveToLevel(elev, ElevSubsystem.Level.LVL4));
+
+        NamedCommands.registerCommand("HeadIntake", new Intake(head));
+        NamedCommands.registerCommand("HeadShoot", new Shoot(head));
     }
     private void addTelemetry() {
         //one time telemetry values, such as dashboard commands
