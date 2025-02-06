@@ -15,12 +15,12 @@ import frc.robot.subsystems.VisionSubsystem;
  */
 
 public class DriveToTag extends InstantCommand {
-    private final SwerveSubsystem swerve;
+    // private final SwerveSubsystem swerve;
     private Command drivetoPose;
-    private VisionSubsystem limelight;
+    // private VisionSubsystem limelight;
     public DriveToTag(SwerveSubsystem swerve, VisionSubsystem limelight, double tag, boolean ManualControl){
-        this.swerve = swerve;
-        this.limelight = limelight;
+        // this.swerve = swerve;
+        // this.limelight = limelight;
         addRequirements(swerve);
         addRequirements(limelight);
     }
