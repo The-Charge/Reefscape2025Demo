@@ -4,6 +4,7 @@ import static edu.wpi.first.units.Units.DegreesPerSecond;
 
 import java.util.Optional;
 
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.Timer;
@@ -51,9 +52,9 @@ public class VisionSubsystem extends SubsystemBase{
     public VisionSubsystem(SwerveSubsystem swerve){
       this.swerve = swerve;
       
-      //Setup YALL limelight object
+      //Setup YALL limelight object (maybe should be in initialize)
       reeflimelight = new Limelight(LLReefConstants.LL_NAME);
-      reeflimelight.getSettings().withLimelightLEDMode(LEDMode.PipelineControl).withCameraOffset(LLReefConstants.CAMERA_OFFSET).save();
+      reeflimelight.getSettings().withLimelightLEDMode(LEDMode.PipelineControl).withCameraOffset(Pose3d.kZero /*Should be LLReefConstants.CAMERA_OFFSET but it was not cooperating*/).save();
       reefPoseEstimator = reeflimelight.getPoseEstimator(true);
 
       /*funnellimelight = new Limelight(LLFunnelConstants.LL_NAME);
