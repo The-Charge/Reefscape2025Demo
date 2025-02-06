@@ -87,7 +87,7 @@ public class TeleopDrive extends Command {
             .times(SwerveConstants.MAX_SPEED) //Limit velocity
             .times(shiftScalar) //trigger shifting scalar
             .times(SwerveConstants.DRIVE_SPEED) //scale by drive speed percentage
-            .times(swerve.isRedAlliance() ? -1 : 1); //switch for red alliance
+            .times(isFieldCentric ? swerve.isRedAlliance() ? -1 : 1 : 1); //switch for red alliance
 
             
             //translation = SwerveMath.limitVelocity(translation, swerve.getFieldVelocity(), swerve.getPose(), Constants.LOOP_TIME, Constants.ROBOT_MASS, List.of(Constants.CHASSIS), swerve.getSwerveDriveConfiguration());
