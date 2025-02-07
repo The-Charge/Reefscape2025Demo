@@ -17,8 +17,8 @@ import frc.robot.subsystems.VisionSubsystem;
  * An example command that uses an example subsystem.
  */
 
-public class DriveToTag extends InstantCommand {
-    // private final SwerveSubsystem swerve;
+public class DriveToTag extends Command {
+    private final SwerveSubsystem swerve;
     private Command drivetoPose;
     private VisionSubsystem limelight;
     private Pose2d intendedPose;
