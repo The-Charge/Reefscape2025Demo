@@ -2,7 +2,6 @@ package frc.robot.constants;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 
@@ -108,12 +107,5 @@ public abstract class VisionConstants {
       aprilTagFieldLayout.getTagPose(21).get(),
       aprilTagFieldLayout.getTagPose(22).get(),
     };
-   
-    
-    
-     
-
-
   }
-  
 }

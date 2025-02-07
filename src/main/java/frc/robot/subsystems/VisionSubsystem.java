@@ -4,7 +4,6 @@ import static edu.wpi.first.units.Units.DegreesPerSecond;
 
 import java.util.Optional;
 
-import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.Timer;
@@ -54,7 +53,7 @@ public class VisionSubsystem extends SubsystemBase{
       
       //Setup YALL limelight object (maybe should be in initialize)
       reeflimelight = new Limelight(LLReefConstants.LL_NAME);
-      reeflimelight.getSettings().withLimelightLEDMode(LEDMode.PipelineControl).withCameraOffset(Pose3d.kZero /*Should be LLReefConstants.CAMERA_OFFSET but it was not cooperating*/).save();
+      reeflimelight.getSettings().withLimelightLEDMode(LEDMode.PipelineControl).withCameraOffset(LLReefConstants.CAMERA_OFFSET /*Can be Pose3d.kZero if it does not cooperate*/).save();
       reefPoseEstimator = reeflimelight.getPoseEstimator(true);
 
       /*funnellimelight = new Limelight(LLFunnelConstants.LL_NAME);
@@ -68,11 +67,9 @@ public class VisionSubsystem extends SubsystemBase{
 
     @Override
     public void periodic(){
-      
       // This method will be called once per scheduler run
       updateLimelightTracking();
       UpdateLocalization();
-      
     }
   
     //updates limelight tracked values and puts on SmartDashboard
@@ -109,18 +106,13 @@ public class VisionSubsystem extends SubsystemBase{
       else
         NetworkTableInstance.getDefault().getTable(LLReefConstants.LL_NAME).getEntry("pipeline").setNumber(1);
     }
-    
-    
-    public void setRobotOrientation(double robotYaw){
-      LimelightHelpers.SetRobotOrientation(LLReefConstants.LL_NAME, robotYaw, 0.0, 0.0, 0.0, 0.0, 0.0);
-    }
    
     public void UpdateLocalization(){
       reeflimelight.getSettings()
       .withRobotOrientation(new Orientation3d(new Rotation3d(0, 0, swerve.getHeading().getRadians()),
                           new AngularVelocity3d(DegreesPerSecond.of(0),
                                       DegreesPerSecond.of(0),
-                                      DegreesPerSecond.of(0))))
+                                      swerve.getSwerveDrive().getGyro().getYawAngularVelocity().copy())))
       .save();
       SmartDashboard.putNumber("swerve rotation", swerve.getRotation3d().getX());
       // Get the vision estimate.
