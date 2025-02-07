@@ -7,23 +7,30 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.constants.SwerveConstants;
+import frc.robot.constants.VisionConstants.ApriltagConstants;
 import frc.robot.subsystems.SwerveSubsystem;
+import frc.robot.subsystems.VisionSubsystem;
 
 public class TeleopDrive extends Command {
     
     private final SwerveSubsystem swerve;
+    // private final VisionSubsystem limelight;
+
     private final DoubleSupplier vX, vY;
     private final DoubleSupplier heading;
     private final BooleanSupplier povUp, povLeft, povDown, povRight;
     private final BooleanSupplier centricToggle;
     private final BooleanSupplier shiftHalf, shiftQuarter;
+    private final BooleanSupplier reefLock;
 
     private boolean usePOV = false;
+    
     private boolean isFieldCentric = true;
     private boolean centricToggleLast = false;
     
-    public TeleopDrive(SwerveSubsystem swerve, DoubleSupplier vX, DoubleSupplier vY, DoubleSupplier heading, BooleanSupplier povUp, BooleanSupplier povLeft, BooleanSupplier povDown, BooleanSupplier povRight, BooleanSupplier centricToggle, BooleanSupplier shiftHalf, BooleanSupplier shiftQuarter) {
+    public TeleopDrive(SwerveSubsystem swerve, VisionSubsystem limelight, DoubleSupplier vX, DoubleSupplier vY, DoubleSupplier heading, BooleanSupplier povUp, BooleanSupplier povLeft, BooleanSupplier povDown, BooleanSupplier povRight, BooleanSupplier centricToggle, BooleanSupplier shiftHalf, BooleanSupplier shiftQuarter, BooleanSupplier useReefLock) {
         this.swerve = swerve;
+        // this.limelight = limelight;
         this.vX = vX;
         this.vY = vY;
         this.heading = heading;
@@ -34,7 +41,8 @@ public class TeleopDrive extends Command {
         this.centricToggle = centricToggle;
         this.shiftHalf = shiftHalf;
         this.shiftQuarter = shiftQuarter;
-        
+        reefLock = useReefLock;
+        addRequirements(limelight);
         addRequirements(swerve);
     }
     
@@ -45,7 +53,7 @@ public class TeleopDrive extends Command {
     public void execute() {
         double headingX = 0;
         double headingY = 0;
-        
+    
         if(povUp.getAsBoolean())  {
             usePOV = true;
             headingY = 1;
@@ -89,6 +97,7 @@ public class TeleopDrive extends Command {
             .times(SwerveConstants.DRIVE_SPEED) //scale by drive speed percentage
             .times(isFieldCentric ? swerve.isRedAlliance() ? -1 : 1 : 1); //switch for red alliance
 
+
             
             //translation = SwerveMath.limitVelocity(translation, swerve.getFieldVelocity(), swerve.getPose(), Constants.LOOP_TIME, Constants.ROBOT_MASS, List.of(Constants.CHASSIS), swerve.getSwerveDriveConfiguration());
             //SmartDashboard.putNumber("LimitedTranslation", translation.getX());
@@ -100,10 +109,28 @@ public class TeleopDrive extends Command {
                 double isRedAlliance = swerve.isRedAlliance() ? -1 : 1;
                 ChassisSpeeds povSpeeds = swerve.getTargetSpeeds(vX.getAsDouble(), vY.getAsDouble(), headingX * isRedAlliance, headingY * isRedAlliance);
                 swerve.drive(translation, povSpeeds.omegaRadiansPerSecond, isFieldCentric);
-        }
+        } 
+        else if (reefLock.getAsBoolean()) {
+            List<Pose2d> tagposes = new ArrayList<Pose2d>();
+            ChassisSpeeds reefLockSpeeds = new ChassisSpeeds();
+
+            for (int i = 1; i <= 22; i++) {
+                if (i == 4 || i == 5 || i == 14 || i == 15 || i == 3 || i == 16)
+                    continue;
+                tagposes.add(ApriltagConstants.TAG_POSES[i].toPose2d());
+            }
+
+            reefLockSpeeds = swerve.getTargetSpeeds(vX.getAsDouble(), vY.getAsDouble(), swerve.getPose().nearest(tagposes).getRotation().minus(new Rotation2d(Math.PI)).getSin(), swerve.getPose().nearest(tagposes).getRotation().minus(new Rotation2d(Math.PI)).getCos());
+
+            SmartDashboard.putNumber("Swerve Heading", swerve.getHeading().getRadians());
+            SmartDashboard.putNumber("omegaRadiansPerSecond", reefLockSpeeds.omegaRadiansPerSecond);
+            SmartDashboard.putNumber("CLosest Tag", swerve.getPose().nearest(tagposes).getRotation().getRadians());
+            swerve.drive(translation, reefLockSpeeds.omegaRadiansPerSecond, isFieldCentric);
+        } 
         else {
             swerve.drive(translation, rotationSpeed, isFieldCentric);
         }
+
     }
     
     // Called once the command ends or is interrupted.

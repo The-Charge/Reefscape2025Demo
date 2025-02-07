@@ -20,6 +20,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.swervedrive.drivebase.TeleopDrive;
+import frc.robot.commands.swervedrive.vision.DriveToTag;
 import frc.robot.constants.SwerveConstants;
 import frc.robot.subsystems.SwerveSubsystem;
 
@@ -45,12 +46,12 @@ public class RobotContainer {
      */
     private SendableChooser<Command> autoChooser;
     
-    public RobotContainer() {
+    public RobotContainer() {       
         // if (RobotBase.isSimulation()) {
         //     rotationXboxAxis = 2;
         // }
         
-        TeleopDrive teleopDrive = new TeleopDrive(swerve,
+        TeleopDrive teleopDrive = new TeleopDrive(swerve, m_limelight,
             () -> -MathUtil.applyDeadband(driverXbox.getLeftY(), SwerveConstants.LEFT_Y_DEADBAND),
             () -> -MathUtil.applyDeadband(driverXbox.getLeftX(), SwerveConstants.LEFT_X_DEADBAND),
             () -> -MathUtil.applyDeadband(driverXbox.getRightX(), SwerveConstants.RIGHT_X_DEADBAND),
@@ -60,10 +61,11 @@ public class RobotContainer {
             () -> driverXbox.povRight().getAsBoolean(),
             () -> driverXbox.back().getAsBoolean(),
             () -> driverXbox.leftTrigger(SwerveConstants.TRIGGER_DEADBAND).getAsBoolean(),
-            () -> driverXbox.rightTrigger(SwerveConstants.TRIGGER_DEADBAND).getAsBoolean()
+            () -> driverXbox.rightTrigger(SwerveConstants.TRIGGER_DEADBAND).getAsBoolean(),
+            () -> driverXbox.rightBumper().getAsBoolean()
         );
         swerve.setDefaultCommand(teleopDrive);
-        
+            
         configureNamedCommands();
         configureBindings();
         addTelemetry();
@@ -91,6 +93,9 @@ public class RobotContainer {
         // new Trigger(() -> buttonBox.getRawButton(1)).onTrue(new InstantCommand(climb::stop));
         // new Trigger(() -> buttonBox.getRawButton(2)).onTrue(new Climb(climb));
         // new Trigger(() -> buttonBox.getRawButton(3)).onTrue(new Declimb(climb));
+        driverXbox.a().onTrue(Commands.runOnce(swerve::addFakeVisionReading));
+        driverXbox.y().whileTrue(new DriveToTag(swerve, m_limelight, 7));
+        driverXbox.leftBumper().onTrue(Commands.runOnce(m_limelight::adjustDriverPipeline));
 
         //driverXbox.b().whileTrue(
         //    swerve.driveToPose(
