@@ -9,7 +9,7 @@ public abstract class HeadConstants {
 
     public static final int currentLimit = 25;
 
-    public static final double intakeVBus = 0.2;
+    public static final double indexerVbus = 0.2;
 
     public static final double shootTime = 0.5;
     public static final double shootVBus = 0.5;

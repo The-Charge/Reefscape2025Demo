@@ -20,8 +20,12 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.commands.intake.Intake;
 import frc.robot.commands.swervedrive.drivebase.TeleopDrive;
 import frc.robot.constants.SwerveConstants;
+import frc.robot.subsystems.ElevSubsystem;
+import frc.robot.subsystems.HeadSubsystem;
+import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
 
@@ -40,12 +44,8 @@ public class RobotContainer {
     // private final ElevSubsystem elev = new ElevSubsystem();
     // private final ClimbSubsystem climb = new ClimbSubsystem();
     // private final HeadSubsystem head = new HeadSubsystem();
+    // private final IntakeSubsystem intake = new IntakeSubsystem();
     
-    /*
-     * ======================
-     * Auto
-     * ======================
-     */
     private SendableChooser<Command> autoChooser;
     
     public RobotContainer() {
@@ -62,6 +62,8 @@ public class RobotContainer {
             () -> driverXbox.rightTrigger(SwerveConstants.TRIGGER_DEADBAND).getAsBoolean()
         );
         swerve.setDefaultCommand(teleopDrive);
+
+        // intake.setDefaultCommand(new Intake(intake, elev, head));
         
         configureNamedCommands();
         configureBindings();

@@ -9,7 +9,9 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.constants.HeadConstants;
 
 public class HeadSubsystem extends SubsystemBase {
@@ -18,6 +20,7 @@ public class HeadSubsystem extends SubsystemBase {
     private DigitalInput headSensor2;
     private SparkMax headLeft;
     private SparkMax headRight;
+    private boolean hasCoral = false;
     
     public HeadSubsystem() {
         headSensor1 = new DigitalInput(HeadConstants.sensorId1);
@@ -31,6 +34,8 @@ public class HeadSubsystem extends SubsystemBase {
 
         headLeft.set(0);
         headRight.set(0);
+
+        createSensorTriggers();
     }
 
     @Override
@@ -56,6 +61,9 @@ public class HeadSubsystem extends SubsystemBase {
     public boolean getHeadSensor2() {
         return headSensor2.get();
     }
+    public boolean getHasCoral() {
+        return hasCoral;
+    }
 
     private void configureMotor(SparkMax m) {
         SparkMaxConfig config = new SparkMaxConfig();
@@ -63,5 +71,13 @@ public class HeadSubsystem extends SubsystemBase {
         config.smartCurrentLimit(HeadConstants.currentLimit);
 
         m.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+    }
+    private void createSensorTriggers() {
+        new Trigger(() -> getHeadSensor1()).onTrue(new InstantCommand(() -> {
+            hasCoral = true;
+        }));
+        new Trigger(() -> getHeadSensor2()).onTrue(new InstantCommand(() -> {
+            hasCoral = false;
+        }));
     }
 }

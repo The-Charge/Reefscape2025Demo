@@ -4,11 +4,11 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.constants.HeadConstants;
 import frc.robot.subsystems.HeadSubsystem;
 
-public class Intake extends Command {
+public class Indexer extends Command {
 
     private HeadSubsystem m_head; 
 
-    public Intake(HeadSubsystem head) {
+    public Indexer(HeadSubsystem head) {
         this.m_head = head;
 
         addRequirements(head);
@@ -17,7 +17,7 @@ public class Intake extends Command {
     @Override 
     public void execute() {
         if(m_head.getHeadSensor1())
-            m_head.flywheelVBus(HeadConstants.intakeVBus);
+            m_head.flywheelVBus(HeadConstants.indexerVbus);
     }
 
     @Override 
