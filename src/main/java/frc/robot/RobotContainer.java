@@ -41,10 +41,10 @@ public class RobotContainer {
 
     private final SwerveSubsystem swerve = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "swerve"));
     private final VisionSubsystem m_limelight = new VisionSubsystem(swerve);
-    private final ElevSubsystem elev = new ElevSubsystem();
+    // private final ElevSubsystem elev = new ElevSubsystem();
     // private final ClimbSubsystem climb = new ClimbSubsystem();
-    private final HeadSubsystem head = new HeadSubsystem();
-    private final IntakeSubsystem intake = new IntakeSubsystem();
+    // private final HeadSubsystem head = new HeadSubsystem();
+    // private final IntakeSubsystem intake = new IntakeSubsystem();
     
     private SendableChooser<Command> autoChooser;
     
@@ -63,7 +63,7 @@ public class RobotContainer {
         );
         swerve.setDefaultCommand(teleopDrive);
 
-        intake.setDefaultCommand(new Intake(intake, elev, head));
+        // intake.setDefaultCommand(new Intake(intake, elev, head));
         
         configureNamedCommands();
         configureBindings();
