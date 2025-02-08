@@ -1,0 +1,49 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Start"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Back to RightSource"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "RightSource to FrontRight"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "FrontRight to RightSource"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "RightSource to Front"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "End"
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": false,
+  "folder": null,
+  "choreoAuto": false
+}
