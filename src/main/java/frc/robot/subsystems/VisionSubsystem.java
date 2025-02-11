@@ -70,6 +70,11 @@ public class VisionSubsystem extends SubsystemBase{
       // This method will be called once per scheduler run
       updateLimelightTracking();
       UpdateLocalization();
+      double[] stddevs = NetworkTableInstance.getDefault().getTable(LLReefConstants.LL_NAME).getEntry("stddevs")
+          .getDoubleArray(new double[] { 0.0 });
+      for (int i = 0; i < stddevs.length; i++) {
+        SmartDashboard.putNumber("Standard Deviation " + i, stddevs[i]);
+      }
     }
   
     //updates limelight tracked values and puts on SmartDashboard
@@ -120,10 +125,10 @@ public class VisionSubsystem extends SubsystemBase{
       visionEstimate.ifPresent((PoseEstimate poseEstimate) -> {
       // If the average tag distance is less than 4 meters,
       // there are more than 0 tags in view,
-      // and the average ambiguity between tags is less than 30% then we update the pose estimation.
-      if (poseEstimate.avgTagDist < 4 && poseEstimate.tagCount > 0 && poseEstimate.getMinTagAmbiguity() < 0.5)
+      // and the average ambiguity between tags is less than 50% then we update the pose estimation.
+        if (poseEstimate.tagCount > 0 && poseEstimate.getMinTagAmbiguity() < 0.3)
       {
-        swerve.addVisionReading(poseEstimate.pose.toPose2d(),poseEstimate.timestampSeconds);
+        swerve.addVisionReading(poseEstimate.pose.toPose2d(), poseEstimate.timestampSeconds);
         SmartDashboard.putNumber("TagX", poseEstimate.pose.toPose2d().getX());
         SmartDashboard.putNumber("TagY", poseEstimate.pose.toPose2d().getY());
         SmartDashboard.putNumber("Timestamp", poseEstimate.timestampSeconds);
