@@ -19,8 +19,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import frc.robot.commands.swervedrive.drivebase.POVDrive;
-import frc.robot.commands.swervedrive.drivebase.ReefLock;
 import frc.robot.commands.swervedrive.drivebase.TeleopDrive;
 import frc.robot.commands.swervedrive.vision.DriveToTag;
 import frc.robot.constants.SwerveConstants;
@@ -53,15 +51,21 @@ public class RobotContainer {
         // if (RobotBase.isSimulation()) {
         //     rotationXboxAxis = 2;
         // }
-        
+
         TeleopDrive teleopDrive = new TeleopDrive(swerve,
-            () -> -MathUtil.applyDeadband(driverXbox.getLeftY(), SwerveConstants.LEFT_Y_DEADBAND),
-            () -> -MathUtil.applyDeadband(driverXbox.getLeftX(), SwerveConstants.LEFT_X_DEADBAND),
-            () -> -MathUtil.applyDeadband(driverXbox.getRightX(), SwerveConstants.RIGHT_X_DEADBAND),
-            () -> driverXbox.back().getAsBoolean(),
-            () -> driverXbox.leftTrigger(SwerveConstants.TRIGGER_DEADBAND).getAsBoolean(),
-            () -> driverXbox.rightTrigger(SwerveConstants.TRIGGER_DEADBAND).getAsBoolean()
-        );
+                () -> -MathUtil.applyDeadband(driverXbox.getLeftY(), SwerveConstants.LEFT_Y_DEADBAND),
+                () -> -MathUtil.applyDeadband(driverXbox.getLeftX(), SwerveConstants.LEFT_X_DEADBAND),
+                () -> -MathUtil.applyDeadband(driverXbox.getRightX(), SwerveConstants.RIGHT_X_DEADBAND),
+                () -> driverXbox.povCenter().getAsBoolean(),
+                () -> driverXbox.povDown().getAsBoolean(), () -> driverXbox.povDownLeft().getAsBoolean(),
+                () -> driverXbox.povDownRight().getAsBoolean(),
+                () -> driverXbox.povLeft().getAsBoolean(), () -> driverXbox.povRight().getAsBoolean(),
+                () -> driverXbox.povUp().getAsBoolean(),
+                () -> driverXbox.povUpLeft().getAsBoolean(), () -> driverXbox.povUpRight().getAsBoolean(),
+                () -> driverXbox.rightBumper().getAsBoolean(),
+                () -> driverXbox.back().getAsBoolean(),
+                () -> driverXbox.leftTrigger(SwerveConstants.TRIGGER_DEADBAND).getAsBoolean(),
+                () -> driverXbox.rightTrigger(SwerveConstants.TRIGGER_DEADBAND).getAsBoolean());
         swerve.setDefaultCommand(teleopDrive);
             
         configureNamedCommands();
@@ -80,8 +84,6 @@ public class RobotContainer {
     private void configureBindings() {
         driverXbox.b().onTrue(Commands.runOnce(swerve::zeroGyroWithAlliance));
         driverXbox.x().whileTrue(Commands.runOnce(swerve::lock, swerve).repeatedly());
-        driverXbox.povCenter().whileFalse(new POVDrive(swerve, driverXbox.povDown(), driverXbox.povDownLeft(), driverXbox.povDownRight(), driverXbox.povLeft(), driverXbox.povRight(), driverXbox.povUp(), driverXbox.povUpLeft(), driverXbox.povUpRight()));
-        driverXbox.rightBumper().whileTrue(new ReefLock(swerve));
         // new Trigger(() -> buttonBox.getRawButton(1)).onTrue(new InstantCommand(elev::stop));
         // new Trigger(() -> buttonBox.getRawButton(2)).onTrue(new MoveToInches(elev, 0));
         // new Trigger(() -> buttonBox.getRawButton(3)).onTrue(new MoveToLevel(elev, ElevSubsystem.Level.LVL1));
