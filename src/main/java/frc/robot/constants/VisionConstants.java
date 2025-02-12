@@ -15,12 +15,12 @@ public abstract class VisionConstants {
     public static final double VIEWFINDER_PIPELINE = 0;
     public static final double APRILTAG_PIPELINE = 1;
 
-    //limelight pose in robotspace (in meters/degrees) - Change later
+    //limelight pose in robotspace (in meters/radians) - Change later
     public static final double X_CAMERA_OFFSET = 0.37719;
     public static final double Y_CAMERA_OFFSET = 0.04064;
     public static final double Z_CAMERA_OFFSET = 0.233363;
-    public static final double ROLL_CAMERA_OFFSET = -1;
-    public static final double YAW_CAMERA_OFFSET = 0;
+    public static final double ROLL_CAMERA_OFFSET = -0.017453292519943295; //-1 degree
+    public static final double YAW_CAMERA_OFFSET = 0.0017453292519943295; //0.1 degree
     public static final double PITCH_CAMERA_OFFSET = 0;
     public static final Pose3d CAMERA_OFFSET = new Pose3d(X_CAMERA_OFFSET, Y_CAMERA_OFFSET, Z_CAMERA_OFFSET, 
                                                new Rotation3d(ROLL_CAMERA_OFFSET, PITCH_CAMERA_OFFSET, YAW_CAMERA_OFFSET));
