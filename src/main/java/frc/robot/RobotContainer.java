@@ -13,7 +13,6 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Filesystem;
-import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -22,6 +21,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.intake.Intake;
 import frc.robot.commands.swervedrive.drivebase.TeleopDrive;
+import frc.robot.commands.swervedrive.vision.DriveToTag;
 import frc.robot.constants.SwerveConstants;
 import frc.robot.subsystems.ElevSubsystem;
 import frc.robot.subsystems.HeadSubsystem;
@@ -37,7 +37,7 @@ import frc.robot.subsystems.VisionSubsystem;
 public class RobotContainer {
 
     private final CommandXboxController driverXbox = new CommandXboxController(0);
-    private final Joystick buttonBox = new Joystick(1);
+    // private final Joystick buttonBox = new Joystick(1);
 
     private final SwerveSubsystem swerve = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "swerve"));
     private final VisionSubsystem m_limelight = new VisionSubsystem(swerve);
@@ -50,17 +50,19 @@ public class RobotContainer {
     
     public RobotContainer() {
         TeleopDrive teleopDrive = new TeleopDrive(swerve,
-            () -> -MathUtil.applyDeadband(driverXbox.getLeftY(), SwerveConstants.LEFT_Y_DEADBAND),
-            () -> -MathUtil.applyDeadband(driverXbox.getLeftX(), SwerveConstants.LEFT_X_DEADBAND),
-            () -> -MathUtil.applyDeadband(driverXbox.getRightX(), SwerveConstants.RIGHT_X_DEADBAND),
-            () -> driverXbox.povUp().getAsBoolean(),
-            () -> driverXbox.povLeft().getAsBoolean(),
-            () -> driverXbox.povDown().getAsBoolean(),
-            () -> driverXbox.povRight().getAsBoolean(),
-            () -> driverXbox.back().getAsBoolean(),
-            () -> driverXbox.leftTrigger(SwerveConstants.TRIGGER_DEADBAND).getAsBoolean(),
-            () -> driverXbox.rightTrigger(SwerveConstants.TRIGGER_DEADBAND).getAsBoolean()
-        );
+                () -> -MathUtil.applyDeadband(driverXbox.getLeftY(), SwerveConstants.LEFT_Y_DEADBAND),
+                () -> -MathUtil.applyDeadband(driverXbox.getLeftX(), SwerveConstants.LEFT_X_DEADBAND),
+                () -> -MathUtil.applyDeadband(driverXbox.getRightX(), SwerveConstants.RIGHT_X_DEADBAND),
+                () -> driverXbox.povCenter().getAsBoolean(),
+                () -> driverXbox.povDown().getAsBoolean(), () -> driverXbox.povDownLeft().getAsBoolean(),
+                () -> driverXbox.povDownRight().getAsBoolean(),
+                () -> driverXbox.povLeft().getAsBoolean(), () -> driverXbox.povRight().getAsBoolean(),
+                () -> driverXbox.povUp().getAsBoolean(),
+                () -> driverXbox.povUpLeft().getAsBoolean(), () -> driverXbox.povUpRight().getAsBoolean(),
+                () -> driverXbox.rightBumper().getAsBoolean(),
+                () -> driverXbox.back().getAsBoolean(),
+                () -> driverXbox.leftTrigger(SwerveConstants.TRIGGER_DEADBAND).getAsBoolean(),
+                () -> driverXbox.rightTrigger(SwerveConstants.TRIGGER_DEADBAND).getAsBoolean());
         swerve.setDefaultCommand(teleopDrive);
 
         // intake.setDefaultCommand(new Intake(intake, elev, head));
@@ -79,9 +81,8 @@ public class RobotContainer {
     }
 
     private void configureBindings() {
-        driverXbox.b().onTrue(Commands.runOnce(swerve::zeroGyro));
+        driverXbox.b().onTrue(Commands.runOnce(swerve::zeroGyroWithAlliance));
         driverXbox.x().whileTrue(Commands.runOnce(swerve::lock, swerve).repeatedly());
-
         // new Trigger(() -> buttonBox.getRawButton(1)).onTrue(new InstantCommand(elev::stop));
         // new Trigger(() -> buttonBox.getRawButton(2)).onTrue(new MoveToInches(elev, 0));
         // new Trigger(() -> buttonBox.getRawButton(3)).onTrue(new MoveToLevel(elev, ElevSubsystem.Level.LVL1));
@@ -95,6 +96,9 @@ public class RobotContainer {
 
         // new Trigger(() -> buttonBox.getRawButton(1)).onTrue(new Intake(head));
         // new Trigger(() -> buttonBox.getRawButton(2)).onTrue(new Shoot(head));
+        // driverXbox.a().onTrue(Commands.runOnce(swerve::addFakeVisionReading));
+        // driverXbox.y().whileTrue(new DriveToTag(swerve, m_limelight, 7));
+        // driverXbox.leftBumper().onTrue(Commands.runOnce(m_limelight::adjustDriverPipeline));
 
         //driverXbox.b().whileTrue(
         //    swerve.driveToPose(
