@@ -21,8 +21,10 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.intake.Intake;
 import frc.robot.commands.swervedrive.drivebase.TeleopDrive;
-import frc.robot.commands.swervedrive.vision.DriveToTag;
+import frc.robot.commands.vision.AlignToTag;
+import frc.robot.commands.vision.DriveToTag;
 import frc.robot.constants.SwerveConstants;
+import frc.robot.constants.VisionConstants.LLReefConstants;
 import frc.robot.subsystems.ElevSubsystem;
 import frc.robot.subsystems.HeadSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
@@ -40,7 +42,7 @@ public class RobotContainer {
     // private final Joystick buttonBox = new Joystick(1);
 
     private final SwerveSubsystem swerve = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "swerve"));
-    private final VisionSubsystem m_limelight = new VisionSubsystem(swerve);
+    private final VisionSubsystem reeflimelight = new VisionSubsystem(swerve, LLReefConstants.LL_NAME, LLReefConstants.CAMERA_OFFSET);
     // private final ElevSubsystem elev = new ElevSubsystem();
     // private final ClimbSubsystem climb = new ClimbSubsystem();
     // private final HeadSubsystem head = new HeadSubsystem();
@@ -81,8 +83,7 @@ public class RobotContainer {
     }
 
     private void configureBindings() {
-        driverXbox.b().onTrue(Commands.runOnce(swerve::zeroGyroWithAlliance));
-        driverXbox.x().whileTrue(Commands.runOnce(swerve::lock, swerve).repeatedly());
+        
         // new Trigger(() -> buttonBox.getRawButton(1)).onTrue(new InstantCommand(elev::stop));
         // new Trigger(() -> buttonBox.getRawButton(2)).onTrue(new MoveToInches(elev, 0));
         // new Trigger(() -> buttonBox.getRawButton(3)).onTrue(new MoveToLevel(elev, ElevSubsystem.Level.LVL1));
@@ -93,9 +94,11 @@ public class RobotContainer {
         // new Trigger(() -> buttonBox.getRawButton(1)).onTrue(new InstantCommand(climb::stop));
         // new Trigger(() -> buttonBox.getRawButton(2)).onTrue(new Climb(climb));
         // new Trigger(() -> buttonBox.getRawButton(3)).onTrue(new Declimb(climb));
+        driverXbox.b().onTrue(Commands.runOnce(swerve::zeroGyroWithAlliance));
+        driverXbox.x().whileTrue(Commands.runOnce(swerve::lock, swerve).repeatedly());
         driverXbox.a().onTrue(Commands.runOnce(swerve::addFakeVisionReading));
-        driverXbox.y().whileTrue(new DriveToTag(swerve, m_limelight, 7));
-        driverXbox.leftBumper().onTrue(Commands.runOnce(m_limelight::adjustDriverPipeline));
+        driverXbox.y().onTrue(new DriveToTag(swerve, reeflimelight, 0)); //Drive to tag seen by reeflimelight
+        driverXbox.leftBumper().whileTrue(new AlignToTag(swerve, reeflimelight, 7));
 
         //driverXbox.b().whileTrue(
         //    swerve.driveToPose(
