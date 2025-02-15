@@ -143,6 +143,7 @@ public class Robot extends TimedRobot {
         }
         
         AutoDisplayHelper.clearAutoPath();
+        m_robotContainer.configureAutoReturn();
     }
     
     /**
