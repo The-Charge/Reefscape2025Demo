@@ -19,11 +19,11 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.commands.leds.LEDManager;
 import frc.robot.commands.swervedrive.drivebase.TeleopDrive;
 import frc.robot.constants.SwerveConstants;
 import frc.robot.subsystems.LEDSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
-import frc.robot.subsystems.VisionSubsystem;
 
 /**
 * This class is where the bulk of the robot should be declared. Since Command-based is a "declarative" paradigm, very
@@ -36,7 +36,7 @@ public class RobotContainer {
     // private final Joystick buttonBox = new Joystick(1);
 
     private final SwerveSubsystem swerve = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "swerve"));
-    private final VisionSubsystem m_limelight = new VisionSubsystem(swerve);
+    // private final VisionSubsystem m_limelight = new VisionSubsystem(swerve);
     // private final ElevSubsystem elev = new ElevSubsystem();
     // private final ClimbSubsystem climb = new ClimbSubsystem();
     // private final HeadSubsystem head = new HeadSubsystem();
@@ -64,6 +64,7 @@ public class RobotContainer {
         swerve.setDefaultCommand(teleopDrive);
 
         // intake.setDefaultCommand(new Intake(intake, elev, head));
+        leds.setDefaultCommand(new LEDManager(leds));
         
         configureNamedCommands();
         configureBindings();
