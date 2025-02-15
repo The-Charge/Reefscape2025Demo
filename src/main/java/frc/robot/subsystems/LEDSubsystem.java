@@ -12,7 +12,7 @@ public class LEDSubsystem extends SubsystemBase {
     private AddressableLED leds;
     private AddressableLEDBuffer buff;
     // private LEDPattern effect;
-    private int time = 0;
+    private long time = 0;
 
     public LEDSubsystem() {
         leds = new AddressableLED(LEDConstants.ledPort);
