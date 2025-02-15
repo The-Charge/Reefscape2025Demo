@@ -6,6 +6,7 @@ package frc.robot;
 
 import java.io.File;
 import java.util.Optional;
+import java.util.function.BooleanSupplier;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 
@@ -13,17 +14,26 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Filesystem;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.commands.climb.Climb;
+import frc.robot.commands.climb.Declimb;
+import frc.robot.commands.elev.MoveToLevel;
+import frc.robot.commands.head.Shoot;
 import frc.robot.commands.intake.Intake;
 import frc.robot.commands.swervedrive.drivebase.TeleopDrive;
 import frc.robot.commands.swervedrive.vision.DriveToTag;
 import frc.robot.constants.SwerveConstants;
+import frc.robot.subsystems.ClimbSubsystem;
 import frc.robot.subsystems.ElevSubsystem;
+import frc.robot.subsystems.ElevSubsystem.Level;
 import frc.robot.subsystems.HeadSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
@@ -37,14 +47,15 @@ import frc.robot.subsystems.VisionSubsystem;
 public class RobotContainer {
 
     private final CommandXboxController driverXbox = new CommandXboxController(0);
-    // private final Joystick buttonBox = new Joystick(1);
+    private final CommandXboxController driverXbox2 = new CommandXboxController(1);
 
     private final SwerveSubsystem swerve = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "swerve"));
     private final VisionSubsystem m_limelight = new VisionSubsystem(swerve);
-    // private final ElevSubsystem elev = new ElevSubsystem();
-    // private final ClimbSubsystem climb = new ClimbSubsystem();
-    // private final HeadSubsystem head = new HeadSubsystem();
-    // private final IntakeSubsystem intake = new IntakeSubsystem();
+    
+    private final ElevSubsystem elev = new ElevSubsystem();
+    private final ClimbSubsystem climb = new ClimbSubsystem();
+    private final HeadSubsystem head = new HeadSubsystem();
+    private final IntakeSubsystem intake = new IntakeSubsystem();
     
     private SendableChooser<Command> autoChooser;
     
@@ -79,10 +90,31 @@ public class RobotContainer {
         Field2d field = new Field2d();
         SmartDashboard.putData("Field", field);
     }
+    public void configureAutoReturn() {
+        Timer returnToCollect = new Timer();
+        returnToCollect.start();
+        new Trigger(() -> returnToCollect.hasElapsed(5)).onTrue(new MoveToLevel(elev, Level.HOME));
+        new Trigger(() -> head.getHasCoral()).onTrue(new InstantCommand(() -> returnToCollect.reset()));
+    }
 
     private void configureBindings() {
         driverXbox.b().onTrue(Commands.runOnce(swerve::zeroGyroWithAlliance));
         driverXbox.x().whileTrue(Commands.runOnce(swerve::lock, swerve).repeatedly());
+        
+        driverXbox2.a().onTrue(new Climb(climb));
+        driverXbox2.leftStick();
+        driverXbox2.rightStick();
+        driverXbox2.y().onTrue(new Declimb(climb));
+        driverXbox2.povUp().onTrue(new MoveToLevel(elev, Level.LVL4));
+        driverXbox2.povRight().onTrue(new MoveToLevel(elev, Level.LVL3));
+        driverXbox2.povLeft().onTrue(new MoveToLevel(elev, Level.LVL2));
+        driverXbox2.povDown().onTrue(new MoveToLevel(elev, Level.LVL1));
+        driverXbox2.leftTrigger(SwerveConstants.TRIGGER_DEADBAND).onTrue(new MoveToLevel(elev, Level.HOME));
+        driverXbox2.x().whileTrue(new Intake(intake, elev, head));
+        driverXbox.rightTrigger(SwerveConstants.TRIGGER_DEADBAND).onTrue(new Shoot(head));
+        
+        // algae removing
+
         // new Trigger(() -> buttonBox.getRawButton(1)).onTrue(new InstantCommand(elev::stop));
         // new Trigger(() -> buttonBox.getRawButton(2)).onTrue(new MoveToInches(elev, 0));
         // new Trigger(() -> buttonBox.getRawButton(3)).onTrue(new MoveToLevel(elev, ElevSubsystem.Level.LVL1));
