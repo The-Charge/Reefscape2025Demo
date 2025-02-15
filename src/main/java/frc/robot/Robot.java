@@ -5,8 +5,10 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.constants.SwerveConstants;
@@ -24,14 +26,19 @@ public class Robot extends TimedRobot {
     private RobotContainer m_robotContainer;
     
     private Timer disabledTimer;
-    
+
+    private PowerDistribution m_pdp = new PowerDistribution();
+
     public Robot() {
-        instance = this;
+        instance = this; 
     }
     
     public static Robot getInstance()
     {
         return instance;
+    }
+    public RobotContainer getContainer() {
+        return m_robotContainer;
     }
     
     /**
@@ -39,7 +46,7 @@ public class Robot extends TimedRobot {
     */
     @Override
     public void robotInit()
-    {
+    {   
         // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
         // autonomous chooser on the dashboard.
         m_robotContainer = new RobotContainer();
@@ -53,7 +60,6 @@ public class Robot extends TimedRobot {
             DriverStation.silenceJoystickConnectionWarning(true);
         }
     }
-    
     /**
     * This function is called every 20 ms, no matter the mode. Use this for items like diagnostics that you want ran
     * during disabled, autonomous, teleoperated and test.
@@ -69,6 +75,9 @@ public class Robot extends TimedRobot {
         // and running subsystem periodic() methods.  This must be called from the robot's periodic
         // block in order for anything in the Command-based framework to work.
         CommandScheduler.getInstance().run();
+
+        SmartDashboard.putNumber("Battery Voltage", m_pdp.getVoltage());
+        SmartDashboard.putNumber("Total Amps", m_pdp.getTotalCurrent());
     }
     
     /**
@@ -106,6 +115,8 @@ public class Robot extends TimedRobot {
         {
             m_autonomousCommand.schedule();
         }
+
+        m_robotContainer.displayAuto();
     }
     
     /**
@@ -126,18 +137,25 @@ public class Robot extends TimedRobot {
         if (m_autonomousCommand != null)
         {
             m_autonomousCommand.cancel();
-        } else
-        {
+        }
+        else {
             CommandScheduler.getInstance().cancelAll();
         }
+        
+        AutoDisplayHelper.clearAutoPath();
     }
     
     /**
-    * This function is called periodically during operator control.
-    */
+     * This function is called periodically during operator control.
+     */
     @Override
     public void teleopPeriodic()
     {
+        SmartDashboard.putNumber("Time Remaining", DriverStation.getMatchTime());
+        SmartDashboard.putNumber("velocity", Math.hypot(
+            m_robotContainer.getSwerveSubsystem().getFieldVelocity().vxMetersPerSecond,
+            m_robotContainer.getSwerveSubsystem().getFieldVelocity().vyMetersPerSecond
+        ));
     }
     
     @Override
