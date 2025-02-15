@@ -19,13 +19,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import frc.robot.commands.intake.Intake;
 import frc.robot.commands.swervedrive.drivebase.TeleopDrive;
-import frc.robot.commands.swervedrive.vision.DriveToTag;
 import frc.robot.constants.SwerveConstants;
-import frc.robot.subsystems.ElevSubsystem;
-import frc.robot.subsystems.HeadSubsystem;
-import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
 
@@ -45,6 +40,7 @@ public class RobotContainer {
     // private final ClimbSubsystem climb = new ClimbSubsystem();
     // private final HeadSubsystem head = new HeadSubsystem();
     // private final IntakeSubsystem intake = new IntakeSubsystem();
+    // private final AlgaeRemSubsystem algaeRem = new AlgaeRemSubsystem();
     
     private SendableChooser<Command> autoChooser;
     
@@ -125,6 +121,11 @@ public class RobotContainer {
 
         // NamedCommands.registerCommand("HeadIntake", new Intake(head));
         // NamedCommands.registerCommand("HeadShoot", new Shoot(head));
+
+        // NamedCommands.registerCommand("AlgaeRemIn", new AlgaeRemIn(algaeRem));
+        // NamedCommands.registerCommand("AlgaeRemOut", new AlgaeRemOut(algaeRem));
+        // NamedCommands.registerCommand("AlgaeRemSpin", new AlgaeRemSpin(algaeRem));
+        // NamedCommands.registerCommand("AlgaeRemStop", new AlgaeRemStop(algaeRem));
     }
     private void addTelemetry() {
         //one time telemetry values, such as dashboard commands
@@ -139,6 +140,11 @@ public class RobotContainer {
 
         // SmartDashboard.putData("Head Intake", new Intake(head));
         // SmartDashboard.putData("Head Shoot", new Shoot(head));
+
+        // SmartDashboard.putData("AlgaeRem In", new AlgaeRemIn(algaeRem));
+        // SmartDashboard.putData("AlgaeRem Out", new AlgaeRemOut(algaeRem));
+        // SmartDashboard.putData("AlgaeRem Spin", new AlgaeRemSpin(algaeRem));
+        // SmartDashboard.putData("AlgaeRem Stop", new AlgaeRemStop(algaeRem));
     }
     private void setupAutoDisplay() {
         //update the displayed auto path in smartdashboard when ever the selection is changed
