@@ -49,7 +49,7 @@ public abstract class VisionConstants {
   }
   public static class ApriltagConstants
   {
-    public static final AprilTagFieldLayout aprilTagFieldLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2025Reefscape);
+    public static final AprilTagFieldLayout aprilTagFieldLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeWelded);
   
 
     public static final double ANGLE_POSE_TOLERANCE = 10; //degrees

@@ -23,6 +23,7 @@ import limelight.structures.Orientation3d;
 public class VisionSubsystem extends SubsystemBase{
     SwerveSubsystem swerve;
 
+    // private final AprilTagFieldLayout aprilTagFieldLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2025Reefscape);
    
 
     public Timer detectiontimer = new Timer();
