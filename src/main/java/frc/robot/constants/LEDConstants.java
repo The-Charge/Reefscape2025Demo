@@ -5,9 +5,8 @@ import java.util.Map;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.AddressableLED.ColorOrder;
+import edu.wpi.first.wpilibj.LEDPattern;
 import edu.wpi.first.wpilibj.util.Color;
-import frc.robot.commands.leds.patterns.LEDStepPattern;
-import frc.robot.subsystems.LEDSubsystem;
 
 public abstract class LEDConstants {
     
@@ -16,7 +15,7 @@ public abstract class LEDConstants {
     public static final ColorOrder ledColorOrder = ColorOrder.kRGB;
     public static final Distance ledSpacing = Units.Meters.of(1 / 60.0); //60 leds per meter
 
-    public static final LEDSubsystem.Pattern colorTest = new LEDStepPattern(Map.ofEntries(
+    public static final LEDPattern colorTest = LEDPattern.steps(Map.ofEntries(
         Map.entry(0d, new Color("#ff0000")),
         Map.entry(1 / 12.0, new Color("#ff8800")),
         Map.entry(2 / 12.0, new Color("#ffff00")),
@@ -29,7 +28,7 @@ public abstract class LEDConstants {
         Map.entry(9 / 12.0, new Color("#8800ff")),
         Map.entry(10 / 12.0, new Color("#ff00ff")),
         Map.entry(11 / 12.0, new Color("#ff0088"))
-    ), Units.InchesPerSecond.zero());
+    ));
     public static final Color chargeGreen = new Color("#008800");
     public static final Color chargeGold = new Color("#ffaa00");
 }
