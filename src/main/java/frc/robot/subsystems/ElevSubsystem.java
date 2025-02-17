@@ -133,7 +133,8 @@ public class ElevSubsystem extends SubsystemBase {
         TalonFXConfiguration motorConfig = new TalonFXConfiguration();
         motorConfig.MotorOutput.PeakForwardDutyCycle = ElevConstants.maxVBus;
         motorConfig.MotorOutput.PeakReverseDutyCycle = -ElevConstants.maxVBus;
-        motorConfig.MotorOutput.withNeutralMode(NeutralModeValue.Brake);
+        motorConfig.MotorOutput.withNeutralMode(ElevConstants.neutralMode);
+        motorConfig.MotorOutput.Inverted = ElevConstants.inverted;
         
         motorConfig.CurrentLimits.StatorCurrentLimit = ElevConstants.maxCurrent;
         motorConfig.CurrentLimits.StatorCurrentLimitEnable = true;

@@ -6,6 +6,7 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.PositionDutyCycle;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.GravityTypeValue;
+import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.math.MathUtil;
@@ -104,7 +105,8 @@ public class ClimbSubsystem extends SubsystemBase {
         TalonFXConfiguration motorConfig = new TalonFXConfiguration();
         motorConfig.MotorOutput.PeakForwardDutyCycle = ClimbConstants.maxVBus;
         motorConfig.MotorOutput.PeakReverseDutyCycle = -ClimbConstants.maxVBus;
-        motorConfig.MotorOutput.withNeutralMode(NeutralModeValue.Brake);
+        motorConfig.MotorOutput.withNeutralMode(ClimbConstants.neutralMode);
+        motorConfig.MotorOutput.Inverted = ClimbConstants.inverted;
         
         motorConfig.CurrentLimits.StatorCurrentLimit = ClimbConstants.maxCurrent;
         motorConfig.CurrentLimits.StatorCurrentLimitEnable = true;
