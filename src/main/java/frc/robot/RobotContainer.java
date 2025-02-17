@@ -6,7 +6,6 @@ package frc.robot;
 
 import java.io.File;
 import java.util.Optional;
-import java.util.function.BooleanSupplier;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 
@@ -27,9 +26,8 @@ import frc.robot.commands.climb.Climb;
 import frc.robot.commands.climb.Declimb;
 import frc.robot.commands.elev.MoveToLevel;
 import frc.robot.commands.head.Shoot;
-import frc.robot.commands.intake.Intake;
+import frc.robot.commands.intake.ManualIntake;
 import frc.robot.commands.swervedrive.drivebase.TeleopDrive;
-import frc.robot.commands.swervedrive.vision.DriveToTag;
 import frc.robot.constants.SwerveConstants;
 import frc.robot.subsystems.ClimbSubsystem;
 import frc.robot.subsystems.ElevSubsystem;
@@ -102,16 +100,14 @@ public class RobotContainer {
         driverXbox.x().whileTrue(Commands.runOnce(swerve::lock, swerve).repeatedly());
         
         driverXbox2.a().onTrue(new Climb(climb));
-        driverXbox2.leftStick();
-        driverXbox2.rightStick();
         driverXbox2.y().onTrue(new Declimb(climb));
         driverXbox2.povUp().onTrue(new MoveToLevel(elev, Level.LVL4));
         driverXbox2.povRight().onTrue(new MoveToLevel(elev, Level.LVL3));
         driverXbox2.povLeft().onTrue(new MoveToLevel(elev, Level.LVL2));
         driverXbox2.povDown().onTrue(new MoveToLevel(elev, Level.LVL1));
         driverXbox2.leftTrigger(SwerveConstants.TRIGGER_DEADBAND).onTrue(new MoveToLevel(elev, Level.HOME));
-        driverXbox2.x().whileTrue(new Intake(intake, elev, head));
-        driverXbox.rightTrigger(SwerveConstants.TRIGGER_DEADBAND).onTrue(new Shoot(head));
+        driverXbox2.x().whileTrue(new ManualIntake(intake));
+        driverXbox2.rightTrigger(SwerveConstants.TRIGGER_DEADBAND).onTrue(new Shoot(head));
         
         // algae removing
 
