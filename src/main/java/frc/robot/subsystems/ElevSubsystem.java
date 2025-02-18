@@ -23,6 +23,8 @@ public class ElevSubsystem extends SubsystemBase {
         LVL2,
         LVL3,
         LVL4,
+        ALGAE_LOW,
+        ALGAE_HIGH,
         UNKNOWN
     }
     
@@ -47,6 +49,8 @@ public class ElevSubsystem extends SubsystemBase {
         targetOverrideLvl.addOption("Level 2", Level.LVL2);
         targetOverrideLvl.addOption("Level 3", Level.LVL3);
         targetOverrideLvl.addOption("Level 4", Level.LVL4);
+        targetOverrideLvl.addOption("Algae Low", Level.ALGAE_LOW);
+        targetOverrideLvl.addOption("Algae High", Level.ALGAE_HIGH);
         targetOverrideLvl.setDefaultOption("Home", Level.HOME);
         SmartDashboard.putData(ElevConstants.overrideLVLName, targetOverrideLvl);
     }
@@ -99,6 +103,14 @@ public class ElevSubsystem extends SubsystemBase {
 
             case LVL4:
             val = ElevConstants.lvl4Inches;
+            break;
+
+            case ALGAE_LOW:
+            val = ElevConstants.algaeLowInches;
+            break;
+
+            case ALGAE_HIGH:
+            val = ElevConstants.algaeHighInches;
             break;
 
             case UNKNOWN:
@@ -170,6 +182,10 @@ public class ElevSubsystem extends SubsystemBase {
             return Level.LVL3;
         else if(Math.abs(inches - ElevConstants.lvl4Inches) <= ElevConstants.targetThresholdInches)
             return Level.LVL4;
+        else if(Math.abs(inches - ElevConstants.algaeLowInches) <= ElevConstants.targetThresholdInches)
+            return Level.ALGAE_LOW;
+        else if(Math.abs(inches - ElevConstants.algaeHighInches) <= ElevConstants.targetThresholdInches)
+            return Level.ALGAE_HIGH;
         
         return Level.UNKNOWN;
     }

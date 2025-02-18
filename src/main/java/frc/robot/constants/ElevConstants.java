@@ -25,6 +25,8 @@ public abstract class ElevConstants {
     public static final double lvl2Inches = 31.72 - 16.769;
     public static final double lvl3Inches = 47.59 - 16.769;
     public static final double lvl4Inches = 71.87 - 16.769;
+    public static final double algaeLowInches = 0;
+    public static final double algaeHighInches = 0;
 
     public static final String overrideInName = "Elev Target Override (In)";
     public static final String overrideTicksName = "Elev Target Override (Ticks)";
