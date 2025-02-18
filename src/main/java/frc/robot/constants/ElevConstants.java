@@ -15,7 +15,7 @@ public abstract class ElevConstants {
     public static final double maxPosTicks = 101.224;
     public static final InvertedValue inverted = InvertedValue.Clockwise_Positive;
     public static final NeutralModeValue neutralMode = NeutralModeValue.Brake;
-    public static final double tickToInConversion = 61 / (maxPosTicks - minPosTicks);
+    public static final double tickToInConversion = (maxPosTicks - minPosTicks) / 61.0;
     public static final double targetThresholdInches = 0.2;
     public static final double targetThresholdSeconds = 0.1;
 

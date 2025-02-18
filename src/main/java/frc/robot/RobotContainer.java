@@ -56,10 +56,10 @@ public class RobotContainer {
 
     private final SwerveSubsystem swerve = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "swerve"));
     // private final VisionSubsystem m_limelight = new VisionSubsystem(swerve);
-    // private final ElevSubsystem elev = new ElevSubsystem();
-    // private final ClimbSubsystem climb = new ClimbSubsystem();
+    private final ElevSubsystem elev = new ElevSubsystem();
+    private final ClimbSubsystem climb = new ClimbSubsystem();
     // private final HeadSubsystem head = new HeadSubsystem();
-    // private final IntakeSubsystem intake = new IntakeSubsystem();
+    private final IntakeSubsystem intake = new IntakeSubsystem();
     // private final AlgaeRemSubsystem algaeRem = new AlgaeRemSubsystem();
     
     private SendableChooser<Command> autoChooser;
@@ -82,7 +82,7 @@ public class RobotContainer {
         swerve.setDefaultCommand(teleopDrive);
 
         // intake.setDefaultCommand(new Intake(intake, elev, head));
-        algaeRem.setDefaultCommand(new AlgaeRemManager(algaeRem, elev));
+        // algaeRem.setDefaultCommand(new AlgaeRemManager(algaeRem, elev));
         
         configureNamedCommands();
         configureBindings();
@@ -109,21 +109,21 @@ public class RobotContainer {
         driver2.povDown().onTrue(new MoveToLevel(elev, Level.LVL1));
         driver2.leftTrigger(SwerveConstants.TRIGGER_DEADBAND).onTrue(new MoveToLevel(elev, Level.HOME));
         driver2.x().whileTrue(new ManualIntake(intake));
-        driver2.rightTrigger(SwerveConstants.TRIGGER_DEADBAND).onTrue(new SequentialCommandGroup(
-            new Shoot(head),
-            new WaitCommand(3),
-            new MoveToLevel(elev, Level.HOME)
-        ));
-        driver2.rightBumper().onTrue(new SequentialCommandGroup(
-            new MoveToLevel(elev, Level.ALGAE_HIGH, true),
-            new AlgaeRemOut(algaeRem),
-            new AlgaeRemSpin(algaeRem)
-        ));
-        driver2.leftBumper().onTrue(new SequentialCommandGroup(
-            new MoveToLevel(elev, Level.ALGAE_LOW, true),
-            new AlgaeRemOut(algaeRem),
-            new AlgaeRemSpin(algaeRem)
-        ));
+        // driver2.rightTrigger(SwerveConstants.TRIGGER_DEADBAND).onTrue(new SequentialCommandGroup(
+        //     new Shoot(head),
+        //     new WaitCommand(3),
+        //     new MoveToLevel(elev, Level.HOME)
+        // ));
+        // driver2.rightBumper().onTrue(new SequentialCommandGroup(
+        //     new MoveToLevel(elev, Level.ALGAE_HIGH, true),
+        //     new AlgaeRemOut(algaeRem),
+        //     new AlgaeRemSpin(algaeRem)
+        // ));
+        // driver2.leftBumper().onTrue(new SequentialCommandGroup(
+        //     new MoveToLevel(elev, Level.ALGAE_LOW, true),
+        //     new AlgaeRemOut(algaeRem),
+        //     new AlgaeRemSpin(algaeRem)
+        // ));
 
         // new Trigger(() -> buttonBox.getRawButton(1)).onTrue(new InstantCommand(elev::stop));
         // new Trigger(() -> buttonBox.getRawButton(2)).onTrue(new MoveToInches(elev, 0));
