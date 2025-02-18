@@ -8,41 +8,34 @@ import java.io.File;
 import java.util.Optional;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Filesystem;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.commands.algaerem.AlgaeRemManager;
-import frc.robot.commands.algaerem.AlgaeRemOut;
-import frc.robot.commands.algaerem.AlgaeRemSpin;
 import frc.robot.commands.climb.Climb;
+import frc.robot.commands.climb.ClimbToDegreesManual;
+import frc.robot.commands.climb.ClimbToTicksManual;
 import frc.robot.commands.climb.Declimb;
+import frc.robot.commands.elev.MoveToInchesManual;
 import frc.robot.commands.elev.MoveToLevel;
-import frc.robot.commands.head.Shoot;
+import frc.robot.commands.elev.MoveToLevelManual;
+import frc.robot.commands.elev.MoveToTicksManual;
 import frc.robot.commands.intake.ManualIntake;
 import frc.robot.commands.swervedrive.drivebase.TeleopDrive;
-import frc.robot.constants.AlgaeRemConstants;
 import frc.robot.constants.SwerveConstants;
-import frc.robot.subsystems.AlgaeRemSubsystem;
 import frc.robot.subsystems.ClimbSubsystem;
 import frc.robot.subsystems.ElevSubsystem;
 import frc.robot.subsystems.ElevSubsystem.Level;
-import frc.robot.subsystems.HeadSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
-import frc.robot.subsystems.VisionSubsystem;
 
 /**
 * This class is where the bulk of the robot should be declared. Since Command-based is a "declarative" paradigm, very
@@ -125,19 +118,8 @@ public class RobotContainer {
         //     new AlgaeRemSpin(algaeRem)
         // ));
 
-        // new Trigger(() -> buttonBox.getRawButton(1)).onTrue(new InstantCommand(elev::stop));
-        // new Trigger(() -> buttonBox.getRawButton(2)).onTrue(new MoveToInches(elev, 0));
-        // new Trigger(() -> buttonBox.getRawButton(3)).onTrue(new MoveToLevel(elev, ElevSubsystem.Level.LVL1));
-        // new Trigger(() -> buttonBox.getRawButton(4)).onTrue(new MoveToLevel(elev, ElevSubsystem.Level.LVL2));
-        // new Trigger(() -> buttonBox.getRawButton(5)).onTrue(new MoveToLevel(elev, ElevSubsystem.Level.LVL3));
-        // new Trigger(() -> buttonBox.getRawButton(6)).onTrue(new MoveToLevel(elev, ElevSubsystem.Level.LVL4));
+        // new Trigger(() -> head.getFunnelSensor()).onTrue(new Index(head).withInterruptBehavior(InterruptionBehavior.kCancelIncoming)); //we don't want the head to do anything until indexing is finished
 
-        // new Trigger(() -> buttonBox.getRawButton(1)).onTrue(new InstantCommand(climb::stop));
-        // new Trigger(() -> buttonBox.getRawButton(2)).onTrue(new Climb(climb));
-        // new Trigger(() -> buttonBox.getRawButton(3)).onTrue(new Declimb(climb));
-
-        // new Trigger(() -> buttonBox.getRawButton(1)).onTrue(new Intake(head));
-        // new Trigger(() -> buttonBox.getRawButton(2)).onTrue(new Shoot(head));
         // driverXbox.a().onTrue(Commands.runOnce(swerve::addFakeVisionReading));
         // driverXbox.y().whileTrue(new DriveToTag(swerve, m_limelight, 7));
         // driverXbox.leftBumper().onTrue(Commands.runOnce(m_limelight::adjustDriverPipeline));
@@ -159,11 +141,11 @@ public class RobotContainer {
          * <Subsytem><Action>
          * Use PascalCase
          */
-        // NamedCommands.registerCommand("ElevHome", new MoveToLevel(elev, ElevSubsystem.Level.HOME));
-        // NamedCommands.registerCommand("ElevLevel1", new MoveToLevel(elev, ElevSubsystem.Level.LVL1));
-        // NamedCommands.registerCommand("ElevLevel2", new MoveToLevel(elev, ElevSubsystem.Level.LVL2));
-        // NamedCommands.registerCommand("ElevLevel3", new MoveToLevel(elev, ElevSubsystem.Level.LVL3));
-        // NamedCommands.registerCommand("ElevLevel4", new MoveToLevel(elev, ElevSubsystem.Level.LVL4));
+        NamedCommands.registerCommand("ElevHome", new MoveToLevel(elev, ElevSubsystem.Level.HOME));
+        NamedCommands.registerCommand("ElevLevel1", new MoveToLevel(elev, ElevSubsystem.Level.LVL1));
+        NamedCommands.registerCommand("ElevLevel2", new MoveToLevel(elev, ElevSubsystem.Level.LVL2));
+        NamedCommands.registerCommand("ElevLevel3", new MoveToLevel(elev, ElevSubsystem.Level.LVL3));
+        NamedCommands.registerCommand("ElevLevel4", new MoveToLevel(elev, ElevSubsystem.Level.LVL4));
 
         // NamedCommands.registerCommand("HeadIntake", new Intake(head));
         // NamedCommands.registerCommand("HeadShoot", new Shoot(head));
@@ -175,14 +157,14 @@ public class RobotContainer {
     }
     private void addTelemetry() {
         //one time telemetry values, such as dashboard commands
-        // SmartDashboard.putData("Elev Manual Move (IN)", new MoveToInchesManual(elev));
-        // SmartDashboard.putData("Elev Manual Move (TICKS)", new MoveToTicksManual(elev));
-        // SmartDashboard.putData("Elev Manual Move (LVL)", new MoveToLevelManual(elev));
+        SmartDashboard.putData("Elev Manual Move (IN)", new MoveToInchesManual(elev));
+        SmartDashboard.putData("Elev Manual Move (TICKS)", new MoveToTicksManual(elev));
+        SmartDashboard.putData("Elev Manual Move (LVL)", new MoveToLevelManual(elev));
 
-        // SmartDashboard.putData("Climb Manual Climb (DEG)", new ClimbToDegreesManual(climb));
-        // SmartDashboard.putData("Climb Manual Climb (TICKS)", new ClimbToTicksManual(climb));
-        // SmartDashboard.putData("Climb Manual", new Climb(climb));
-        // SmartDashboard.putData("Declimb Manual", new Declimb(climb));
+        SmartDashboard.putData("Climb Manual Climb (DEG)", new ClimbToDegreesManual(climb));
+        SmartDashboard.putData("Climb Manual Climb (TICKS)", new ClimbToTicksManual(climb));
+        SmartDashboard.putData("Climb Manual", new Climb(climb));
+        SmartDashboard.putData("Declimb Manual", new Declimb(climb));
 
         // SmartDashboard.putData("Head Intake", new Intake(head));
         // SmartDashboard.putData("Head Shoot", new Shoot(head));
