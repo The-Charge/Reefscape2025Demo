@@ -15,12 +15,21 @@ public class LEDManager extends Command {
         leds = ledSub;
         addRequirements(leds);
 
-        scan = new LEDScanAnimation(LEDConstants.chargeGreen, 2);
+        scan = new LEDScanAnimation(LEDConstants.chargeGreen, 1, 16);
     }
 
     @Override
     public void execute() {
-        // scan.update();
-        // scan.evaluate(leds.segment1());
+        scan.update();
+        scan.evaluate(leds.segment1());
+    }
+
+    @Override
+    public boolean isFinished() {
+        return false;
+    }
+    @Override
+    public boolean runsWhenDisabled() {
+        return true;
     }
 }

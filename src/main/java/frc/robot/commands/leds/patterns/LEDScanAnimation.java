@@ -9,10 +9,12 @@ public class LEDScanAnimation extends Animation {
     private final Color col;
     private final double speed;
     private long time;
+    private int pulseWidth;
 
-    public LEDScanAnimation(Color color, double speedMult) {
+    public LEDScanAnimation(Color color, double speedMult, int pulseLength) {
         col = color;
         speed = speedMult;
+        pulseWidth = pulseLength;
 
         time = 0;
     }
@@ -26,13 +28,11 @@ public class LEDScanAnimation extends Animation {
         time = 0;
     }
     @Override
-    public void evaluate(AddressableLEDBufferView segment) {
-        final double pulseWidth = 10; //width of visible pulse
-
-        final double offsetRange = segment.getLength() - pulseWidth;
+    public void evaluate(AddressableLEDBufferView seg) {
+        final double offsetRange = seg.getLength() - pulseWidth;
         double offset = (offsetRange * 0.5) * (Math.sin(((Math.PI * time * speed) / offsetRange) - (0.5 * Math.PI)) + 1);
 
-        for(int i = 0; i < segment.getLength(); i++) {
+        for(int i = 0; i < seg.getLength(); i++) {
             double strength = 0;
             if(offset < i && i < offset + pulseWidth) {
                 strength = Math.sin((Math.PI / pulseWidth) * (i - offset));
@@ -44,7 +44,7 @@ public class LEDScanAnimation extends Animation {
                 col.blue * strength
             );
 
-            segment.setLED(i, pixel);
+            seg.setLED(i, pixel);
         }
     }
 }

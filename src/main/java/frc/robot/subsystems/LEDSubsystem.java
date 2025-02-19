@@ -29,34 +29,30 @@ public class LEDSubsystem extends SubsystemBase {
     
     private final AddressableLED leds;
     private final AddressableLEDBuffer buff;
-    private final AddressableLEDBufferView segment1, segment2;
+    private final AddressableLEDBufferView segment1;
 
     public LEDSubsystem() {
         leds = new AddressableLED(LEDConstants.ledPort);
         buff = new AddressableLEDBuffer(LEDConstants.ledLength);
 
         segment1 = buff.createView(0, 149);
-        segment2 = buff.createView(22, 43);
         
         leds.setLength(LEDConstants.ledLength);
         leds.setColorOrder(LEDConstants.ledColorOrder);
 
-        LEDPattern solid = LEDPattern.solid(LEDConstants.chargeGreen);
-        solid.applyTo(buff);
+        // LEDPattern solid = LEDPattern.solid(LEDConstants.chargeGreen);
+        // solid.applyTo(buff);
 
-        leds.setData(buff);
+        // leds.setData(buff);
         leds.start();
     }
 
     @Override
     public void periodic() {
-        // leds.setData(buff);
+        leds.setData(buff);
     }
 
     public AddressableLEDBufferView segment1() {
         return segment1;
-    }
-    public AddressableLEDBufferView segment2() {
-        return segment2;
     }
 }
