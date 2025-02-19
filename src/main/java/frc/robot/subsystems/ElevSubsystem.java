@@ -6,7 +6,6 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.PositionDutyCycle;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.GravityTypeValue;
-import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -71,7 +70,7 @@ public class ElevSubsystem extends SubsystemBase {
     }
 
     public void setTargetPositionInches(double inches) {
-        setTargetPositionTicks(inches * ElevConstants.tickToInConversion);
+        setTargetPositionTicks(inches / ElevConstants.tickToInConversion);
     }
     public void setTargetPositionTicks(double ticks) {
         targetTicks = MathUtil.clamp(ticks, ElevConstants.minPosTicks, ElevConstants.maxPosTicks);

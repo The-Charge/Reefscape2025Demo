@@ -15,7 +15,7 @@ public abstract class ClimbConstants {
     public static final double maxPosTicks = 40;
     public static final InvertedValue inverted = InvertedValue.Clockwise_Positive;
     public static final NeutralModeValue neutralMode = NeutralModeValue.Brake;
-    public static final double tickToDegConversion = 28.65 / 90;
+    public static final double tickToDegConversion = 90 / 28.65;
     public static final double targetThresholdDegrees = 1.5;
     public static final double targetThresholdSeconds = 0.1;
 

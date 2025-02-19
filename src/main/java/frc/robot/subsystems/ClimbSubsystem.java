@@ -54,7 +54,7 @@ public class ClimbSubsystem extends SubsystemBase {
     }
 
     public void setTargetAngleDegrees(double deg) {
-        setTargetAngleTicks(deg * ClimbConstants.tickToDegConversion);
+        setTargetAngleTicks(deg / ClimbConstants.tickToDegConversion);
     }
     public void setTargetAngleTicks(double ticks) {
         targetTicks = MathUtil.clamp(ticks, ClimbConstants.minPosTicks, ClimbConstants.maxPosTicks);
