@@ -33,11 +33,14 @@ import frc.robot.commands.swervedrive.drivebase.TeleopDrive;
 import frc.robot.commands.vision.AlignToTag;
 import frc.robot.commands.vision.DriveToTag;
 import frc.robot.constants.SwerveConstants;
+import frc.robot.constants.VisionConstants.LLFunnelConstants;
 import frc.robot.constants.VisionConstants.LLReefConstants;
+import frc.robot.subsystems.ClimbSubsystem;
 import frc.robot.subsystems.ElevSubsystem;
 import frc.robot.subsystems.ElevSubsystem.Level;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
+import frc.robot.subsystems.VisionSubsystem;
 
 /**
 * This class is where the bulk of the robot should be declared. Since Command-based is a "declarative" paradigm, very
@@ -50,7 +53,8 @@ public class RobotContainer {
     private final CommandXboxController driver2 = new CommandXboxController(1);
 
     private final SwerveSubsystem swerve = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "swerve"));
-    // private final VisionSubsystem m_limelight = new VisionSubsystem(swerve);
+    private final VisionSubsystem reeflimelight = new VisionSubsystem(swerve, LLReefConstants.LL_NAME, LLReefConstants.CAMERA_OFFSET);
+    private final VisionSubsystem funnellimelight = new VisionSubsystem(swerve, LLFunnelConstants.LL_NAME, LLFunnelConstants.CAMERA_OFFSET);
     private final ElevSubsystem elev = new ElevSubsystem();
     private final ClimbSubsystem climb = new ClimbSubsystem();
     // private final HeadSubsystem head = new HeadSubsystem();

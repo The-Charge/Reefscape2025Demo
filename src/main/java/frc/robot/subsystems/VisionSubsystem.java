@@ -79,33 +79,33 @@ public class VisionSubsystem extends SubsystemBase{
         NetworkTableInstance.getDefault().getTable(ll_name).getEntry("pipeline").setNumber(1);
     }
    
-    public void UpdateLocalization(){
+    public void UpdateLocalization() {
       limelight.getSettings()
-      .withRobotOrientation(new Orientation3d(new Rotation3d(0, 0, swerve.getHeading().getRadians()),
-                          new AngularVelocity3d(DegreesPerSecond.of(0),
-                                      DegreesPerSecond.of(0),
-                                      swerve.getSwerveDrive().getGyro().getYawAngularVelocity().copy())))
-      .save();
+          .withRobotOrientation(new Orientation3d(new Rotation3d(0, 0, swerve.getHeading().getRadians()),
+              new AngularVelocity3d(DegreesPerSecond.of(0),
+                  DegreesPerSecond.of(0),
+                  swerve.getSwerveDrive().getGyro().getYawAngularVelocity().copy())))
+          .save();
       SmartDashboard.putNumber("swerve rotation", swerve.getRotation3d().getX());
       // Get the vision estimate.
       Optional<PoseEstimate> visionEstimate = llPoseEstimator.getPoseEstimate(); // BotPose.BLUE_MEGATAG2.get(limelight);
       visionEstimate.ifPresent((PoseEstimate poseEstimate) -> {
-        if (poseEstimate.tagCount > 0 && poseEstimate.getMinTagAmbiguity() < 0.4)
-      {
-        swerve.addVisionReading(poseEstimate.pose.toPose2d(), poseEstimate.timestampSeconds);
-        SmartDashboard.putNumber("TagX", poseEstimate.pose.toPose2d().getX());
-        SmartDashboard.putNumber("TagY", poseEstimate.pose.toPose2d().getY());
-        SmartDashboard.putNumber("Timestamp", poseEstimate.timestampSeconds);
-        SmartDashboard.putNumber("Rotationtag", poseEstimate.pose.toPose2d().getRotation().getDegrees());
-        SmartDashboard.putNumber("Distance to tag", poseEstimate.avgTagDist);
-        SmartDashboard.putBoolean("Pose Estimated", true);
-      }
-      else{
-        SmartDashboard.putBoolean("Pose Estimated", false);
-      }
-      SmartDashboard.putNumber("Tag Ambig", poseEstimate.getMinTagAmbiguity());
+        // poseEstimate.printPoseEstimate(); // poseEstimate does not work with multiple
+        // limelights
+        if (poseEstimate.tagCount > 0 && poseEstimate.getMinTagAmbiguity() < 0.4) {
+          swerve.addVisionReading(poseEstimate.pose.toPose2d(), poseEstimate.timestampSeconds);
+          SmartDashboard.putNumber(ll_name + " TagX ", poseEstimate.pose.toPose2d().getX());
+          SmartDashboard.putNumber(ll_name + " TagY ", poseEstimate.pose.toPose2d().getY());
+          SmartDashboard.putNumber(ll_name + " Timestamp ", poseEstimate.timestampSeconds);
+          SmartDashboard.putNumber(ll_name + " Rotationtag ", poseEstimate.pose.toPose2d().getRotation().getDegrees());
+          SmartDashboard.putNumber(ll_name + " Distance to tag ", poseEstimate.avgTagDist);
+          SmartDashboard.putBoolean(ll_name + " Pose Estimated ", true);
+        } else {
+          SmartDashboard.putBoolean(ll_name + " Pose Estimated ", false);
+        }
+        SmartDashboard.putNumber(ll_name + " Tag Ambig ", poseEstimate.getMinTagAmbiguity());
 
-    });
+      });
     }
     
     public boolean robotRotationWithinThreshold(int tagid){
