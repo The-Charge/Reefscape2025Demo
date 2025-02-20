@@ -19,7 +19,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.commands.algaerem.AlgaeRemSpin;
 import frc.robot.commands.climb.Climb;
 import frc.robot.commands.climb.ClimbToDegreesManual;
 import frc.robot.commands.climb.ClimbToTicksManual;
@@ -31,6 +33,7 @@ import frc.robot.commands.elev.MoveToTicksManual;
 import frc.robot.commands.intake.ManualIntake;
 import frc.robot.commands.swervedrive.drivebase.TeleopDrive;
 import frc.robot.constants.SwerveConstants;
+import frc.robot.subsystems.AlgaeRemSubsystem;
 import frc.robot.subsystems.ClimbSubsystem;
 import frc.robot.subsystems.ElevSubsystem;
 import frc.robot.subsystems.ElevSubsystem.Level;
@@ -53,7 +56,7 @@ public class RobotContainer {
     private final ClimbSubsystem climb = new ClimbSubsystem();
     // private final HeadSubsystem head = new HeadSubsystem();
     private final IntakeSubsystem intake = new IntakeSubsystem();
-    // private final AlgaeRemSubsystem algaeRem = new AlgaeRemSubsystem();
+    private final AlgaeRemSubsystem algaeRem = new AlgaeRemSubsystem();
     
     private SendableChooser<Command> autoChooser;
     
@@ -75,7 +78,6 @@ public class RobotContainer {
         swerve.setDefaultCommand(teleopDrive);
 
         // intake.setDefaultCommand(new Intake(intake, elev, head));
-        // algaeRem.setDefaultCommand(new AlgaeRemManager(algaeRem, elev));
         
         configureNamedCommands();
         configureBindings();
@@ -107,16 +109,14 @@ public class RobotContainer {
         //     new WaitCommand(3),
         //     new MoveToLevel(elev, Level.HOME)
         // ));
-        // driver2.rightBumper().onTrue(new SequentialCommandGroup(
-        //     new MoveToLevel(elev, Level.ALGAE_HIGH, true),
-        //     new AlgaeRemOut(algaeRem),
-        //     new AlgaeRemSpin(algaeRem)
-        // ));
-        // driver2.leftBumper().onTrue(new SequentialCommandGroup(
-        //     new MoveToLevel(elev, Level.ALGAE_LOW, true),
-        //     new AlgaeRemOut(algaeRem),
-        //     new AlgaeRemSpin(algaeRem)
-        // ));
+        driver2.rightBumper().onTrue(new SequentialCommandGroup(
+            new MoveToLevel(elev, Level.ALGAE_HIGH, true),
+            new AlgaeRemSpin(algaeRem)
+        ));
+        driver2.leftBumper().onTrue(new SequentialCommandGroup(
+            new MoveToLevel(elev, Level.ALGAE_LOW, true),
+            new AlgaeRemSpin(algaeRem)
+        ));
 
         // new Trigger(() -> head.getFunnelSensor()).onTrue(new Index(head).withInterruptBehavior(InterruptionBehavior.kCancelIncoming)); //we don't want the head to do anything until indexing is finished
 
