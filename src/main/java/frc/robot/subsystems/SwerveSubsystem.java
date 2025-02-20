@@ -718,8 +718,8 @@ public class SwerveSubsystem extends SubsystemBase
   /*
    * Add odometry readings using vision
    */
-  public void addVisionReading(Pose2d pose, double timestampSeconds){
-    swerveDrive.addVisionMeasurement(new Pose2d(pose.getX(), pose.getY(), Rotation2d.fromDegrees(pose.getRotation().getDegrees())), timestampSeconds);
+  public void addVisionReading(Pose2d pose, double timestampSeconds) {
+    swerveDrive.addVisionMeasurement(pose, timestampSeconds);
   }
 
   /**

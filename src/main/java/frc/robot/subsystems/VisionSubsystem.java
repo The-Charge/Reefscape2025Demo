@@ -2,23 +2,21 @@ package frc.robot.subsystems;
 
 import static edu.wpi.first.units.Units.DegreesPerSecond;
 
-import java.util.Optional;
-
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.util.Units;
+import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.LimelightHelpers;
 import frc.robot.LimelightHelpers.RawFiducial;
 import frc.robot.constants.VisionConstants.ApriltagConstants;
-import frc.robot.constants.VisionConstants.LLReefConstants;
 import limelight.Limelight;
 import limelight.estimator.LimelightPoseEstimator;
-import limelight.estimator.PoseEstimate;
-import limelight.structures.AngularVelocity3d;
 import limelight.structures.LimelightSettings.LEDMode;
-import limelight.structures.Orientation3d;
 
 public class VisionSubsystem extends SubsystemBase{
     SwerveSubsystem swerve;
@@ -45,6 +43,7 @@ public class VisionSubsystem extends SubsystemBase{
       this.ll_name = ll_name;
       //Setup YALL limelight object (maybe should be in initialize)
       limelight = new Limelight(ll_name);
+      NetworkTableInstance.getDefault().getTable(ll_name).getEntry("pipeline").setNumber(1);
       limelight.getSettings().withLimelightLEDMode(LEDMode.PipelineControl).withCameraOffset(cameraOffset).save();
       llPoseEstimator = limelight.getPoseEstimator(true);
       
@@ -80,32 +79,50 @@ public class VisionSubsystem extends SubsystemBase{
     }
    
     public void UpdateLocalization() {
-      limelight.getSettings()
-          .withRobotOrientation(new Orientation3d(new Rotation3d(0, 0, swerve.getHeading().getRadians()),
-              new AngularVelocity3d(DegreesPerSecond.of(0),
-                  DegreesPerSecond.of(0),
-                  swerve.getSwerveDrive().getGyro().getYawAngularVelocity().copy())))
-          .save();
-      SmartDashboard.putNumber("swerve rotation", swerve.getRotation3d().getX());
-      // Get the vision estimate.
-      Optional<PoseEstimate> visionEstimate = llPoseEstimator.getPoseEstimate(); // BotPose.BLUE_MEGATAG2.get(limelight);
-      visionEstimate.ifPresent((PoseEstimate poseEstimate) -> {
-        // poseEstimate.printPoseEstimate(); // poseEstimate does not work with multiple
-        // limelights
-        if (poseEstimate.tagCount > 0 && poseEstimate.getMinTagAmbiguity() < 0.4) {
-          swerve.addVisionReading(poseEstimate.pose.toPose2d(), poseEstimate.timestampSeconds);
-          SmartDashboard.putNumber(ll_name + " TagX ", poseEstimate.pose.toPose2d().getX());
-          SmartDashboard.putNumber(ll_name + " TagY ", poseEstimate.pose.toPose2d().getY());
-          SmartDashboard.putNumber(ll_name + " Timestamp ", poseEstimate.timestampSeconds);
-          SmartDashboard.putNumber(ll_name + " Rotationtag ", poseEstimate.pose.toPose2d().getRotation().getDegrees());
-          SmartDashboard.putNumber(ll_name + " Distance to tag ", poseEstimate.avgTagDist);
-          SmartDashboard.putBoolean(ll_name + " Pose Estimated ", true);
-        } else {
-          SmartDashboard.putBoolean(ll_name + " Pose Estimated ", false);
-        }
-        SmartDashboard.putNumber(ll_name + " Tag Ambig ", poseEstimate.getMinTagAmbiguity());
+      NetworkTable table = NetworkTableInstance.getDefault().getTable(ll_name);
 
-      });
+      double yaw = swerve.getHeading().getDegrees();
+      double yawRate = swerve.getSwerveDrive().getGyro().getYawAngularVelocity().in(DegreesPerSecond);
+      Double[] poseArray = {yaw, yawRate, 0., 0., 0., 0.};
+      table.getEntry("robot_orientation_set").setDoubleArray(poseArray);
+
+      Double[] rawFiducials = table.getEntry("rawfiducials").getDoubleArray(new Double[] { });
+      if (rawFiducials.length == 0) {
+        SmartDashboard.putBoolean(ll_name + " Pose Estimated ", false);
+        return;
+      }
+
+      double avgAmbig = 0;
+      int rawFiducialsLength = rawFiducials.length / 7;
+      for (int i = 1; i <= rawFiducialsLength; i++) {
+        SmartDashboard.putNumber(ll_name + " TagID #" + i, rawFiducials[i * 7 - 7]);
+        SmartDashboard.putNumber(ll_name + " TagX #" + i, rawFiducials[i * 7 - 6]);
+        SmartDashboard.putNumber(ll_name + " TagY #" + i, rawFiducials[i * 7 - 5]);
+        SmartDashboard.putNumber(ll_name + " Distance to tag #" + i, rawFiducials[i * 7 - 3]); // tag to camera
+        SmartDashboard.putNumber(ll_name + " Ambiguity #" + i, rawFiducials[i * 7 - 1]);
+
+        avgAmbig += rawFiducials[i * 7 - 1] / rawFiducialsLength;
+      }
+
+      SmartDashboard.putNumber("avg ambigg " + ll_name, avgAmbig);
+
+      if (avgAmbig > 0.5) {
+        SmartDashboard.putBoolean(ll_name + " Pose Estimated ", false);
+        return;
+      }
+
+      Double[] botPoseArray = table.getEntry("botpose_orb_wpiblue").getDoubleArray(new Double[] { });
+      
+      if (botPoseArray.length == 0) {
+        SmartDashboard.putBoolean(ll_name + " Pose Estimated ", false);
+        return;
+      }
+
+      double timeStamp = Timer.getFPGATimestamp() - Units.millisecondsToSeconds(botPoseArray[6]);
+      Pose2d pose = new Pose2d(botPoseArray[0], botPoseArray[1], new Rotation2d(Units.degreesToRadians(botPoseArray[5])));
+      swerve.addVisionReading(pose, timeStamp);
+
+      SmartDashboard.putBoolean(ll_name + " Pose Estimated ", true);
     }
     
     public boolean robotRotationWithinThreshold(int tagid){
