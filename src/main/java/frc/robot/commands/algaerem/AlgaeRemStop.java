@@ -1,7 +1,6 @@
 package frc.robot.commands.algaerem;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.constants.AlgaeRemConstants;
 import frc.robot.subsystems.AlgaeRemSubsystem;
 
 public class AlgaeRemStop extends Command {

@@ -19,4 +19,5 @@ public abstract class AlgaeRemConstants {
     public static final double servoOutPercent = 0.6;
     public static final double servoInPercent = 0;
     public static final double flywheelActiveVbus = 0.4;
+    public static final double spinTime = 3; //seconds
 }
