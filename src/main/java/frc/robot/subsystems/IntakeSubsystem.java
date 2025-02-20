@@ -40,6 +40,7 @@ public class IntakeSubsystem extends SubsystemBase {
         SparkMaxConfig config = new SparkMaxConfig();
         config.idleMode(IdleMode.kCoast);
         config.smartCurrentLimit(HeadConstants.currentLimit);
+        config.inverted(IntakeConstants.inverted);
 
         m.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     }

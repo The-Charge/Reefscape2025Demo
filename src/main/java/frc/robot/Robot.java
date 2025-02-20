@@ -152,10 +152,10 @@ public class Robot extends TimedRobot {
     public void teleopPeriodic()
     {
         SmartDashboard.putNumber("Time Remaining", DriverStation.getMatchTime());
-        // SmartDashboard.putNumber("velocity", Math.hypot(
-        //     m_robotContainer.getSwerveSubsystem().getFieldVelocity().vxMetersPerSecond,
-        //     m_robotContainer.getSwerveSubsystem().getFieldVelocity().vyMetersPerSecond
-        // ));
+        SmartDashboard.putNumber("velocity", Math.hypot(
+            m_robotContainer.getSwerveSubsystem().getFieldVelocity().vxMetersPerSecond,
+            m_robotContainer.getSwerveSubsystem().getFieldVelocity().vyMetersPerSecond
+        ));
     }
     
     @Override
