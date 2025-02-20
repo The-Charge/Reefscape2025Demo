@@ -56,7 +56,7 @@ public class RobotContainer {
     private final ClimbSubsystem climb = new ClimbSubsystem();
     // private final HeadSubsystem head = new HeadSubsystem();
     private final IntakeSubsystem intake = new IntakeSubsystem();
-    private final AlgaeRemSubsystem algaeRem = new AlgaeRemSubsystem();
+    // private final AlgaeRemSubsystem algaeRem = new AlgaeRemSubsystem();
     
     private SendableChooser<Command> autoChooser;
     
@@ -109,14 +109,14 @@ public class RobotContainer {
         //     new WaitCommand(3),
         //     new MoveToLevel(elev, Level.HOME)
         // ));
-        driver2.rightBumper().onTrue(new SequentialCommandGroup(
-            new MoveToLevel(elev, Level.ALGAE_HIGH, true),
-            new AlgaeRemSpin(algaeRem)
-        ));
-        driver2.leftBumper().onTrue(new SequentialCommandGroup(
-            new MoveToLevel(elev, Level.ALGAE_LOW, true),
-            new AlgaeRemSpin(algaeRem)
-        ));
+        // driver2.rightBumper().onTrue(new SequentialCommandGroup(
+        //     new MoveToLevel(elev, Level.ALGAE_HIGH, true),
+        //     new AlgaeRemSpin(algaeRem)
+        // ));
+        // driver2.leftBumper().onTrue(new SequentialCommandGroup(
+        //     new MoveToLevel(elev, Level.ALGAE_LOW, true),
+        //     new AlgaeRemSpin(algaeRem)
+        // ));
 
         // new Trigger(() -> head.getFunnelSensor()).onTrue(new Index(head).withInterruptBehavior(InterruptionBehavior.kCancelIncoming)); //we don't want the head to do anything until indexing is finished
 
