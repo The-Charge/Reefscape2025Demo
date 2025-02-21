@@ -83,7 +83,7 @@ public class VisionSubsystem extends SubsystemBase{
 
       Double[] botPoseArray = table.getEntry("botpose_orb_wpiblue").getDoubleArray(new Double[] {});
 
-      if (botPoseArray[7] == 0) {
+      if (botPoseArray.length == 0 || botPoseArray[7] == 0) {
         return null;
       }
 
