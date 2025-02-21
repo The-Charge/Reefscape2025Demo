@@ -19,7 +19,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.commands.algaerem.AlgaeRemSpin;
 import frc.robot.commands.climb.Climb;
 import frc.robot.commands.climb.ClimbToDegreesManual;
 import frc.robot.commands.climb.ClimbToTicksManual;
@@ -36,6 +38,7 @@ import frc.robot.commands.vision.LimelightManager;
 import frc.robot.constants.SwerveConstants;
 import frc.robot.constants.VisionConstants.LLFunnelConstants;
 import frc.robot.constants.VisionConstants.LLReefConstants;
+import frc.robot.subsystems.AlgaeRemSubsystem;
 import frc.robot.subsystems.ClimbSubsystem;
 import frc.robot.subsystems.ElevSubsystem;
 import frc.robot.subsystems.ElevSubsystem.Level;
@@ -82,7 +85,6 @@ public class RobotContainer {
         swerve.setDefaultCommand(teleopDrive);
 
         // intake.setDefaultCommand(new Intake(intake, elev, head));
-        // algaeRem.setDefaultCommand(new AlgaeRemManager(algaeRem, elev));
         
         configureNamedCommands();
         configureBindings();
@@ -118,12 +120,10 @@ public class RobotContainer {
         // ));
         // driver2.rightBumper().onTrue(new SequentialCommandGroup(
         //     new MoveToLevel(elev, Level.ALGAE_HIGH, true),
-        //     new AlgaeRemOut(algaeRem),
         //     new AlgaeRemSpin(algaeRem)
         // ));
         // driver2.leftBumper().onTrue(new SequentialCommandGroup(
         //     new MoveToLevel(elev, Level.ALGAE_LOW, true),
-        //     new AlgaeRemOut(algaeRem),
         //     new AlgaeRemSpin(algaeRem)
         // ));
 

@@ -157,6 +157,12 @@ public class ElevSubsystem extends SubsystemBase {
         slotConfigs.kD = ElevConstants.pidf.d;
         slotConfigs.kG = ElevConstants.pidf.f;
         slotConfigs.GravityType = GravityTypeValue.Elevator_Static;
+
+        // conservative motionmagic configs
+        var motionMagicConfigs = motorConfig.MotionMagic;
+        motionMagicConfigs.MotionMagicCruiseVelocity = 20; // Target cruise velocity of 80 rps
+        motionMagicConfigs.MotionMagicAcceleration = 80; // Target acceleration of 80 rps/s (1 second)
+        motionMagicConfigs.MotionMagicJerk = 800; // Target jerk of 800 rps/s/s (0.2 seconds)
         
         m.getConfigurator().apply(motorConfig);
         
