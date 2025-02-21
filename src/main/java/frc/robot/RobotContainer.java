@@ -32,6 +32,7 @@ import frc.robot.commands.intake.ManualIntake;
 import frc.robot.commands.swervedrive.drivebase.TeleopDrive;
 import frc.robot.commands.vision.AlignToTag;
 import frc.robot.commands.vision.DriveToTag;
+import frc.robot.commands.vision.LimelightManager;
 import frc.robot.constants.SwerveConstants;
 import frc.robot.constants.VisionConstants.LLFunnelConstants;
 import frc.robot.constants.VisionConstants.LLReefConstants;
@@ -91,6 +92,8 @@ public class RobotContainer {
         autoChooser = AutoBuilder.buildAutoChooser();
         setupAutoDisplay();
         SmartDashboard.putData("Auto Chooser", autoChooser);
+
+        new LimelightManager(swerve, reeflimelight, funnellimelight).schedule();
 
         Field2d field = new Field2d();
         SmartDashboard.putData("Field", field);

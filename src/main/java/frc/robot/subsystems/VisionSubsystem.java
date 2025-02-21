@@ -77,6 +77,34 @@ public class VisionSubsystem extends SubsystemBase{
       else
         NetworkTableInstance.getDefault().getTable(ll_name).getEntry("pipeline").setNumber(1);
     }
+    
+    public Pose2d getEstimatedPose() {
+      NetworkTable table = NetworkTableInstance.getDefault().getTable(ll_name);
+
+      Double[] botPoseArray = table.getEntry("botpose_orb_wpiblue").getDoubleArray(new Double[] {});
+
+      if (botPoseArray[7] == 0) {
+        return null;
+      }
+
+      Pose2d pose = new Pose2d(botPoseArray[0], botPoseArray[1], new Rotation2d(Units.degreesToRadians(botPoseArray[5])));
+
+      return pose;
+    }
+    
+    public double getPoseTimestamp() {
+      NetworkTable table = NetworkTableInstance.getDefault().getTable(ll_name);
+
+      Double[] botPoseArray = table.getEntry("botpose_orb_wpiblue").getDoubleArray(new Double[] {});
+
+      if (botPoseArray.length == 0) {
+        return Double.NaN;
+      }
+
+      double timeStamp = Timer.getFPGATimestamp() - Units.millisecondsToSeconds(botPoseArray[6]);
+
+      return timeStamp;
+    }
    
     public void UpdateLocalization() {
       NetworkTable table = NetworkTableInstance.getDefault().getTable(ll_name);
@@ -120,7 +148,7 @@ public class VisionSubsystem extends SubsystemBase{
 
       double timeStamp = Timer.getFPGATimestamp() - Units.millisecondsToSeconds(botPoseArray[6]);
       Pose2d pose = new Pose2d(botPoseArray[0], botPoseArray[1], new Rotation2d(Units.degreesToRadians(botPoseArray[5])));
-      swerve.addVisionReading(pose, timeStamp);
+      // swerve.addVisionReading(pose, timeStamp);
 
       SmartDashboard.putBoolean(ll_name + " Pose Estimated ", true);
     }
