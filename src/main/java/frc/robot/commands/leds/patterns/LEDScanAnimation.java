@@ -1,36 +1,37 @@
 package frc.robot.commands.leds.patterns;
 
 import edu.wpi.first.wpilibj.AddressableLEDBufferView;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.util.Color;
 import frc.robot.subsystems.LEDSubsystem.Animation;
 
 public class LEDScanAnimation extends Animation {
 
     private final Color col;
-    private final double speed;
-    private long time;
+    private final double cycleTime;
+    private final Timer time;
+    
     private int pulseWidth;
 
-    public LEDScanAnimation(Color color, double speedMult, int pulseLength) {
+    public LEDScanAnimation(Color color, int pulseLength, double cycleTime) {
         col = color;
-        speed = speedMult;
         pulseWidth = pulseLength;
+        this.cycleTime = cycleTime;
 
-        time = 0;
+        time = new Timer();
+        time.start();
     }
 
     @Override
-    public void update() {
-        time++;
-    }
+    public void update() {}
     @Override
     public void reset() {
-        time = 0;
+        time.reset();
     }
     @Override
     public void evaluate(AddressableLEDBufferView seg) {
         final double offsetRange = seg.getLength() - pulseWidth;
-        double offset = (offsetRange * 0.5) * (Math.sin(((Math.PI * time * speed) / offsetRange) - (0.5 * Math.PI)) + 1);
+        double offset = (offsetRange * 0.5) * (1 - Math.cos((2 * Math.PI * time.get()) / cycleTime));
 
         for(int i = 0; i < seg.getLength(); i++) {
             double strength = 0;

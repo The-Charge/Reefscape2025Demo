@@ -3,7 +3,6 @@ package frc.robot.subsystems;
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.AddressableLEDBufferView;
-import edu.wpi.first.wpilibj.LEDPattern;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.LEDConstants;
 
@@ -29,21 +28,17 @@ public class LEDSubsystem extends SubsystemBase {
     
     private final AddressableLED leds;
     private final AddressableLEDBuffer buff;
-    private final AddressableLEDBufferView segment1;
+    private final AddressableLEDBufferView fullBuffSeg;
 
     public LEDSubsystem() {
         leds = new AddressableLED(LEDConstants.ledPort);
         buff = new AddressableLEDBuffer(LEDConstants.ledLength);
 
-        segment1 = buff.createView(0, 149);
+        fullBuffSeg = buff.createView(0, buff.getLength() - 1);
         
         leds.setLength(LEDConstants.ledLength);
         leds.setColorOrder(LEDConstants.ledColorOrder);
 
-        // LEDPattern solid = LEDPattern.solid(LEDConstants.chargeGreen);
-        // solid.applyTo(buff);
-
-        // leds.setData(buff);
         leds.start();
     }
 
@@ -52,7 +47,7 @@ public class LEDSubsystem extends SubsystemBase {
         leds.setData(buff);
     }
 
-    public AddressableLEDBufferView segment1() {
-        return segment1;
+    public AddressableLEDBufferView fullBuff() {
+        return fullBuffSeg;
     }
 }

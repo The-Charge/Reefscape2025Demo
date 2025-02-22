@@ -11,7 +11,7 @@ import edu.wpi.first.wpilibj.util.Color;
 public abstract class LEDConstants {
     
     public static final int ledPort = 0;
-    public static final int ledLength = 150;
+    public static final int ledLength = 115;
     public static final ColorOrder ledColorOrder = ColorOrder.kGRB;
     public static final Distance ledSpacing = Units.Meters.of(1 / 60.0); //60 leds per meter
 
