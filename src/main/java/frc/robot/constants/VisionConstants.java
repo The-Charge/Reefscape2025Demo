@@ -12,12 +12,12 @@ public abstract class VisionConstants {
     public static final double ARRAY_NUM = 0;
 
     //pipelines
-    public static final double VIEWFINDER_PIPELINE = 0;
+    public static final double VIEWPORT_PIPELINE = 0;
     public static final double APRILTAG_PIPELINE = 1;
 
     //limelight pose in robotspace (in meters/radians) - Change later
     public static final double X_CAMERA_OFFSET = 0.37719;
-    public static final double Y_CAMERA_OFFSET = 0.04064;
+    public static final double Y_CAMERA_OFFSET = 0.0381;
     public static final double Z_CAMERA_OFFSET = 0.233363;
     public static final double ROLL_CAMERA_OFFSET = -0.017453292519943295; //-1 degree
     public static final double YAW_CAMERA_OFFSET = 0.0017453292519943295; //0.1 degree
@@ -33,7 +33,7 @@ public abstract class VisionConstants {
     public static final double ARRAY_NUM = 1;
 
     //pipelines
-    public static final double VIEWFINDER_PIPELINE = 0;
+    public static final double VIEWPORT_PIPELINE = 0;
     public static final double APRILTAG_PIPELINE = 1;
 
     //limelight pose in robotspace (in meters/radians) - Change later
@@ -51,7 +51,7 @@ public abstract class VisionConstants {
   {
     public static final AprilTagFieldLayout aprilTagFieldLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeWelded);
   
-
+    public static final double TRANSLATION_POSE_TOLERANCE = 0.1; //meters
     public static final double ANGLE_POSE_TOLERANCE = 10; //degrees
     public static final double APRILTAG_POSE_OFFSET = 1; //meters
 
