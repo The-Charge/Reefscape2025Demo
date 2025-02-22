@@ -29,6 +29,7 @@ import frc.robot.commands.elev.MoveToLevel;
 import frc.robot.commands.elev.MoveToLevelManual;
 import frc.robot.commands.elev.MoveToTicksManual;
 import frc.robot.commands.intake.ManualIntake;
+import frc.robot.commands.leds.LEDManager;
 import frc.robot.commands.swervedrive.drivebase.SwerveZero;
 import frc.robot.commands.swervedrive.drivebase.TeleopDrive;
 import frc.robot.commands.vision.LimelightManager;
@@ -39,6 +40,7 @@ import frc.robot.subsystems.ClimbSubsystem;
 import frc.robot.subsystems.ElevSubsystem;
 import frc.robot.subsystems.ElevSubsystem.Level;
 import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.subsystems.LEDSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
 
@@ -60,6 +62,7 @@ public class RobotContainer {
     // private final HeadSubsystem head = new HeadSubsystem();
     private final IntakeSubsystem intake = new IntakeSubsystem();
     // private final AlgaeRemSubsystem algaeRem = new AlgaeRemSubsystem();
+    private final LEDSubsystem leds = new LEDSubsystem();
     
     private SendableChooser<Command> autoChooser;
     private TeleopDrive teleop;
@@ -82,6 +85,7 @@ public class RobotContainer {
         );
 
         // intake.setDefaultCommand(new Intake(intake, elev, head));
+        leds.setDefaultCommand(new LEDManager(leds));
         
         configureNamedCommands();
         configureBindings();
