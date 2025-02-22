@@ -129,21 +129,11 @@ public class TeleopDrive extends Command {
     }
 
     private double ReefLock() {
-        List<Pose2d> tagposes = new ArrayList<>();
-        for (int i = 1; i <= 22; i++) {
-            if (i == 4 || i == 5 || i == 14 || i == 15 || i == 3 || i == 16)
-                continue;
-            tagposes.add(ApriltagConstants.TAG_POSES[i].toPose2d());
-        }
-
-        Pose2d nearestTag = swerve.getPose().nearest(tagposes);
-        Rotation2d targetRotation = nearestTag.getRotation().minus(new Rotation2d(Math.PI));
-
+        Rotation2d targetRotation = swerve.getClosestTagPose().getRotation().minus(new Rotation2d(Math.PI));
         ChassisSpeeds reefLockSpeeds = swerve.getTargetSpeeds(
                 vX.getAsDouble(), vY.getAsDouble(),
                 targetRotation.getSin(),
                 targetRotation.getCos());
-
         return reefLockSpeeds.omegaRadiansPerSecond;
     }
 

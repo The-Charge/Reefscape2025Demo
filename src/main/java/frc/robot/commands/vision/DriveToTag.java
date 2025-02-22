@@ -39,19 +39,27 @@ public class DriveToTag extends InstantCommand {
  
   @Override
   public void initialize() {
-    if (tagid == 0 && limelight.getTagID() > 0) tagid = (int) NetworkTableInstance.getDefault().getTable(limelight.getName()).getEntry("tid").getDouble(0);;
-    if (tagid > 0){
+   if (tagid == 0){
+     intendedPose = new Pose2d(
+        swerve.getClosestTagPose().getX() + ApriltagConstants.APRILTAG_POSE_OFFSET * Math.cos(swerve.getClosestTagPose().getRotation().getRadians()),
+        swerve.getClosestTagPose().getY() + ApriltagConstants.APRILTAG_POSE_OFFSET * Math.sin(swerve.getClosestTagPose().getRotation().getRadians()), 
+        new Rotation2d(ApriltagConstants.TAG_POSES[tagid].toPose2d().getRotation().getRadians() - Math.PI)
+      );
+   }
+   else{
       intendedPose = new Pose2d(
         ApriltagConstants.TAG_POSES[tagid].getX() + ApriltagConstants.APRILTAG_POSE_OFFSET * Math.cos(ApriltagConstants.TAG_POSES[tagid].getRotation().getZ()),
         ApriltagConstants.TAG_POSES[tagid].getY() + ApriltagConstants.APRILTAG_POSE_OFFSET * Math.sin(ApriltagConstants.TAG_POSES[tagid].getRotation().getZ()), 
         new Rotation2d(ApriltagConstants.TAG_POSES[tagid].toPose2d().getRotation().getRadians() - Math.PI)
       );
+   }
+      
 
     drivetoPose = swerve.driveToPose(intendedPose);
     drivetoPose.schedule();
     }
    
-}
+
 
   @Override 
   public void execute() {
@@ -62,7 +70,6 @@ public class DriveToTag extends InstantCommand {
   @Override
   public void end(boolean interrupted) {
     drivetoPose.cancel();
-    SmartDashboard.putBoolean("DriveToTag Scheduled", false);
   }
 
   // Returns true when the command should end.

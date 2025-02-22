@@ -51,10 +51,15 @@ public abstract class VisionConstants {
   {
     public static final AprilTagFieldLayout aprilTagFieldLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeWelded);
   
-    public static final double TRANSLATION_POSE_TOLERANCE = 0.1; //meters
+    public static final double TRANSLATION_SIDE_POSE_TOLERANCE = 2;
+    public static final double TRANSLATION_FRONT_POSE_TOLERANCE = 0.2;
+
     public static final double ANGLE_POSE_TOLERANCE = 10; //degrees
     public static final double APRILTAG_POSE_OFFSET = 1; //meters
 
+    public static final double LEFT_ALIGN_OFFSET = 0;
+    public static final double MID_ALIGN_OFFSET = 0;
+    public static final double RIGHT_ALIGN_OFFSET = 0;
     //Tag ids for each tag
     public static final double LOW_RED_CORALSTATION_ID = 1;
     public static final double HIGH_RED_CORALSTATION_ID = 2;
@@ -107,5 +112,6 @@ public abstract class VisionConstants {
       aprilTagFieldLayout.getTagPose(21).get(),
       aprilTagFieldLayout.getTagPose(22).get(),
     };
+
   }
 }

@@ -3,6 +3,8 @@ package frc.robot.subsystems;
 import static edu.wpi.first.units.Units.DegreesPerSecond;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
@@ -21,8 +23,6 @@ import limelight.structures.LimelightSettings.LEDMode;
 public class VisionSubsystem extends SubsystemBase{
     SwerveSubsystem swerve;
 
-    //private final AprilTagFieldLayout aprilTagFieldLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2025Reefscape);
-
     Limelight limelight;
     LimelightPoseEstimator llPoseEstimator;
 
@@ -38,21 +38,39 @@ public class VisionSubsystem extends SubsystemBase{
     double ambiguity;
     double currentPipeline;
 
+    PIDController sideController;
+    PIDController frontController;
+    double frontAdjust = 0;
+    double leftSideAdjust = 0;
+    double rightSideAdjust = 0;
+    double midSideAdjust = 0;
+    double alignmentSideOffset;
+
     public VisionSubsystem(SwerveSubsystem swerve, String ll_name, Pose3d cameraOffset){
       this.swerve = swerve;
       this.ll_name = ll_name;
+
       //Setup YALL limelight object (maybe should be in initialize)
       limelight = new Limelight(ll_name);
       NetworkTableInstance.getDefault().getTable(ll_name).getEntry("pipeline").setNumber(1);
       limelight.getSettings().withLimelightLEDMode(LEDMode.PipelineControl).withCameraOffset(cameraOffset).save();
       llPoseEstimator = limelight.getPoseEstimator(true);
+
+      //Setup PIDControllers for AlignToTag
+      sideController = new PIDController(.4, 0.001, 0.0001);
+      sideController.setSetpoint(0.0);
+      sideController.setTolerance(ApriltagConstants.TRANSLATION_SIDE_POSE_TOLERANCE);
       
+      frontController = new PIDController(.4, 0.001, 0.0001);
+      frontController.setSetpoint(0.0);
+      frontController.setTolerance(ApriltagConstants.TRANSLATION_FRONT_POSE_TOLERANCE);
     }
 
     @Override
     public void periodic(){
       updateLimelightTracking();
       UpdateLocalization();
+      UpdateAlignerPID();
     }
   
     public void updateLimelightTracking(){ 
@@ -65,17 +83,7 @@ public class VisionSubsystem extends SubsystemBase{
           distToCamera = fiducial.distToCamera;  // Distance to camera
           distToRobot = fiducial.distToRobot;    // Distance to robot
           ambiguity = fiducial.ambiguity;        // Tag pose ambiguity
-    }
-  }
-    public void setPipeline(double index){
-      NetworkTableInstance.getDefault().getTable(ll_name).getEntry("pipeline").setNumber(index);
-    }
-
-    public void adjustDriverPipeline(){
-      if (currentPipeline == 1) 
-        NetworkTableInstance.getDefault().getTable(ll_name).getEntry("pipeline").setNumber(0);
-      else
-        NetworkTableInstance.getDefault().getTable(ll_name).getEntry("pipeline").setNumber(1);
+      }
     }
     
     public Pose2d getEstimatedPose() {
@@ -152,7 +160,16 @@ public class VisionSubsystem extends SubsystemBase{
 
       SmartDashboard.putBoolean(ll_name + " Pose Estimated ", true);
     }
-    
+
+    public void UpdateAlignerPID(){
+      sideController.reset();
+      frontController.reset();
+      leftSideAdjust = MathUtil.clamp(sideController.calculate(txnc + ApriltagConstants.LEFT_ALIGN_OFFSET,0), -0.2, 0.2);
+      midSideAdjust = MathUtil.clamp(sideController.calculate(txnc,0), -0.2, 0.2);
+      rightSideAdjust = MathUtil.clamp(sideController.calculate(txnc + ApriltagConstants.RIGHT_ALIGN_OFFSET,0), -0.2, 0.2);
+      frontAdjust = MathUtil.clamp(frontController.calculate(distToRobot, ApriltagConstants.APRILTAG_POSE_OFFSET), -0.5, 0.5);
+    }
+
     public boolean robotRotationWithinThreshold(int tagid){
       return 
         Math.abs(ApriltagConstants.TAG_POSES[tagid].getRotation().getAngle() * 180 / Math.PI - 180
@@ -162,7 +179,8 @@ public class VisionSubsystem extends SubsystemBase{
 
   
     public boolean getObjectedDetected(){
-      return LimelightHelpers.getTV(ll_name);
+      if (txnc != 0.0) return true;
+      else return false;
     }
     public int getTagID(){
       return tagid;
@@ -184,5 +202,20 @@ public class VisionSubsystem extends SubsystemBase{
     }
     public String getName(){
       return ll_name;
-  }
+    }
+
+    public double getRobotPoseTagSpace(){
+      return LimelightHelpers.getBotPose3d_TargetSpace(ll_name).toPose2d().getX();
+    }
+    public double getSideAdjustment(double adjustDirection){
+      if (adjustDirection == -1) return leftSideAdjust;
+      else if (adjustDirection == 0) return midSideAdjust;
+      else if (adjustDirection == 1) return rightSideAdjust;
+      return 0;
+    }
+    public double getFrontAdjustment(){
+        return frontAdjust;
+    }
+
+
 }

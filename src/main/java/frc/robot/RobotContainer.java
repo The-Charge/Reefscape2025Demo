@@ -19,9 +19,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import frc.robot.commands.algaerem.AlgaeRemSpin;
 import frc.robot.commands.climb.Climb;
 import frc.robot.commands.climb.ClimbToDegreesManual;
 import frc.robot.commands.climb.ClimbToTicksManual;
@@ -38,7 +36,6 @@ import frc.robot.commands.vision.LimelightManager;
 import frc.robot.constants.SwerveConstants;
 import frc.robot.constants.VisionConstants.LLFunnelConstants;
 import frc.robot.constants.VisionConstants.LLReefConstants;
-import frc.robot.subsystems.AlgaeRemSubsystem;
 import frc.robot.subsystems.ClimbSubsystem;
 import frc.robot.subsystems.ElevSubsystem;
 import frc.robot.subsystems.ElevSubsystem.Level;
@@ -104,9 +101,14 @@ public class RobotContainer {
     private void configureBindings() {
         driver1.b().onTrue(Commands.runOnce(swerve::zeroGyroWithAlliance));
         driver1.x().whileTrue(Commands.runOnce(swerve::lock, swerve).repeatedly());
+
+        // limelight testing
+        driver1.a().onTrue(Commands.runOnce(swerve::addFakeVisionReading));
+        driver1.y().onTrue(new DriveToTag(swerve, reeflimelight, 0)); //Drive to tag seen by reeflimelight
+        driver1.leftBumper().whileTrue(new AlignToTag(swerve, reeflimelight, 7, 1));
         
-        driver2.a().onTrue(new Climb(climb));
-        driver2.y().onTrue(new Declimb(climb));
+        // driver2.a().onTrue(new Climb(climb));
+        // driver2.y().onTrue(new Declimb(climb));
         driver2.povUp().onTrue(new MoveToLevel(elev, Level.LVL4));
         driver2.povRight().onTrue(new MoveToLevel(elev, Level.LVL3));
         driver2.povLeft().onTrue(new MoveToLevel(elev, Level.LVL2));
@@ -128,10 +130,6 @@ public class RobotContainer {
         // ));
 
         // new Trigger(() -> head.getFunnelSensor()).onTrue(new Index(head).withInterruptBehavior(InterruptionBehavior.kCancelIncoming)); //we don't want the head to do anything until indexing is finished
-
-        // driverXbox.a().onTrue(Commands.runOnce(swerve::addFakeVisionReading));
-        // driverXbox.y().whileTrue(new DriveToTag(swerve, m_limelight, 7));
-        // driverXbox.leftBumper().onTrue(Commands.runOnce(m_limelight::adjustDriverPipeline));
 
         //driverXbox.b().whileTrue(
         //    swerve.driveToPose(

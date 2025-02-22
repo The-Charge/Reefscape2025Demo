@@ -23,22 +23,20 @@ public class AlignToTag extends Command {
     private final SwerveSubsystem swerve;
     private VisionSubsystem limelight;
     private int tagid; 
-    private double sideVal;
-    private double frontVal;
+    private double sideAdjust;
+    private double frontAdjust;
     private ChassisSpeeds alignmentSpeeds;
     private Pose2d tagpose;
     private Rotation2d tagpose_rotation;
-    private final PIDController translation_controller;
-    private double tx;
-    public AlignToTag(SwerveSubsystem swerve, VisionSubsystem limelight, int tagid){
+    
+    private double alignmentSide;
+
+    public AlignToTag(SwerveSubsystem swerve, VisionSubsystem limelight, int tagid, double alignmentSide){
         this.swerve = swerve;
         this.limelight = limelight;
         this.tagid = tagid;
-        translation_controller = new PIDController(1, 0.0, 0.0);
-        translation_controller.setTolerance(ApriltagConstants.TRANSLATION_POSE_TOLERANCE);
-        translation_controller.setSetpoint(0.0);
+        this.alignmentSide = alignmentSide;
 
-        
         addRequirements(swerve);
         addRequirements(limelight);
     }
@@ -50,21 +48,17 @@ public class AlignToTag extends Command {
 
   @Override 
   public void execute() {
-    
-    tagpose = ApriltagConstants.TAG_POSES[tagid].toPose2d();
+    tagpose = swerve.getClosestReefTagPose();
     tagpose_rotation = tagpose.getRotation().minus(new Rotation2d(Math.PI));
 
-    translation_controller.reset();
-    tx = LimelightHelpers.getTX(limelight.getName());
-    sideVal = 14.5 / translation_controller.calculate(tx,0);
-    frontVal = 14.5 / translation_controller.calculate(limelight.getDistToCamera(), ApriltagConstants.APRILTAG_POSE_OFFSET);
-    swerve.drive(new Translation2d(sideVal, frontVal), 0, true);
-    //alignmentSpeeds = swerve.getTargetSpeeds(sideVal, frontVal, tagpose_rotation.getSin(), tagpose_rotation.getCos());
-    SmartDashboard.putNumber(
-      "sideval", sideVal);
-    SmartDashboard.putNumber("frontval", frontVal);
-    SmartDashboard.putNumber("tx thing", tx);
-    //swerve.drive(alignmentSpeeds);
+    frontAdjust = MathUtil.clamp((limelight.getFrontAdjustment()), -1, 1);
+    sideAdjust = MathUtil.clamp(limelight.getSideAdjustment(alignmentSide), -0.3, 0.3);
+    
+    SmartDashboard.putNumber("sideval", sideAdjust);
+    SmartDashboard.putNumber("frontval", frontAdjust);
+
+    alignmentSpeeds = swerve.getTargetSpeeds(sideAdjust, frontAdjust, tagpose_rotation.getSin(), tagpose_rotation.getCos());
+    swerve.drive(alignmentSpeeds);
   }
 
   // Called once the command ends or is interrupted.
