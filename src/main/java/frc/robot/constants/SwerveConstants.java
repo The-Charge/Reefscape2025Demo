@@ -15,8 +15,18 @@ public abstract class SwerveConstants {
 
     // Hold time on motor brakes when disabled
     public static final double WHEEL_LOCK_TIME = 10; // seconds
-    public static final PIDConstants pathPlannerTranslationPID = new PIDConstants(8.5, 0, 0);
-    public static final PIDConstants pathPlannerRotationPID = new PIDConstants(10, 0, 4);
+
+    public static final boolean useChassisVelocityCorrection = true;
+    public static final double chassisVelocityCorrection = 0.2;
+
+    public static final boolean useCosineCompensator = true;
+
+    public static final boolean useAngularCompensationTeleop = true;
+    public static final boolean useAngularCompensationAuton = true;
+    public static final double angularCompensation = -10;
+
+    public static final PIDConstants pathPlannerTranslationPID = new PIDConstants(5, 0, 0);
+    public static final PIDConstants pathPlannerRotationPID = new PIDConstants(5, 0, 0);
 
     // Joystick Deadband
     public static final double LEFT_Y_DEADBAND = 0.1;

@@ -94,14 +94,12 @@ public class SwerveSubsystem extends SubsystemBase
     {
       throw new RuntimeException(e);
     }
+    
+    swerveDrive.setChassisDiscretization(SwerveConstants.useChassisVelocityCorrection, SwerveConstants.chassisVelocityCorrection);
     swerveDrive.setHeadingCorrection(false); // Heading correction should only be used while controlling the robot via angle.
-    swerveDrive.setCosineCompensator(false);//!SwerveDriveTelemetry.isSimulation); // Disables cosine compensation for simulations since it causes discrepancies not seen in real life.
-    swerveDrive.setAngularVelocityCompensation(true,
-                                               false,
-                                               0.1); //Correct for skew that gets worse as angular velocity increases. Start with a coefficient of 0.1.
-    swerveDrive.setModuleEncoderAutoSynchronize(false,
-                                                1); // Enable if you want to resynchronize your absolute encoders and motor encoders periodically when they are not moving.
-//    swerveDrive.pushOffsetsToEncoders(); // Set the absolute encoder to be used over the internal encoder and push the offsets onto it. Throws warning if not possible
+    swerveDrive.setCosineCompensator(SwerveConstants.useCosineCompensator);//!SwerveDriveTelemetry.isSimulation); // Disables cosine compensation for simulations since it causes discrepancies not seen in real life.
+    swerveDrive.setAngularVelocityCompensation(SwerveConstants.useAngularCompensationTeleop, SwerveConstants.useAngularCompensationAuton, SwerveConstants.angularCompensation); //Correct for skew that gets worse as angular velocity increases. Start with a coefficient of 0.1
+
     if (visionDriveTest)
     {
 //      setupPhotonVision();
@@ -175,10 +173,10 @@ public class SwerveSubsystem extends SubsystemBase
             if (enableFeedforward)
             {
               swerveDrive.drive(
-                  speedsRobotRelative,
-                  swerveDrive.kinematics.toSwerveModuleStates(speedsRobotRelative),
-                  moduleFeedForwards.linearForces()
-                               );
+                speedsRobotRelative,
+                swerveDrive.kinematics.toSwerveModuleStates(speedsRobotRelative),
+                moduleFeedForwards.linearForces()
+              );
             } else
             {
               swerveDrive.setChassisSpeeds(speedsRobotRelative);

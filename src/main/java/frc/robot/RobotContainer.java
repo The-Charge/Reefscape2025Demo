@@ -19,9 +19,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import frc.robot.commands.algaerem.AlgaeRemSpin;
 import frc.robot.commands.climb.Climb;
 import frc.robot.commands.climb.ClimbToDegreesManual;
 import frc.robot.commands.climb.ClimbToTicksManual;
@@ -31,14 +29,12 @@ import frc.robot.commands.elev.MoveToLevel;
 import frc.robot.commands.elev.MoveToLevelManual;
 import frc.robot.commands.elev.MoveToTicksManual;
 import frc.robot.commands.intake.ManualIntake;
+import frc.robot.commands.swervedrive.drivebase.SwerveZero;
 import frc.robot.commands.swervedrive.drivebase.TeleopDrive;
-import frc.robot.commands.vision.AlignToTag;
-import frc.robot.commands.vision.DriveToTag;
 import frc.robot.commands.vision.LimelightManager;
 import frc.robot.constants.SwerveConstants;
 import frc.robot.constants.VisionConstants.LLFunnelConstants;
 import frc.robot.constants.VisionConstants.LLReefConstants;
-import frc.robot.subsystems.AlgaeRemSubsystem;
 import frc.robot.subsystems.ClimbSubsystem;
 import frc.robot.subsystems.ElevSubsystem;
 import frc.robot.subsystems.ElevSubsystem.Level;
@@ -66,9 +62,10 @@ public class RobotContainer {
     // private final AlgaeRemSubsystem algaeRem = new AlgaeRemSubsystem();
     
     private SendableChooser<Command> autoChooser;
+    private TeleopDrive teleop;
     
     public RobotContainer() {
-        TeleopDrive teleopDrive = new TeleopDrive(swerve,
+        teleop = new TeleopDrive(swerve,
             () -> -MathUtil.applyDeadband(driver1.getLeftY(), SwerveConstants.LEFT_Y_DEADBAND),
             () -> -MathUtil.applyDeadband(driver1.getLeftX(), SwerveConstants.LEFT_X_DEADBAND),
             () -> -MathUtil.applyDeadband(driver1.getRightX(), SwerveConstants.RIGHT_X_DEADBAND),
@@ -83,7 +80,6 @@ public class RobotContainer {
             () -> driver1.leftTrigger(SwerveConstants.TRIGGER_DEADBAND).getAsBoolean(),
             () -> driver1.rightTrigger(SwerveConstants.TRIGGER_DEADBAND).getAsBoolean()
         );
-        swerve.setDefaultCommand(teleopDrive);
 
         // intake.setDefaultCommand(new Intake(intake, elev, head));
         
@@ -225,5 +221,11 @@ public class RobotContainer {
     }
     public SwerveSubsystem getSwerveSubsystem() {
       return swerve;
+    }
+    public void setTeleopDefaultCommand() {
+        swerve.setDefaultCommand(teleop);
+    }
+    public void clearTeleopDefaultCommand() {
+        swerve.setDefaultCommand(new SwerveZero(swerve));
     }
 }
