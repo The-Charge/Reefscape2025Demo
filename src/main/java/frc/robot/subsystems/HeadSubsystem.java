@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.constants.HeadConstants;
+import frc.robot.constants.TelemetryConstants;
 
 public class HeadSubsystem extends SubsystemBase {
 
@@ -45,12 +46,27 @@ public class HeadSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        SmartDashboard.putNumber("Head VBus L", headLeft.get());
-        SmartDashboard.putNumber("Head VBus R", headRight.get());
-        SmartDashboard.putBoolean("Head Funnel Sensor (Bool)", getFunnelSensor());
-        SmartDashboard.putBoolean("Head Shooter Sensor (Bool)", getShooterSensor());
-        SmartDashboard.putNumber("Head Funnel Sensor (mm)", funnelSensor.getRange());
-        SmartDashboard.putNumber("Head Shooter Sensor (mm)", shooterSensor.getRange());
+        if(TelemetryConstants.headLevel >= TelemetryConstants.LOW) {
+            SmartDashboard.putNumber("Head VBus L", headLeft.get());
+            SmartDashboard.putNumber("Head VBus R", headRight.get());
+            SmartDashboard.putBoolean("Head HasCoral", getHasCoral());
+            
+            if(TelemetryConstants.headLevel >= TelemetryConstants.MEDIUM) {
+                SmartDashboard.putBoolean("Head Funnel Sensor (Bool)", getFunnelSensor());
+                SmartDashboard.putBoolean("Head Shooter Sensor (Bool)", getShooterSensor());
+
+                if(TelemetryConstants.headLevel >= TelemetryConstants.HIGH) {
+                    SmartDashboard.putNumber("Head Funnel Sensor (mm)", funnelSensor.getRange());
+                    SmartDashboard.putNumber("Head Shooter Sensor (mm)", shooterSensor.getRange());
+    
+                    if(TelemetryConstants.headLevel >= TelemetryConstants.EYE_OF_SAURON) {
+                        SmartDashboard.putNumber("Head Current L", headLeft.getOutputCurrent());
+                        SmartDashboard.putNumber("Head Current R", headRight.getOutputCurrent());
+                        SmartDashboard.putString("Head RunningCommand", getCurrentCommand().getName());
+                    }
+                }
+            }
+        }
     }
 
     public void flywheelVBus(double percent) {
