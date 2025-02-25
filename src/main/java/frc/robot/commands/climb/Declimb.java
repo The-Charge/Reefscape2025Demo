@@ -8,6 +8,7 @@ public class Declimb extends Command {
     
     private ClimbSubsystem climb;
     private boolean wait;
+    private boolean canRun = true;
 
     public Declimb(ClimbSubsystem climbSub) {
         this(climbSub, false);
@@ -21,7 +22,16 @@ public class Declimb extends Command {
 
     @Override
     public void initialize() {
+        if(climb.getAngleDegrees() <= ClimbConstants.safeDegrees)
+            canRun = false;
+        else
+            canRun = true;
+
         climb.setTargetAngleDegrees(ClimbConstants.restingDegrees);
+    }
+    @Override
+    public void end(boolean interrupted) {
+        canRun = true;
     }
 
     @Override
@@ -29,6 +39,6 @@ public class Declimb extends Command {
         if(!wait)
             return true;
         
-        return climb.isAtTarget();
+        return !canRun && climb.isAtTarget();
     }
 }

@@ -18,9 +18,14 @@ public class Shoot extends Command {
     @Override
     public void initialize() {
         timeout = new Timer(); 
-        timeout.start();
 
         m_head.flywheelVBus(HeadConstants.shootVBus);
+    }
+    @Override
+    public void execute() {
+        if(!m_head.getHasCoral() && !timeout.isRunning()) {
+            timeout.start();
+        }
     }
     @Override
     public void end(boolean interrupted) {
@@ -30,6 +35,5 @@ public class Shoot extends Command {
     @Override
     public boolean isFinished() {
         return timeout.hasElapsed(HeadConstants.shootTime);
-    }
-        
+    }       
 }
