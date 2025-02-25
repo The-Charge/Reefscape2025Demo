@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.ClimbConstants;
+import frc.robot.constants.TelemetryConstants;
 
 public class ClimbSubsystem extends SubsystemBase {
     
@@ -31,24 +32,40 @@ public class ClimbSubsystem extends SubsystemBase {
 
         configureMotor(motor);
 
-        //used for smartdashboard override commands, read only
-        SmartDashboard.putNumber(ClimbConstants.overrideDegName, 0);
-        SmartDashboard.putNumber(ClimbConstants.overrideTicksName, 0);
+        if(TelemetryConstants.climbLevel >= TelemetryConstants.HIGH) {
+            //used for smartdashboard override commands, read only
+            SmartDashboard.putNumber(ClimbConstants.overrideDegName, 0);
+            SmartDashboard.putNumber(ClimbConstants.overrideTicksName, 0);
+        }
     }
 
     @Override
     public void periodic() {
         targetCheck();
 
-        SmartDashboard.putNumber("Climb Ang (Deg)", getAngleDegrees());
-        SmartDashboard.putNumber("Climb Ang (Ticks)", getAngleTicks());
-        SmartDashboard.putString("Climb Ang (STA)", getAngleState().name());
-        SmartDashboard.putNumber("Climb Err (Deg)", (targetTicks - getAngleTicks()) * ClimbConstants.tickToDegConversion);
-        SmartDashboard.putNumber("Climb Err (Ticks)", targetTicks - getAngleTicks());
-        SmartDashboard.putNumber("Climb Target (Deg)", targetTicks * ClimbConstants.tickToDegConversion);
-        SmartDashboard.putNumber("Climb Target (Ticks)", targetTicks);
-        SmartDashboard.putString("Climb Target (STA)", getTargetState().name());
-        SmartDashboard.putBoolean("Climb isAtTarget", isAtTarget());
+        if(TelemetryConstants.climbLevel >= TelemetryConstants.LOW) {
+            SmartDashboard.putString("Climb Ang (STA)", getAngleState().name());
+            SmartDashboard.putString("Climb Target (STA)", getTargetState().name());
+            SmartDashboard.putBoolean("Climb isAtTarget", isAtTarget());
+
+            if(TelemetryConstants.climbLevel >= TelemetryConstants.MEDIUM) {
+                SmartDashboard.putNumber("Climb Ang (Deg)", getAngleDegrees());
+                SmartDashboard.putNumber("Climb Err (Deg)", (targetTicks - getAngleTicks()) * ClimbConstants.tickToDegConversion);
+                SmartDashboard.putNumber("Climb Target (Deg)", targetTicks * ClimbConstants.tickToDegConversion);
+
+                if(TelemetryConstants.climbLevel >= TelemetryConstants.HIGH) {
+                    SmartDashboard.putNumber("Climb Ang (Ticks)", getAngleTicks());
+                    SmartDashboard.putNumber("Climb Err (Ticks)", targetTicks - getAngleTicks());
+                    SmartDashboard.putNumber("Climb Target (Ticks)", targetTicks);
+
+                    if(TelemetryConstants.climbLevel >= TelemetryConstants.EYE_OF_SAURON) {
+                        SmartDashboard.putNumber("Climb VBus", motor.get());
+                        SmartDashboard.putNumber("Climb Current", motor.getStatorCurrent().getValueAsDouble());
+                        SmartDashboard.putString("Climb RunningCommand", getCurrentCommand().getName());
+                    }
+                }
+            }
+        }
     }
 
     public void setTargetAngleDegrees(double deg) {

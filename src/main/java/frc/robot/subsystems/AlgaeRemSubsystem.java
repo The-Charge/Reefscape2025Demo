@@ -9,6 +9,7 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.AlgaeRemConstants;
+import frc.robot.constants.TelemetryConstants;
 
 public class AlgaeRemSubsystem extends SubsystemBase {
     
@@ -23,7 +24,14 @@ public class AlgaeRemSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        SmartDashboard.putNumber("AlgaeRem VBus", flywheel.get());
+        if(TelemetryConstants.algaeRemLevel >= TelemetryConstants.LOW) {
+            SmartDashboard.putNumber("AlgaeRem VBus", flywheel.get());
+
+            if(TelemetryConstants.algaeRemLevel >= TelemetryConstants.EYE_OF_SAURON) {
+                SmartDashboard.putNumber("AlgaeRem Current", flywheel.getOutputCurrent());
+                SmartDashboard.putString("AlgaeRem RunningCommand", getCurrentCommand().getName());
+            }
+        }
     }
 
     public void setFlywheelVBus(double percent) {

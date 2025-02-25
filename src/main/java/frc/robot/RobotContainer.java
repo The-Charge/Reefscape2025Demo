@@ -34,6 +34,7 @@ import frc.robot.commands.swervedrive.drivebase.SwerveZero;
 import frc.robot.commands.swervedrive.drivebase.TeleopDrive;
 import frc.robot.commands.vision.LimelightManager;
 import frc.robot.constants.SwerveConstants;
+import frc.robot.constants.TelemetryConstants;
 import frc.robot.constants.VisionConstants.LLFunnelConstants;
 import frc.robot.constants.VisionConstants.LLReefConstants;
 import frc.robot.subsystems.ClimbSubsystem;
@@ -167,22 +168,30 @@ public class RobotContainer {
     }
     private void addTelemetry() {
         //one time telemetry values, such as dashboard commands
-        SmartDashboard.putData("Elev Manual Move (IN)", new MoveToInchesManual(elev));
-        SmartDashboard.putData("Elev Manual Move (TICKS)", new MoveToTicksManual(elev));
-        SmartDashboard.putData("Elev Manual Move (LVL)", new MoveToLevelManual(elev));
+        if(TelemetryConstants.elevLevel >= TelemetryConstants.HIGH) {
+            SmartDashboard.putData("Elev Manual Move (IN)", new MoveToInchesManual(elev));
+            SmartDashboard.putData("Elev Manual Move (TICKS)", new MoveToTicksManual(elev));
+            SmartDashboard.putData("Elev Manual Move (LVL)", new MoveToLevelManual(elev));
+        }
 
-        SmartDashboard.putData("Climb Manual Climb (DEG)", new ClimbToDegreesManual(climb));
-        SmartDashboard.putData("Climb Manual Climb (TICKS)", new ClimbToTicksManual(climb));
-        SmartDashboard.putData("Climb Manual", new Climb(climb));
-        SmartDashboard.putData("Declimb Manual", new Declimb(climb));
+        if(TelemetryConstants.climbLevel >= TelemetryConstants.HIGH) {
+            SmartDashboard.putData("Climb Manual Climb (DEG)", new ClimbToDegreesManual(climb));
+            SmartDashboard.putData("Climb Manual Climb (TICKS)", new ClimbToTicksManual(climb));
+            SmartDashboard.putData("Climb Manual", new Climb(climb));
+            SmartDashboard.putData("Declimb Manual", new Declimb(climb));
+        }
 
-        // SmartDashboard.putData("Head Intake", new Intake(head));
-        // SmartDashboard.putData("Head Shoot", new Shoot(head));
+        // if(TelemetryConstants.headLevel >= TelemetryConstants.HIGH) {
+        //     SmartDashboard.putData("Head Intake", new Intake(head));
+        //     SmartDashboard.putData("Head Shoot", new Shoot(head));
+        // }
 
-        // SmartDashboard.putData("AlgaeRem In", new AlgaeRemIn(algaeRem));
-        // SmartDashboard.putData("AlgaeRem Out", new AlgaeRemOut(algaeRem));
-        // SmartDashboard.putData("AlgaeRem Spin", new AlgaeRemSpin(algaeRem));
-        // SmartDashboard.putData("AlgaeRem Stop", new AlgaeRemStop(algaeRem));
+        // if(TelemetryConstants.algaeRemLevel >= TelemetryConstants.HIGH) {
+        //     SmartDashboard.putData("AlgaeRem In", new AlgaeRemIn(algaeRem));
+        //     SmartDashboard.putData("AlgaeRem Out", new AlgaeRemOut(algaeRem));
+        //     SmartDashboard.putData("AlgaeRem Spin", new AlgaeRemSpin(algaeRem));
+        //     SmartDashboard.putData("AlgaeRem Stop", new AlgaeRemStop(algaeRem));
+        // }
     }
     private void setupAutoDisplay() {
         //update the displayed auto path in smartdashboard when ever the selection is changed
