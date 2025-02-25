@@ -1,5 +1,8 @@
 package frc.robot.constants;
 
+import swervelib.telemetry.SwerveDriveTelemetry;
+import swervelib.telemetry.SwerveDriveTelemetry.TelemetryVerbosity;
+
 public abstract class TelemetryConstants {
 
     public static final int COMPETITION = 0; //only what drivers need to see
@@ -17,7 +20,7 @@ public abstract class TelemetryConstants {
     public static final int headLevel = HIGH;
     public static final int intakeLevel = HIGH;
     public static final int ledLevel = HIGH;
-    public static final int swerveLevel = HIGH;
+    public static final SwerveDriveTelemetry.TelemetryVerbosity swerveLevel = TelemetryVerbosity.HIGH;
     public static final int visionLevel = HIGH;
     public static final int robotLevel = HIGH; //whole robot telemetry, such as PDP
 }

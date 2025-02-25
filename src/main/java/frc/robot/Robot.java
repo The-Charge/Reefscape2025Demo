@@ -159,7 +159,7 @@ public class Robot extends TimedRobot {
     {
         SmartDashboard.putNumber("Time Remaining", DriverStation.getMatchTime());
 
-        if(TelemetryConstants.swerveLevel >= TelemetryConstants.LOW) {
+        if(TelemetryConstants.robotLevel >= TelemetryConstants.LOW) {
             SmartDashboard.putNumber("velocity", Math.hypot(
                 m_robotContainer.getSwerveSubsystem().getFieldVelocity().vxMetersPerSecond,
                 m_robotContainer.getSwerveSubsystem().getFieldVelocity().vyMetersPerSecond

@@ -42,6 +42,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Config;
 import frc.robot.constants.SwerveConstants;
+import frc.robot.constants.TelemetryConstants;
 import swervelib.SwerveController;
 import swervelib.SwerveDrive;
 import swervelib.SwerveDriveTest;
@@ -80,7 +81,7 @@ public class SwerveSubsystem extends SubsystemBase
   public SwerveSubsystem(File directory)
   {
     // Configure the Telemetry before creating the SwerveDrive to avoid unnecessary objects being created.
-    SwerveDriveTelemetry.verbosity = TelemetryVerbosity.HIGH;
+    SwerveDriveTelemetry.verbosity = TelemetryConstants.swerveLevel;
     try
     {
       swerveDrive = new SwerveParser(directory).createSwerveDrive(SwerveConstants.MAX_SPEED,
@@ -96,7 +97,7 @@ public class SwerveSubsystem extends SubsystemBase
     
     swerveDrive.setChassisDiscretization(SwerveConstants.useChassisVelocityCorrection, SwerveConstants.chassisVelocityCorrection);
     swerveDrive.setHeadingCorrection(false); // Heading correction should only be used while controlling the robot via angle.
-    swerveDrive.setCosineCompensator(SwerveConstants.useCosineCompensator);//!SwerveDriveTelemetry.isSimulation); // Disables cosine compensation for simulations since it causes discrepancies not seen in real life.
+    swerveDrive.setCosineCompensator(SwerveConstants.useCosineCompensator && !SwerveDriveTelemetry.isSimulation); // Disables cosine compensation for simulations since it causes discrepancies not seen in real life.
     swerveDrive.setAngularVelocityCompensation(SwerveConstants.useAngularCompensationTeleop, SwerveConstants.useAngularCompensationAuton, SwerveConstants.angularCompensation); //Correct for skew that gets worse as angular velocity increases. Start with a coefficient of 0.1
 
     if (visionDriveTest)
