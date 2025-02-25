@@ -35,8 +35,8 @@ public class HeadSubsystem extends SubsystemBase {
         headLeft = new SparkMax(HeadConstants.leftId, MotorType.kBrushless);
         headRight = new SparkMax(HeadConstants.rightId, MotorType.kBrushless);
 
-        configureMotor(headLeft);
-        configureMotor(headRight);
+        configureMotor(headLeft, HeadConstants.leftReversed);
+        configureMotor(headRight, HeadConstants.rightReversed);
 
         headLeft.set(0);
         headRight.set(0);
@@ -62,7 +62,10 @@ public class HeadSubsystem extends SubsystemBase {
                     if(TelemetryConstants.headLevel >= TelemetryConstants.EYE_OF_SAURON) {
                         SmartDashboard.putNumber("Head Current L", headLeft.getOutputCurrent());
                         SmartDashboard.putNumber("Head Current R", headRight.getOutputCurrent());
-                        SmartDashboard.putString("Head RunningCommand", getCurrentCommand().getName());
+                        if(getCurrentCommand() == null)
+                            SmartDashboard.putString("Head RunningCommand", "None");
+                        else
+                            SmartDashboard.putString("Head RunningCommand", getCurrentCommand().getName());
                     }
                 }
             }
@@ -88,10 +91,11 @@ public class HeadSubsystem extends SubsystemBase {
         return hasCoral;
     }
 
-    private void configureMotor(SparkMax m) {
+    private void configureMotor(SparkMax m, boolean inverted) {
         SparkMaxConfig config = new SparkMaxConfig();
         config.idleMode(HeadConstants.idleMode);
         config.smartCurrentLimit(HeadConstants.currentLimit);
+        config.inverted(inverted);
 
         m.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     }

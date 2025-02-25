@@ -49,7 +49,10 @@ public class LEDSubsystem extends SubsystemBase {
         leds.setData(buff);
 
         if(TelemetryConstants.ledLevel >= TelemetryConstants.EYE_OF_SAURON) {
-            SmartDashboard.putString("LED RunningCommand", getCurrentCommand().getName());
+            if(getCurrentCommand() == null)
+                SmartDashboard.putString("LED RunningCommand", "None");
+            else
+                SmartDashboard.putString("LED RunningCommand", getCurrentCommand().getName());
         }
     }
 

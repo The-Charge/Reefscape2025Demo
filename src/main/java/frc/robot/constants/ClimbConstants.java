@@ -20,7 +20,8 @@ public abstract class ClimbConstants {
     public static final double targetThresholdSeconds = 0.1;
 
     public static final double restingDegrees = 3;
-    public static final double activeDegrees = 100;
+    public static final double safeDegrees = 100;
+    public static final double activeDegrees = 120;
 
     public static final String overrideDegName = "Climb Target Override (Deg)";
     public static final String overrideTicksName = "Climb Target Override (Ticks)";

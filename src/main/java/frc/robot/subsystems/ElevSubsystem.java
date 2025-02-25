@@ -79,7 +79,10 @@ public class ElevSubsystem extends SubsystemBase {
                     if(TelemetryConstants.elevLevel >= TelemetryConstants.EYE_OF_SAURON) {
                         SmartDashboard.putNumber("Elev VBus", motor.get());
                         SmartDashboard.putNumber("Elev Current", motor.getStatorCurrent().getValueAsDouble());
-                        SmartDashboard.putString("Elev RunningCommand", getCurrentCommand().getName());
+                        if(getCurrentCommand() == null)
+                            SmartDashboard.putString("Elev RunningCommand", "None");
+                        else
+                            SmartDashboard.putString("Elev RunningCommand", getCurrentCommand().getName());
                     }
                 }
             }

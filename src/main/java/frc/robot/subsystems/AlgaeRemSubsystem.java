@@ -29,7 +29,10 @@ public class AlgaeRemSubsystem extends SubsystemBase {
 
             if(TelemetryConstants.algaeRemLevel >= TelemetryConstants.EYE_OF_SAURON) {
                 SmartDashboard.putNumber("AlgaeRem Current", flywheel.getOutputCurrent());
-                SmartDashboard.putString("AlgaeRem RunningCommand", getCurrentCommand().getName());
+                if(getCurrentCommand() == null)
+                    SmartDashboard.putString("AlgaeRem RunningCommand", "None");
+                else
+                    SmartDashboard.putString("AlgaeRem RunningCommand", getCurrentCommand().getName());
             }
         }
     }

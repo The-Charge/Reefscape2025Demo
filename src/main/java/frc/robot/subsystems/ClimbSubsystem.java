@@ -61,7 +61,10 @@ public class ClimbSubsystem extends SubsystemBase {
                     if(TelemetryConstants.climbLevel >= TelemetryConstants.EYE_OF_SAURON) {
                         SmartDashboard.putNumber("Climb VBus", motor.get());
                         SmartDashboard.putNumber("Climb Current", motor.getStatorCurrent().getValueAsDouble());
-                        SmartDashboard.putString("Climb RunningCommand", getCurrentCommand().getName());
+                        if(getCurrentCommand() == null)
+                            SmartDashboard.putString("Climb RunningCommand", "None");
+                        else
+                            SmartDashboard.putString("Climb RunningCommand", getCurrentCommand().getName());
                     }
                 }
             }
