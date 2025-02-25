@@ -143,46 +143,46 @@ public class VisionSubsystem extends SubsystemBase{
     public void UpdateLocalization() {
       NetworkTable table = NetworkTableInstance.getDefault().getTable(ll_name);
 
-      double yaw = swerve.getHeading().getDegrees();
-      double yawRate = swerve.getSwerveDrive().getGyro().getYawAngularVelocity().in(DegreesPerSecond);
-      Double[] poseArray = {yaw, yawRate, 0., 0., 0., 0.};
-      table.getEntry("robot_orientation_set").setDoubleArray(poseArray);
+    //   double yaw = swerve.getHeading().getDegrees();
+    //   double yawRate = swerve.getSwerveDrive().getGyro().getYawAngularVelocity().in(DegreesPerSecond);
+    //   Double[] poseArray = {yaw, yawRate, 0., 0., 0., 0.};
+    //   table.getEntry("robot_orientation_set").setDoubleArray(poseArray);
 
-      Double[] rawFiducials = table.getEntry("rawfiducials").getDoubleArray(new Double[] { });
-      if (rawFiducials.length == 0) {
-        SmartDashboard.putBoolean(ll_name + " Pose Estimated ", false);
-        return;
-      }
+    //   Double[] rawFiducials = table.getEntry("rawfiducials").getDoubleArray(new Double[] { });
+    //   if (rawFiducials.length == 0) {
+    //     SmartDashboard.putBoolean(ll_name + " Pose Estimated ", false);
+    //     return;
+    //   }
 
-      double avgAmbig = 0;
-      int rawFiducialsLength = rawFiducials.length / 7;
-      for (int i = 1; i <= rawFiducialsLength; i++) {
-        SmartDashboard.putNumber(ll_name + " TagID #" + i, rawFiducials[i * 7 - 7]);
-        SmartDashboard.putNumber(ll_name + " TagX #" + i, rawFiducials[i * 7 - 6]);
-        SmartDashboard.putNumber(ll_name + " TagY #" + i, rawFiducials[i * 7 - 5]);
-        SmartDashboard.putNumber(ll_name + " Distance to tag #" + i, rawFiducials[i * 7 - 3]); // tag to camera
-        SmartDashboard.putNumber(ll_name + " Ambiguity #" + i, rawFiducials[i * 7 - 1]);
+    //   double avgAmbig = 0;
+    //   int rawFiducialsLength = rawFiducials.length / 7;
+    //   for (int i = 1; i <= rawFiducialsLength; i++) {
+    //     SmartDashboard.putNumber(ll_name + " TagID #" + i, rawFiducials[i * 7 - 7]);
+    //     SmartDashboard.putNumber(ll_name + " TagX #" + i, rawFiducials[i * 7 - 6]);
+    //     SmartDashboard.putNumber(ll_name + " TagY #" + i, rawFiducials[i * 7 - 5]);
+    //     SmartDashboard.putNumber(ll_name + " Distance to tag #" + i, rawFiducials[i * 7 - 3]); // tag to camera
+    //     SmartDashboard.putNumber(ll_name + " Ambiguity #" + i, rawFiducials[i * 7 - 1]);
 
-        avgAmbig += rawFiducials[i * 7 - 1] / rawFiducialsLength;
-      }
+    //     avgAmbig += rawFiducials[i * 7 - 1] / rawFiducialsLength;
+    //   }
 
-      SmartDashboard.putNumber("avg ambigg " + ll_name, avgAmbig);
+    //   SmartDashboard.putNumber("avg ambigg " + ll_name, avgAmbig);
 
-      if (avgAmbig > 0.5) {
-        SmartDashboard.putBoolean(ll_name + " Pose Estimated ", false);
-        return;
-      }
+    //   if (avgAmbig > 0.5) {
+    //     SmartDashboard.putBoolean(ll_name + " Pose Estimated ", false);
+    //     return;
+    //   }
 
-      Double[] botPoseArray = table.getEntry("botpose_orb_wpiblue").getDoubleArray(new Double[] { });
+    //   Double[] botPoseArray = table.getEntry("botpose_orb_wpiblue").getDoubleArray(new Double[] { });
       
-      if (botPoseArray.length == 0) {
-        SmartDashboard.putBoolean(ll_name + " Pose Estimated ", false);
-        return;
-      }
+    //   if (botPoseArray.length == 0) {
+    //     SmartDashboard.putBoolean(ll_name + " Pose Estimated ", false);
+    //     return;
+    //   }
 
-      double timeStamp = Timer.getFPGATimestamp() - Units.millisecondsToSeconds(botPoseArray[6]);
-      Pose2d pose = new Pose2d(botPoseArray[0], botPoseArray[1], new Rotation2d(Units.degreesToRadians(botPoseArray[5])));
-      // swerve.addVisionReading(pose, timeStamp);
+    //   double timeStamp = Timer.getFPGATimestamp() - Units.millisecondsToSeconds(botPoseArray[6]);
+    //   Pose2d pose = new Pose2d(botPoseArray[0], botPoseArray[1], new Rotation2d(Units.degreesToRadians(botPoseArray[5])));
+    //   swerve.addVisionReading(pose, timeStamp);
 
       SmartDashboard.putBoolean(ll_name + " Pose Estimated ", true);
     }
