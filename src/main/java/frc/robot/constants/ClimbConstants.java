@@ -8,7 +8,7 @@ import swervelib.parser.PIDFConfig;
 public abstract class ClimbConstants {
     
     public static final int motorID = 2;
-    public static final double maxVBus = 0.5;
+    public static final double maxVBus = 0.3;
     public static final double maxCurrent = 50;
     public static final PIDFConfig pidf = new PIDFConfig(0.1, 0, 0, 0);
     public static final double minPosTicks = 0;
