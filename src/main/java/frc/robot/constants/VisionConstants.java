@@ -6,29 +6,28 @@ import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 
 public abstract class VisionConstants {
-    public static class LLReefConstants
-  {
+
+  public static class LLReefConstants{
     public static final String LL_NAME = "limelight-reef";
     public static final double ARRAY_NUM = 0;
 
     //pipelines
-    public static final double VIEWPORT_PIPELINE = 0;
-    public static final double APRILTAG_PIPELINE = 1;
+    public static final int VIEWPORT_PIPELINE = 0;
+    public static final int APRILTAG_PIPELINE = 1;
+    public static final int ALGAE_PIPELINE = 2;
 
     //limelight pose in robotspace (in meters/radians) - Change later
-    public static final double X_CAMERA_OFFSET = 0.37719;
-    public static final double Y_CAMERA_OFFSET = 0.0381;
-    public static final double Z_CAMERA_OFFSET = 0.233363;
-    public static final double ROLL_CAMERA_OFFSET = -0.017453292519943295; //-1 degree
-    public static final double YAW_CAMERA_OFFSET = 0.0017453292519943295; //0.1 degree
+    public static final double X_CAMERA_OFFSET = 0.352425; //forward
+    public static final double Y_CAMERA_OFFSET = 0.13081; //right
+    public static final double Z_CAMERA_OFFSET = 0.2286; //up
+    public static final double ROLL_CAMERA_OFFSET = 0.0523599; //3 degree
+    public static final double YAW_CAMERA_OFFSET = 0; //0.1 degree
     public static final double PITCH_CAMERA_OFFSET = 0;
     public static final Pose3d CAMERA_OFFSET = new Pose3d(X_CAMERA_OFFSET, Y_CAMERA_OFFSET, Z_CAMERA_OFFSET, 
-                                               new Rotation3d(ROLL_CAMERA_OFFSET, PITCH_CAMERA_OFFSET, YAW_CAMERA_OFFSET));
-    
+                                               new Rotation3d(ROLL_CAMERA_OFFSET, PITCH_CAMERA_OFFSET, YAW_CAMERA_OFFSET));                              
   }
 
-  public static class LLFunnelConstants
-  {
+  public static class LLFunnelConstants{
     public static final String LL_NAME = "limelight-funnel";
     public static final double ARRAY_NUM = 1;
 
@@ -37,29 +36,32 @@ public abstract class VisionConstants {
     public static final double APRILTAG_PIPELINE = 1;
 
     //limelight pose in robotspace (in meters/radians) - Change later
-    public static final double X_CAMERA_OFFSET = 0.37719;   //forward
-    public static final double Y_CAMERA_OFFSET = 0.04064;   //right
-    public static final double Z_CAMERA_OFFSET = 0.233363;  //up
+    public static final double X_CAMERA_OFFSET = -0.038735;   //forward
+    public static final double Y_CAMERA_OFFSET = -0.03;   //right
+    public static final double Z_CAMERA_OFFSET = 0.6985;  //up
     public static final double ROLL_CAMERA_OFFSET = 0.017453; //-1 degree
-    public static final double YAW_CAMERA_OFFSET = 0.001745; //0.1 degrees
+    public static final double YAW_CAMERA_OFFSET = 0.174533; //10 degrees
     public static final double PITCH_CAMERA_OFFSET = 0; //0 degrees
     public static final Pose3d CAMERA_OFFSET = new Pose3d(X_CAMERA_OFFSET, Y_CAMERA_OFFSET, Z_CAMERA_OFFSET, 
                                                new Rotation3d(ROLL_CAMERA_OFFSET, PITCH_CAMERA_OFFSET, YAW_CAMERA_OFFSET));
-    
+
   }
-  public static class ApriltagConstants
-  {
+
+  public static class ApriltagConstants{ //Apriltag + general constants for vision
     public static final AprilTagFieldLayout aprilTagFieldLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeWelded);
   
     public static final double TRANSLATION_SIDE_POSE_TOLERANCE = 2;
     public static final double TRANSLATION_FRONT_POSE_TOLERANCE = 0.2;
-
+    public static final double TX_TOLERANCE = 5; //degrees
+    public static final double TARGET_DISTANCE_TOLERANCE = 0.1; //meters
+    
     public static final double ANGLE_POSE_TOLERANCE = 10; //degrees
     public static final double APRILTAG_POSE_OFFSET = 1; //meters
 
     public static final double LEFT_ALIGN_OFFSET = 0;
     public static final double MID_ALIGN_OFFSET = 0;
     public static final double RIGHT_ALIGN_OFFSET = 0;
+
     //Tag ids for each tag
     public static final double LOW_RED_CORALSTATION_ID = 1;
     public static final double HIGH_RED_CORALSTATION_ID = 2;
@@ -84,9 +86,9 @@ public abstract class VisionConstants {
     public static final double RIGHT_BLUE_REEF_ID = 21;
     public static final double BOTTOMRIGHT_BLUE_REEF_ID = 22;
 
-    
-    //I am terribly sorry for the sin committed below
+    //I am terribly sorry for the sin committed below (pun intended)
     //note: sin is y, cos is x
+    
     public static final Pose3d[] TAG_POSES = {
       Pose3d.kZero,
       aprilTagFieldLayout.getTagPose(1).get(),

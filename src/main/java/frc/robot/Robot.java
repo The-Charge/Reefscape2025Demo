@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import edu.wpi.first.net.PortForwarder;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.TimedRobot;
@@ -59,6 +60,17 @@ public class Robot extends TimedRobot {
         {
             DriverStation.silenceJoystickConnectionWarning(true);
         }
+
+        // Connect to 172.22.11.2:2011 to see reef limelight
+         PortForwarder.add(2011, "limelight-reef.local", 5800);
+         PortForwarder.add(2011, "limelight-reef.local", 5801);
+         PortForwarder.add(2011, "limelight-reef.local", 5805);
+
+        // Connect to 172.22.11.2:2012 to see  funnel limelight
+         PortForwarder.add(2012, "limelight-funnel.local", 5800);
+         PortForwarder.add(2012, "limelight-funnel.local", 5801);
+         PortForwarder.add(2012, "limelight-funnel.local", 5805);
+
     }
     /**
     * This function is called every 20 ms, no matter the mode. Use this for items like diagnostics that you want ran

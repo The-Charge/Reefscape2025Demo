@@ -31,6 +31,7 @@ import frc.robot.commands.elev.MoveToTicksManual;
 import frc.robot.commands.intake.ManualIntake;
 import frc.robot.commands.swervedrive.drivebase.TeleopDrive;
 import frc.robot.commands.vision.AlignToTag;
+import frc.robot.commands.vision.DriveToAlgae;
 import frc.robot.commands.vision.DriveToTag;
 import frc.robot.commands.vision.LimelightManager;
 import frc.robot.constants.SwerveConstants;
@@ -104,9 +105,10 @@ public class RobotContainer {
 
         // limelight testing
         driver1.a().onTrue(Commands.runOnce(swerve::addFakeVisionReading));
-        driver1.y().onTrue(new DriveToTag(swerve, reeflimelight, 0)); //Drive to tag seen by reeflimelight
+        driver1.y().onTrue(new DriveToTag(swerve, 0)); //Drive to tag closest to reeflimelight
         driver1.leftBumper().whileTrue(new AlignToTag(swerve, reeflimelight, 7, 1));
-        
+        driver1.rightBumper().whileTrue(new DriveToAlgae(swerve, reeflimelight));
+
         // driver2.a().onTrue(new Climb(climb));
         // driver2.y().onTrue(new Declimb(climb));
         driver2.povUp().onTrue(new MoveToLevel(elev, Level.LVL4));

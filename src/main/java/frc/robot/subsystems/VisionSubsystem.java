@@ -1,7 +1,5 @@
 package frc.robot.subsystems;
 
-import static edu.wpi.first.units.Units.DegreesPerSecond;
-
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
@@ -11,109 +9,137 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.LimelightHelpers;
-import frc.robot.LimelightHelpers.RawFiducial;
 import frc.robot.constants.VisionConstants.ApriltagConstants;
-import limelight.Limelight;
-import limelight.estimator.LimelightPoseEstimator;
-import limelight.structures.LimelightSettings.LEDMode;
 
 public class VisionSubsystem extends SubsystemBase{
-    SwerveSubsystem swerve;
+  SwerveSubsystem swerve;
+  String ll_name;
+  int tagid;
+  double tx;
+  double ty;
+  double ta;
+  double tv;
+  double distToCamera;
+  double currentPipeline;
+  PIDController sideController;
+  PIDController frontController;
+  double frontAdjust = 0;
+  double leftSideAdjust = 0;
+  double rightSideAdjust = 0;
+  double midSideAdjust = 0;
+  double alignmentSideOffset;
+  NetworkTable table;
 
-    Limelight limelight;
-    LimelightPoseEstimator llPoseEstimator;
+  public VisionSubsystem(SwerveSubsystem swerve, String ll_name, Pose3d cameraOffset){
+    this.swerve = swerve;
+    this.ll_name = ll_name;
+    //Setup PIDControllers for AlignToTag
+    sideController = new PIDController(5, 0, 0);
+    sideController.setSetpoint(0.0);
+    sideController.setTolerance(ApriltagConstants.TRANSLATION_SIDE_POSE_TOLERANCE);
+    
+    frontController = new PIDController(5, 0, 0);
+    frontController.setSetpoint(0.0);
+    frontController.setTolerance(ApriltagConstants.TRANSLATION_FRONT_POSE_TOLERANCE);
+  }
 
-    public String ll_name;
-    RawFiducial[] fiducials;
-
-    int tagid;
-    double txnc;
-    double tync;
-    double ta;
-    double distToCamera;
-    double distToRobot;
-    double ambiguity;
-    double currentPipeline;
-
-    PIDController sideController;
-    PIDController frontController;
-    double frontAdjust = 0;
-    double leftSideAdjust = 0;
-    double rightSideAdjust = 0;
-    double midSideAdjust = 0;
-    double alignmentSideOffset;
-
-    public VisionSubsystem(SwerveSubsystem swerve, String ll_name, Pose3d cameraOffset){
-      this.swerve = swerve;
-      this.ll_name = ll_name;
-
-      //Setup YALL limelight object (maybe should be in initialize)
-      limelight = new Limelight(ll_name);
-      NetworkTableInstance.getDefault().getTable(ll_name).getEntry("pipeline").setNumber(1);
-      limelight.getSettings().withLimelightLEDMode(LEDMode.PipelineControl).withCameraOffset(cameraOffset).save();
-      llPoseEstimator = limelight.getPoseEstimator(true);
-
-      //Setup PIDControllers for AlignToTag
-      sideController = new PIDController(.4, 0.001, 0.0001);
-      sideController.setSetpoint(0.0);
-      sideController.setTolerance(ApriltagConstants.TRANSLATION_SIDE_POSE_TOLERANCE);
-      
-      frontController = new PIDController(.4, 0.001, 0.0001);
-      frontController.setSetpoint(0.0);
-      frontController.setTolerance(ApriltagConstants.TRANSLATION_FRONT_POSE_TOLERANCE);
-    }
-
-    @Override
-    public void periodic(){
-      updateLimelightTracking();
-      UpdateLocalization();
-      UpdateAlignerPID();
-    }
+  @Override
+  public void periodic(){
+    updateLimelightTracking();
+    //UpdateLocalization();
+    UpdateAlignerPID();
+  }
   
-    public void updateLimelightTracking(){ 
-      fiducials = LimelightHelpers.getRawFiducials(ll_name);
-      for (RawFiducial fiducial : fiducials) {
-          tagid = fiducial.id;                   // Tag ID
-          txnc = fiducial.txnc;                  // X offset (no crosshair)
-          tync = fiducial.tync;                  // Y offset (no crosshair)
-          ta = fiducial.ta;                      // Target area
-          distToCamera = fiducial.distToCamera;  // Distance to camera
-          distToRobot = fiducial.distToRobot;    // Distance to robot
-          ambiguity = fiducial.ambiguity;        // Tag pose ambiguity
-      }
-    }
+  public void updateLimelightTracking(){ 
+    table = NetworkTableInstance.getDefault().getTable(ll_name);
+      
+    tx = table.getEntry("tx").getDouble(0);
+    ty = table.getEntry("ty").getDouble(0);
+    ta = table.getEntry("ta").getDouble(0);
+    tv = table.getEntry("tv").getDouble(0);
+    distToCamera = table.getEntry("botpose_orb_wpiblue").getDoubleArray(new Double[] {})[9];
+  
+    currentPipeline = table.getEntry("getpipe").getDouble(0);
+  }
     
-    public Pose2d getEstimatedPose() {
-      NetworkTable table = NetworkTableInstance.getDefault().getTable(ll_name);
-
-      Double[] botPoseArray = table.getEntry("botpose_orb_wpiblue").getDoubleArray(new Double[] {});
-
-      if (botPoseArray.length == 0 || botPoseArray[7] == 0) {
-        return null;
-      }
-
-      Pose2d pose = new Pose2d(botPoseArray[0], botPoseArray[1], new Rotation2d(Units.degreesToRadians(botPoseArray[5])));
-
-      return pose;
+  public Pose2d getEstimatedPose() {
+    Double[] botPoseArray = table.getEntry("botpose_orb_wpiblue").getDoubleArray(new Double[] {});
+    if (botPoseArray.length == 0 || botPoseArray[7] == 0) {
+      return null;
     }
+    Pose2d pose = new Pose2d(botPoseArray[0], botPoseArray[1], new Rotation2d(Units.degreesToRadians(botPoseArray[5])));
+    return pose;
+  }
     
-    public double getPoseTimestamp() {
-      NetworkTable table = NetworkTableInstance.getDefault().getTable(ll_name);
-
-      Double[] botPoseArray = table.getEntry("botpose_orb_wpiblue").getDoubleArray(new Double[] {});
-
-      if (botPoseArray.length == 0) {
-        return Double.NaN;
-      }
-
-      double timeStamp = Timer.getFPGATimestamp() - Units.millisecondsToSeconds(botPoseArray[6]);
-
-      return timeStamp;
+  public double getPoseTimestamp() {
+    Double[] botPoseArray = table.getEntry("botpose_orb_wpiblue").getDoubleArray(new Double[] {});
+    if (botPoseArray.length == 0) {
+      return Double.NaN;
     }
-   
+    double timeStamp = Timer.getFPGATimestamp() - Units.millisecondsToSeconds(botPoseArray[6]);
+    return timeStamp;
+  }
+ 
+  public void UpdateAlignerPID(){
+    sideController.reset();
+    frontController.reset();
+    leftSideAdjust = MathUtil.clamp(sideController.calculate(tx + ApriltagConstants.LEFT_ALIGN_OFFSET,0), -0.2, 0.2);
+    midSideAdjust = MathUtil.clamp(sideController.calculate(tx,0), -0.2, 0.2);
+    rightSideAdjust = MathUtil.clamp(sideController.calculate(tx + ApriltagConstants.RIGHT_ALIGN_OFFSET,0), -0.2, 0.2);
+    frontAdjust = MathUtil.clamp(frontController.calculate(distToCamera, ApriltagConstants.APRILTAG_POSE_OFFSET), -0.5, 0.5);
+  }
+  
+  public void setPipeline(int index){
+    table.getEntry("pipeline").setNumber(index); 
+  }
+  
+  public boolean getObjectedDetected(){
+    if (tv == 1) return true;
+    else return false;
+  }
+  public int getTagID(){
+    return tagid;
+  }
+  public double getTX(){
+    return tx;
+  }
+  public double getTY(){
+    return ty;
+  }
+  public double getTA(){
+    return ta;
+  }
+  public double getCurrentPipeline(){
+    return currentPipeline;
+  }
+  
+  public double getDistToCamera(){
+    return distToCamera;
+  }
+  public String getName(){
+    return ll_name;
+  }
+
+  public double getSideAdjustment(double adjustDirection){
+    if (adjustDirection == -1) return leftSideAdjust;
+    else if (adjustDirection == 0) return midSideAdjust;
+    else if (adjustDirection == 1) return rightSideAdjust;
+    return 0;
+  }
+
+  public double getFrontAdjustment(){
+    return frontAdjust;
+  }
+}
+
+
+
+
+
+
+
+  /*
     public void UpdateLocalization() {
       NetworkTable table = NetworkTableInstance.getDefault().getTable(ll_name);
 
@@ -160,62 +186,5 @@ public class VisionSubsystem extends SubsystemBase{
 
       SmartDashboard.putBoolean(ll_name + " Pose Estimated ", true);
     }
-
-    public void UpdateAlignerPID(){
-      sideController.reset();
-      frontController.reset();
-      leftSideAdjust = MathUtil.clamp(sideController.calculate(txnc + ApriltagConstants.LEFT_ALIGN_OFFSET,0), -0.2, 0.2);
-      midSideAdjust = MathUtil.clamp(sideController.calculate(txnc,0), -0.2, 0.2);
-      rightSideAdjust = MathUtil.clamp(sideController.calculate(txnc + ApriltagConstants.RIGHT_ALIGN_OFFSET,0), -0.2, 0.2);
-      frontAdjust = MathUtil.clamp(frontController.calculate(distToRobot, ApriltagConstants.APRILTAG_POSE_OFFSET), -0.5, 0.5);
-    }
-
-    public boolean robotRotationWithinThreshold(int tagid){
-      return 
-        Math.abs(ApriltagConstants.TAG_POSES[tagid].getRotation().getAngle() * 180 / Math.PI - 180
-        - llPoseEstimator.getPoseEstimate().get().pose.toPose2d().getRotation().getDegrees())
-        < ApriltagConstants.ANGLE_POSE_TOLERANCE;
-    }
-
-  
-    public boolean getObjectedDetected(){
-      if (txnc != 0.0) return true;
-      else return false;
-    }
-    public int getTagID(){
-      return tagid;
-    }
-    public double getTXNC(){
-      return txnc;
-    }
-    public double getTYNC(){
-      return tync;
-    }
-    public double getTA(){
-      return ta;
-    }
-    public double getDistToRobot(){
-      return distToRobot;
-    }
-    public double getDistToCamera(){
-      return distToCamera;
-    }
-    public String getName(){
-      return ll_name;
-    }
-
-    public double getRobotPoseTagSpace(){
-      return LimelightHelpers.getBotPose3d_TargetSpace(ll_name).toPose2d().getX();
-    }
-    public double getSideAdjustment(double adjustDirection){
-      if (adjustDirection == -1) return leftSideAdjust;
-      else if (adjustDirection == 0) return midSideAdjust;
-      else if (adjustDirection == 1) return rightSideAdjust;
-      return 0;
-    }
-    public double getFrontAdjustment(){
-        return frontAdjust;
-    }
-
-
-}
+    */
+    
