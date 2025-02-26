@@ -3,15 +3,18 @@ package frc.robot.commands.head;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.constants.HeadConstants;
+import frc.robot.subsystems.ElevSubsystem;
 import frc.robot.subsystems.HeadSubsystem;
 
 public class Shoot extends Command {
 
-    private HeadSubsystem m_head; 
+    private final HeadSubsystem head;
+    private final ElevSubsystem elev;
     private Timer timeout; 
 
-    public Shoot(HeadSubsystem head) {
-        this.m_head = head;
+    public Shoot(HeadSubsystem headSub, ElevSubsystem elevSub) {
+        this.head = headSub;
+        this.elev = elevSub;
         addRequirements(head);
     }
 
@@ -19,17 +22,23 @@ public class Shoot extends Command {
     public void initialize() {
         timeout = new Timer(); 
 
-        m_head.flywheelVBus(HeadConstants.shootVBus);
+        if(elev.getPositionLevel() == ElevSubsystem.Level.LVL1) {
+            head.flywheelLeft(HeadConstants.shootVBus / 2);
+        }
+        else {
+            head.flywheelLeft(HeadConstants.shootVBus);
+        }
+        head.flywheelRight(HeadConstants.shootVBus);
     }
     @Override
     public void execute() {
-        if(!m_head.getHasCoral() && !timeout.isRunning()) {
+        if(!head.getHasCoral() && !timeout.isRunning()) {
             timeout.start();
         }
     }
     @Override
     public void end(boolean interrupted) {
-        m_head.stop();
+        head.stop();
     }
 
     @Override

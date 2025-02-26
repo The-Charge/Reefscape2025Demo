@@ -21,7 +21,11 @@ public class Climb extends Command {
 
     @Override
     public void initialize() {
-        climb.setTargetAngleDegrees(ClimbConstants.activeDegrees);
+        climb.vbus(ClimbConstants.maxVBus);
+    }
+    @Override
+    public void end(boolean interrupted) {
+        climb.stop();
     }
 
     @Override

@@ -75,6 +75,10 @@ public class ClimbSubsystem extends SubsystemBase {
         setTargetAngleTicks(deg / ClimbConstants.tickToDegConversion);
     }
     public void setTargetAngleTicks(double ticks) {
+        // if(getAngleDegrees() >= ClimbConstants.safeDegrees) {
+        //     return;
+        // }
+
         targetTicks = MathUtil.clamp(ticks, ClimbConstants.minPosTicks, ClimbConstants.maxPosTicks);
         
         PositionDutyCycle request = new PositionDutyCycle(targetTicks).withSlot(0);
@@ -101,6 +105,9 @@ public class ClimbSubsystem extends SubsystemBase {
         }
 
         setTargetAngleDegrees(val);
+    }
+    public void vbus(double speed) {
+        motor.set(speed);
     }
     public void stop() {
         motor.set(0);
