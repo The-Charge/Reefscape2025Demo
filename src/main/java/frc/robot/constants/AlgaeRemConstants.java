@@ -6,5 +6,6 @@ public abstract class AlgaeRemConstants {
 
     public static final int flywheelCurrentLimit = 25;
 
-    public static final double flywheelActiveVbus = 0.6;
+    public static final double spinVBus = 1;
+    public static final double spinTime = 2;
 }

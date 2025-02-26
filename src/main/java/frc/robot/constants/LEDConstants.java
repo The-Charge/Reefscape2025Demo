@@ -1,11 +1,8 @@
 package frc.robot.constants;
 
-import java.util.Map;
-
 import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.AddressableLED.ColorOrder;
-import edu.wpi.first.wpilibj.LEDPattern;
 import edu.wpi.first.wpilibj.util.Color;
 
 public abstract class LEDConstants {
@@ -17,4 +14,6 @@ public abstract class LEDConstants {
 
     public static final Color chargeGreen = new Color("#008800");
     public static final Color chargeGold = new Color("#ffaa00");
+    public static final Color orange = new Color("#ff2200");
+    public static final Color white = new Color("#ffffff");
 }

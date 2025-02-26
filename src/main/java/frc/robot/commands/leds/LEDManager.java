@@ -1,42 +1,53 @@
 package frc.robot.commands.leds;
 
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.LEDPattern;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.commands.leds.patterns.LEDBreatheAnimation;
 import frc.robot.constants.LEDConstants;
+import frc.robot.subsystems.HeadSubsystem;
 import frc.robot.subsystems.LEDSubsystem;
 
 public class LEDManager extends Command {
     
     private final LEDSubsystem leds;
+    private final HeadSubsystem head;
     
-    // private LEDScanAnimation scan;
-    // private LEDPattern rainbow;
-    // private LEDStepsAnimation steps;
-    private LEDBreatheAnimation breathe;
+    private final LEDBreatheAnimation breathe;
+    private final LEDPattern hasCoral;
+    private final LEDPattern noCoral;
 
-    public LEDManager(LEDSubsystem ledSub) {
+    private boolean disabledLast;
+
+    public LEDManager(LEDSubsystem ledSub, HeadSubsystem headSub) {
         leds = ledSub;
+        head = headSub;
         addRequirements(leds);
 
-        // scan = new LEDScanAnimation(LEDConstants.chargeGreen, 16, 6);
-        // rainbow = LEDPattern.rainbow(255, 255)
-        //     .scrollAtAbsoluteSpeed(Units.MetersPerSecond.of(1), LEDConstants.ledSpacing);
-        // steps = new LEDStepsAnimation(LEDConstants.chargeGreen, LEDConstants.chargeGold, 4, Units.MetersPerSecond.of(1));
-        breathe = new LEDBreatheAnimation(LEDConstants.chargeGreen, LEDConstants.chargeGold, 5, 0.2, 0.4);
+        breathe = new LEDBreatheAnimation(LEDConstants.chargeGreen, LEDConstants.chargeGold, 4, 0.2, 0.4);
+        hasCoral = LEDPattern.solid(LEDConstants.white);
+        noCoral = LEDPattern.solid(LEDConstants.orange);
     }
 
     @Override
     public void execute() {
-        // scan.update();
-        // scan.evaluate(leds.fullBuff());
+        if(DriverStation.isDisabled()) {
+            if(!disabledLast)
+                breathe.reset();
 
-        // rainbow.applyTo(leds.fullBuff());
+            breathe.update();
+            breathe.evaluate(leds.fullBuff());
+            return;
+        }
 
-        // steps.update();
-        // steps.evaluate(leds.fullBuff());
+        if(head.getHasCoral()) {
+            hasCoral.applyTo(leds.fullBuff());
+            return;
+        }
 
-        breathe.update();
-        breathe.evaluate(leds.fullBuff());
+        noCoral.applyTo(leds.fullBuff());
+
+        disabledLast = DriverStation.isDisabled();
     }
 
     @Override

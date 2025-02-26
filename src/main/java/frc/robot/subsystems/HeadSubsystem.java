@@ -72,8 +72,10 @@ public class HeadSubsystem extends SubsystemBase {
         }
     }
 
-    public void flywheelVBus(double percent) {
+    public void flywheelLeft(double percent) {
         headLeft.set(percent);
+    }
+    public void flywheelRight(double percent) {
         headRight.set(percent);
     }
     public void stop() {
@@ -89,6 +91,10 @@ public class HeadSubsystem extends SubsystemBase {
     }
     public boolean getHasCoral() {
         return hasCoral;
+    }
+
+    public void recheckHasCoral() {
+        hasCoral = getShooterSensor();
     }
 
     private void configureMotor(SparkMax m, boolean inverted) {
