@@ -16,7 +16,8 @@ public class Index extends Command {
 
     @Override 
     public void initialize() {
-        head.flywheelVBus(HeadConstants.indexerVbus);
+        head.flywheelLeft(HeadConstants.indexerVbus);
+        head.flywheelRight(HeadConstants.indexerVbus);
     }
 
     @Override 

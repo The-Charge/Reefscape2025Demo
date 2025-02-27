@@ -1,15 +1,13 @@
 package frc.robot.subsystems;
 
+import com.playingwithfusion.TimeOfFlight;
+import com.playingwithfusion.TimeOfFlight.RangingMode;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
-import com.playingwithfusion.TimeOfFlight;
-import com.playingwithfusion.TimeOfFlight.RangingMode;
 import com.revrobotics.spark.SparkMax;
-import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
-import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
@@ -17,6 +15,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.constants.HeadConstants;
+import frc.robot.constants.TelemetryConstants;
 
 public class HeadSubsystem extends SubsystemBase {
 
@@ -36,8 +35,8 @@ public class HeadSubsystem extends SubsystemBase {
         headLeft = new SparkMax(HeadConstants.leftId, MotorType.kBrushless);
         headRight = new SparkMax(HeadConstants.rightId, MotorType.kBrushless);
 
-        configureMotor(headLeft);
-        configureMotor(headRight);
+        configureMotor(headLeft, HeadConstants.leftReversed);
+        configureMotor(headRight, HeadConstants.rightReversed);
 
         headLeft.set(0);
         headRight.set(0);
@@ -47,16 +46,36 @@ public class HeadSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        SmartDashboard.putNumber("Head VBus L", headLeft.get());
-        SmartDashboard.putNumber("Head VBus R", headRight.get());
-        SmartDashboard.putBoolean("Head Funnel Sensor (Bool)", getFunnelSensor());
-        SmartDashboard.putBoolean("Head Shooter Sensor (Bool)", getShooterSensor());
-        SmartDashboard.putNumber("Head Funnel Sensor (mm)", funnelSensor.getRange());
-        SmartDashboard.putNumber("Head Shooter Sensor (mm)", shooterSensor.getRange());
+        if(TelemetryConstants.headLevel >= TelemetryConstants.LOW) {
+            SmartDashboard.putNumber("Head VBus L", headLeft.get());
+            SmartDashboard.putNumber("Head VBus R", headRight.get());
+            SmartDashboard.putBoolean("Head HasCoral", getHasCoral());
+            
+            if(TelemetryConstants.headLevel >= TelemetryConstants.MEDIUM) {
+                SmartDashboard.putBoolean("Head Funnel Sensor (Bool)", getFunnelSensor());
+                SmartDashboard.putBoolean("Head Shooter Sensor (Bool)", getShooterSensor());
+
+                if(TelemetryConstants.headLevel >= TelemetryConstants.HIGH) {
+                    SmartDashboard.putNumber("Head Funnel Sensor (mm)", funnelSensor.getRange());
+                    SmartDashboard.putNumber("Head Shooter Sensor (mm)", shooterSensor.getRange());
+    
+                    if(TelemetryConstants.headLevel >= TelemetryConstants.EYE_OF_SAURON) {
+                        SmartDashboard.putNumber("Head Current L", headLeft.getOutputCurrent());
+                        SmartDashboard.putNumber("Head Current R", headRight.getOutputCurrent());
+                        if(getCurrentCommand() == null)
+                            SmartDashboard.putString("Head RunningCommand", "None");
+                        else
+                            SmartDashboard.putString("Head RunningCommand", getCurrentCommand().getName());
+                    }
+                }
+            }
+        }
     }
 
-    public void flywheelVBus(double percent) {
+    public void flywheelLeft(double percent) {
         headLeft.set(percent);
+    }
+    public void flywheelRight(double percent) {
         headRight.set(percent);
     }
     public void stop() {
@@ -74,10 +93,15 @@ public class HeadSubsystem extends SubsystemBase {
         return hasCoral;
     }
 
-    private void configureMotor(SparkMax m) {
+    public void recheckHasCoral() {
+        hasCoral = getShooterSensor();
+    }
+
+    private void configureMotor(SparkMax m, boolean inverted) {
         SparkMaxConfig config = new SparkMaxConfig();
         config.idleMode(HeadConstants.idleMode);
         config.smartCurrentLimit(HeadConstants.currentLimit);
+        config.inverted(inverted);
 
         m.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     }

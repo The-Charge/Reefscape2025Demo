@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.ElevConstants;
+import frc.robot.constants.TelemetryConstants;
 
 public class ElevSubsystem extends SubsystemBase {
 
@@ -38,35 +39,54 @@ public class ElevSubsystem extends SubsystemBase {
 
         configureMotor(motor);
 
-        //used for smartdashboard override commands, read only
-        SmartDashboard.putNumber(ElevConstants.overrideInName, 0);
-        SmartDashboard.putNumber(ElevConstants.overrideTicksName, 0);
+        if(TelemetryConstants.elevLevel >= TelemetryConstants.HIGH) {
+            //used for smartdashboard override commands, read only
+            SmartDashboard.putNumber(ElevConstants.overrideInName, 0);
+            SmartDashboard.putNumber(ElevConstants.overrideTicksName, 0);
 
-        targetOverrideLvl = new SendableChooser<>();
-        targetOverrideLvl.addOption("Home", Level.HOME);
-        targetOverrideLvl.addOption("Level 1", Level.LVL1);
-        targetOverrideLvl.addOption("Level 2", Level.LVL2);
-        targetOverrideLvl.addOption("Level 3", Level.LVL3);
-        targetOverrideLvl.addOption("Level 4", Level.LVL4);
-        targetOverrideLvl.addOption("Algae Low", Level.ALGAE_LOW);
-        targetOverrideLvl.addOption("Algae High", Level.ALGAE_HIGH);
-        targetOverrideLvl.setDefaultOption("Home", Level.HOME);
-        SmartDashboard.putData(ElevConstants.overrideLVLName, targetOverrideLvl);
+            targetOverrideLvl = new SendableChooser<>();
+            targetOverrideLvl.addOption("Home", Level.HOME);
+            targetOverrideLvl.addOption("Level 1", Level.LVL1);
+            targetOverrideLvl.addOption("Level 2", Level.LVL2);
+            targetOverrideLvl.addOption("Level 3", Level.LVL3);
+            targetOverrideLvl.addOption("Level 4", Level.LVL4);
+            targetOverrideLvl.addOption("Algae Low", Level.ALGAE_LOW);
+            targetOverrideLvl.addOption("Algae High", Level.ALGAE_HIGH);
+            targetOverrideLvl.setDefaultOption("Home", Level.HOME);
+            SmartDashboard.putData(ElevConstants.overrideLVLName, targetOverrideLvl);
+        }
     }
 
     @Override
     public void periodic() {
         targetCheck();
 
-        SmartDashboard.putNumber("Elev Pos (In)", getPositionInches());
-        SmartDashboard.putNumber("Elev Pos (Ticks)", getPositionTicks());
-        SmartDashboard.putString("Elev Pos (LVL)", getPositionLevel().name());
-        SmartDashboard.putNumber("Elev Err (In)", (targetTicks - getPositionTicks()) * ElevConstants.tickToInConversion);
-        SmartDashboard.putNumber("Elev Err (Ticks)", targetTicks - getPositionTicks());
-        SmartDashboard.putNumber("Elev Target (In)", targetTicks * ElevConstants.tickToInConversion);
-        SmartDashboard.putNumber("Elev Target (Ticks)", targetTicks);
-        SmartDashboard.putString("Elev Target (LVL)", getTargetLevel().name());
-        SmartDashboard.putBoolean("Elev isAtTarget", isAtTarget());
+        if(TelemetryConstants.elevLevel >= TelemetryConstants.LOW) {
+            SmartDashboard.putString("Elev Pos (LVL)", getPositionLevel().name());
+            SmartDashboard.putString("Elev Target (LVL)", getTargetLevel().name());
+            SmartDashboard.putBoolean("Elev isAtTarget", isAtTarget());
+
+            if(TelemetryConstants.elevLevel >= TelemetryConstants.MEDIUM) {
+                SmartDashboard.putNumber("Elev Pos (In)", getPositionInches());
+                SmartDashboard.putNumber("Elev Err (In)", (targetTicks - getPositionTicks()) * ElevConstants.tickToInConversion);
+                SmartDashboard.putNumber("Elev Target (In)", targetTicks * ElevConstants.tickToInConversion);
+
+                if(TelemetryConstants.elevLevel >= TelemetryConstants.HIGH) {
+                    SmartDashboard.putNumber("Elev Pos (Ticks)", getPositionTicks());
+                    SmartDashboard.putNumber("Elev Err (Ticks)", targetTicks - getPositionTicks());
+                    SmartDashboard.putNumber("Elev Target (Ticks)", targetTicks);
+
+                    if(TelemetryConstants.elevLevel >= TelemetryConstants.EYE_OF_SAURON) {
+                        SmartDashboard.putNumber("Elev VBus", motor.get());
+                        SmartDashboard.putNumber("Elev Current", motor.getStatorCurrent().getValueAsDouble());
+                        if(getCurrentCommand() == null)
+                            SmartDashboard.putString("Elev RunningCommand", "None");
+                        else
+                            SmartDashboard.putString("Elev RunningCommand", getCurrentCommand().getName());
+                    }
+                }
+            }
+        }
     }
 
     public void setTargetPositionInches(double inches) {

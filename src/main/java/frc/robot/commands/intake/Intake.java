@@ -13,6 +13,7 @@ public class Intake extends Command {
     private final HeadSubsystem head;
     private ElevSubsystem.Level lastLevel = ElevSubsystem.Level.UNKNOWN;
     private boolean lastHadCoral = false;
+    private boolean startupCheck;
 
     public Intake(IntakeSubsystem intakeSub, ElevSubsystem elevSub, HeadSubsystem headSub) {
         intake = intakeSub;
@@ -23,11 +24,15 @@ public class Intake extends Command {
     }
 
     @Override
+    public void initialize() {
+        startupCheck = true;
+    }
+    @Override
     public void execute() {
         ElevSubsystem.Level level = elev.getPositionLevel();
         boolean hasCoral = head.getHasCoral();
 
-        if(level != lastLevel || hasCoral != lastHadCoral) {
+        if(startupCheck || level != lastLevel || hasCoral != lastHadCoral) {
             switch(level) {
                 case HOME:
                     if(!hasCoral)
@@ -44,6 +49,7 @@ public class Intake extends Command {
 
         lastLevel = level;
         lastHadCoral = hasCoral;
+        startupCheck = false;
     }
 
     @Override
