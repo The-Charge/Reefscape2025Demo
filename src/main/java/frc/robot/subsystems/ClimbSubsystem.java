@@ -6,14 +6,13 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.PositionDutyCycle;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.GravityTypeValue;
-import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.ClimbConstants;
-import frc.robot.constants.ElevConstants;
+import frc.robot.constants.TelemetryConstants;
 
 public class ClimbSubsystem extends SubsystemBase {
     
@@ -33,30 +32,54 @@ public class ClimbSubsystem extends SubsystemBase {
 
         configureMotor(motor);
 
-        //used for smartdashboard override commands, read only
-        SmartDashboard.putNumber(ClimbConstants.overrideDegName, 0);
-        SmartDashboard.putNumber(ClimbConstants.overrideTicksName, 0);
+        if(TelemetryConstants.climbLevel >= TelemetryConstants.HIGH) {
+            //used for smartdashboard override commands, read only
+            SmartDashboard.putNumber(ClimbConstants.overrideDegName, 0);
+            SmartDashboard.putNumber(ClimbConstants.overrideTicksName, 0);
+        }
     }
 
     @Override
     public void periodic() {
         targetCheck();
 
-        SmartDashboard.putNumber("Climb Ang (Deg)", getAngleDegrees());
-        SmartDashboard.putNumber("Climb Ang (Ticks)", getAngleTicks());
-        SmartDashboard.putString("Climb Ang (STA)", getAngleState().name());
-        SmartDashboard.putNumber("Climb Err (Deg)", (targetTicks - getAngleTicks()) * ClimbConstants.tickToDegConversion);
-        SmartDashboard.putNumber("Climb Err (Ticks)", targetTicks - getAngleTicks());
-        SmartDashboard.putNumber("Climb Target (Deg)", targetTicks * ClimbConstants.tickToDegConversion);
-        SmartDashboard.putNumber("Climb Target (Ticks)", targetTicks);
-        SmartDashboard.putString("Climb Target (STA)", getTargetState().name());
-        SmartDashboard.putBoolean("Climb isAtTarget", isAtTarget());
+        if(TelemetryConstants.climbLevel >= TelemetryConstants.LOW) {
+            SmartDashboard.putString("Climb Ang (STA)", getAngleState().name());
+            SmartDashboard.putString("Climb Target (STA)", getTargetState().name());
+            SmartDashboard.putBoolean("Climb isAtTarget", isAtTarget());
+
+            if(TelemetryConstants.climbLevel >= TelemetryConstants.MEDIUM) {
+                SmartDashboard.putNumber("Climb Ang (Deg)", getAngleDegrees());
+                SmartDashboard.putNumber("Climb Err (Deg)", (targetTicks - getAngleTicks()) * ClimbConstants.tickToDegConversion);
+                SmartDashboard.putNumber("Climb Target (Deg)", targetTicks * ClimbConstants.tickToDegConversion);
+
+                if(TelemetryConstants.climbLevel >= TelemetryConstants.HIGH) {
+                    SmartDashboard.putNumber("Climb Ang (Ticks)", getAngleTicks());
+                    SmartDashboard.putNumber("Climb Err (Ticks)", targetTicks - getAngleTicks());
+                    SmartDashboard.putNumber("Climb Target (Ticks)", targetTicks);
+
+                    if(TelemetryConstants.climbLevel >= TelemetryConstants.EYE_OF_SAURON) {
+                        SmartDashboard.putNumber("Climb VBus", motor.get());
+                        SmartDashboard.putNumber("Climb Current", motor.getStatorCurrent().getValueAsDouble());
+                        SmartDashboard.putNumber("Climb Temp (deg C)", motor.getDeviceTemp().getValueAsDouble());
+                        if(getCurrentCommand() == null)
+                            SmartDashboard.putString("Climb RunningCommand", "None");
+                        else
+                            SmartDashboard.putString("Climb RunningCommand", getCurrentCommand().getName());
+                    }
+                }
+            }
+        }
     }
 
     public void setTargetAngleDegrees(double deg) {
-        setTargetAngleTicks(deg * ClimbConstants.tickToDegConversion);
+        setTargetAngleTicks(deg / ClimbConstants.tickToDegConversion);
     }
     public void setTargetAngleTicks(double ticks) {
+        // if(getAngleDegrees() >= ClimbConstants.safeDegrees) {
+        //     return;
+        // }
+
         targetTicks = MathUtil.clamp(ticks, ClimbConstants.minPosTicks, ClimbConstants.maxPosTicks);
         
         PositionDutyCycle request = new PositionDutyCycle(targetTicks).withSlot(0);
@@ -84,8 +107,14 @@ public class ClimbSubsystem extends SubsystemBase {
 
         setTargetAngleDegrees(val);
     }
+    public void vbus(double speed) {
+        motor.set(speed);
+        
+        targetTicks = Double.NaN;
+        resetTargetCounter();
+    }
     public void stop() {
-        motor.set(0);
+        vbus(0);
     }
 
     public double getAngleDegrees() {
@@ -105,7 +134,8 @@ public class ClimbSubsystem extends SubsystemBase {
         TalonFXConfiguration motorConfig = new TalonFXConfiguration();
         motorConfig.MotorOutput.PeakForwardDutyCycle = ClimbConstants.maxVBus;
         motorConfig.MotorOutput.PeakReverseDutyCycle = -ClimbConstants.maxVBus;
-        motorConfig.MotorOutput.withNeutralMode(NeutralModeValue.Brake);
+        motorConfig.MotorOutput.withNeutralMode(ClimbConstants.neutralMode);
+        motorConfig.MotorOutput.Inverted = ClimbConstants.inverted;
         
         motorConfig.CurrentLimits.StatorCurrentLimit = ClimbConstants.maxCurrent;
         motorConfig.CurrentLimits.StatorCurrentLimitEnable = true;
@@ -121,7 +151,7 @@ public class ClimbSubsystem extends SubsystemBase {
         m.getConfigurator().apply(motorConfig);
         
         SoftwareLimitSwitchConfigs softLimits = new SoftwareLimitSwitchConfigs();
-        softLimits.ForwardSoftLimitEnable = softLimits.ReverseSoftLimitEnable = true;
+        softLimits.ForwardSoftLimitEnable = softLimits.ReverseSoftLimitEnable = ClimbConstants.useSoftLimits;
         softLimits.ForwardSoftLimitThreshold = ClimbConstants.maxPosTicks;
         softLimits.ReverseSoftLimitThreshold = ClimbConstants.minPosTicks;
         m.getConfigurator().apply(softLimits);
