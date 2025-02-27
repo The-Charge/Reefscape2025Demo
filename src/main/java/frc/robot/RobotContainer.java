@@ -32,6 +32,7 @@ import frc.robot.commands.elev.MoveToLevel;
 import frc.robot.commands.elev.MoveToLevelManual;
 import frc.robot.commands.elev.MoveToTicksManual;
 import frc.robot.commands.head.Shoot;
+import frc.robot.commands.head.WaitForHasCoral;
 import frc.robot.commands.intake.Intake;
 import frc.robot.commands.intake.ManualIntake;
 import frc.robot.commands.leds.LEDManager;
@@ -159,15 +160,16 @@ public class RobotContainer {
          * <Subsytem><Action>
          * Use PascalCase
          */
-        NamedCommands.registerCommand("ElevHome", new MoveToLevel(elev, ElevSubsystem.Level.HOME));
-        NamedCommands.registerCommand("ElevLevel1", new MoveToLevel(elev, ElevSubsystem.Level.LVL1));
-        NamedCommands.registerCommand("ElevLevel2", new MoveToLevel(elev, ElevSubsystem.Level.LVL2));
-        NamedCommands.registerCommand("ElevLevel3", new MoveToLevel(elev, ElevSubsystem.Level.LVL3));
-        NamedCommands.registerCommand("ElevLevel4", new MoveToLevel(elev, ElevSubsystem.Level.LVL4));
-        NamedCommands.registerCommand("ElevAlgaeLow", new MoveToLevel(elev, ElevSubsystem.Level.ALGAE_LOW));
-        NamedCommands.registerCommand("ElevAlgaeHigh", new MoveToLevel(elev, ElevSubsystem.Level.ALGAE_HIGH));
+        NamedCommands.registerCommand("ElevHome", new MoveToLevel(elev, ElevSubsystem.Level.HOME, true));
+        NamedCommands.registerCommand("ElevLevel1", new MoveToLevel(elev, ElevSubsystem.Level.LVL1, true));
+        NamedCommands.registerCommand("ElevLevel2", new MoveToLevel(elev, ElevSubsystem.Level.LVL2, true));
+        NamedCommands.registerCommand("ElevLevel3", new MoveToLevel(elev, ElevSubsystem.Level.LVL3, true));
+        NamedCommands.registerCommand("ElevLevel4", new MoveToLevel(elev, ElevSubsystem.Level.LVL4, true));
+        NamedCommands.registerCommand("ElevAlgaeLow", new MoveToLevel(elev, ElevSubsystem.Level.ALGAE_LOW, true));
+        NamedCommands.registerCommand("ElevAlgaeHigh", new MoveToLevel(elev, ElevSubsystem.Level.ALGAE_HIGH, true));
 
         NamedCommands.registerCommand("HeadShoot", new Shoot(head, elev));
+        NamedCommands.registerCommand("HeadWaitForCoral", new WaitForHasCoral(head));
 
         NamedCommands.registerCommand("AlgaeRemSpin", new AlgaeRemSpin(algaeRem, true));
     }
