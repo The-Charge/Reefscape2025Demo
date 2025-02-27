@@ -764,4 +764,13 @@ public class SwerveSubsystem extends SubsystemBase
         return swerveDrive.getPose().nearest(tagPoses);
   }
 
+  public int getClosestTagID() {
+    Pose2d temp = getClosestTagPose();
+    for (int i = 1; i <= 22; i++) {
+      if (temp.equals(ApriltagConstants.TAG_POSES[i].toPose2d())) {
+        return i;
+      }
+    }
+    return -1;
+  }
 }

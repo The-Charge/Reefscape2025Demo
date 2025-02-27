@@ -119,21 +119,13 @@ public class TeleopDrive extends Command {
 
         return povSpeeds.omegaRadiansPerSecond;
     }
-
+    
     private double ReefLock() {
-        int tag = (int) swerve.getClosestTagPose().getRotation().getDegrees();
-        SmartDashboard.putNumber("tag rotation", tag);
-        switch (tag) {
-            case 126:
-            case -126:
-            case 54:
-            case -54:
-                break;
-            default:
-                tag += 180;
-                break;
+        int tag = swerve.getClosestTagID();
+        Rotation2d targetRotation = swerve.getClosestTagPose().getRotation();
+        if (!(tag == 1 || tag == 2 || tag == 12 || tag == 13)) {
+            targetRotation = targetRotation.minus(Rotation2d.fromDegrees(180));
         }
-        Rotation2d targetRotation = Rotation2d.fromDegrees(tag);
         ChassisSpeeds reefLockSpeeds = swerve.getTargetSpeeds(
                 vX.getAsDouble(), vY.getAsDouble(),
                 targetRotation.getSin(),
