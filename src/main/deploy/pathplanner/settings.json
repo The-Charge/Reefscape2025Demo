@@ -5,7 +5,8 @@
   "pathFolders": [
     "2 L4 Coral B-LeftSource",
     "2 L4 Coral C-RightSource",
-    "A-JustMove"
+    "A-JustMove",
+    "3 L4 Coral A-LeftSource"
   ],
   "autoFolders": [],
   "defaultMaxVel": 3.0,
