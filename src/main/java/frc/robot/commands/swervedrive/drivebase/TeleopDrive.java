@@ -1,7 +1,5 @@
 package frc.robot.commands.swervedrive.drivebase;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
@@ -9,9 +7,9 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.constants.SwerveConstants;
-import frc.robot.constants.VisionConstants.ApriltagConstants;
 import frc.robot.subsystems.SwerveSubsystem;
 
 public class TeleopDrive extends Command {
@@ -21,9 +19,9 @@ public class TeleopDrive extends Command {
     private final DoubleSupplier heading;
     private final BooleanSupplier povCenter, povDown, povDownleft, povDownRight, povLeft, povRight, povUp, povUpLeft,
             povUpRight;
+    private final DoubleSupplier shiftScalar;
     private final BooleanSupplier reefLock;
     private final BooleanSupplier centricToggle;
-    private final BooleanSupplier shiftHalf, shiftQuarter;
 
     private boolean isFieldCentric = true;
     private boolean centricToggleLast = false;
@@ -32,7 +30,7 @@ public class TeleopDrive extends Command {
             BooleanSupplier povCenter, BooleanSupplier povDown, BooleanSupplier povDownleft,
             BooleanSupplier povDownRight, BooleanSupplier povLeft, BooleanSupplier povRight, BooleanSupplier povUp,
             BooleanSupplier povUpLeft, BooleanSupplier povUpRight, BooleanSupplier reefLock,
-            BooleanSupplier centricToggle, BooleanSupplier shiftHalf, BooleanSupplier shiftQuarter) {
+            BooleanSupplier centricToggle, DoubleSupplier shift) {
         this.swerve = swerve;
         this.vX = vX;
         this.vY = vY;
@@ -48,8 +46,7 @@ public class TeleopDrive extends Command {
         this.povUpRight = povUpRight;
         this.reefLock = reefLock;
         this.centricToggle = centricToggle;
-        this.shiftHalf = shiftHalf;
-        this.shiftQuarter = shiftQuarter;
+        this.shiftScalar = shift;
         addRequirements(swerve);
     }
 
@@ -65,21 +62,16 @@ public class TeleopDrive extends Command {
         }
         centricToggleLast = centricToggle.getAsBoolean();
 
-        // Calculate speed multiplier
-        double shiftScalar = 1;
-        if (shiftQuarter.getAsBoolean())
-            shiftScalar = 0.25;
-        else if (shiftHalf.getAsBoolean())
-            shiftScalar = 0.5;
+        double shiftAmt = -0.9 * shiftScalar.getAsDouble() + 1;
 
         // Calculate rotation
         double rotationSpeed = heading.getAsDouble() * swerve.getSwerveController().config.maxAngularVelocity;
-        rotationSpeed *= shiftScalar * SwerveConstants.DRIVE_SPEED;
+        rotationSpeed *= shiftAmt * SwerveConstants.DRIVE_SPEED;
 
         // Calculate translation
         Translation2d translation = new Translation2d(vX.getAsDouble(), vY.getAsDouble())
                 .times(SwerveConstants.MAX_SPEED)
-                .times(shiftScalar)
+                .times(shiftAmt)
                 .times(SwerveConstants.DRIVE_SPEED)
                 .times(isFieldCentric ? swerve.isRedAlliance() ? -1 : 1 : 1);
 
@@ -129,7 +121,19 @@ public class TeleopDrive extends Command {
     }
 
     private double ReefLock() {
-        Rotation2d targetRotation = swerve.getClosestTagPose().getRotation().minus(new Rotation2d(Math.PI));
+        int tag = (int) swerve.getClosestTagPose().getRotation().getDegrees();
+        SmartDashboard.putNumber("tag rotation", tag);
+        switch (tag) {
+            case 126:
+            case -126:
+            case 54:
+            case -54:
+                break;
+            default:
+                tag += 180;
+                break;
+        }
+        Rotation2d targetRotation = Rotation2d.fromDegrees(tag);
         ChassisSpeeds reefLockSpeeds = swerve.getTargetSpeeds(
                 vX.getAsDouble(), vY.getAsDouble(),
                 targetRotation.getSin(),
