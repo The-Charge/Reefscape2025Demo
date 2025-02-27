@@ -128,6 +128,8 @@ public class Robot extends TimedRobot {
             m_autonomousCommand.schedule();
         }
 
+        m_robotContainer.scheduleLimelight();
+
         m_robotContainer.displayAuto();
     }
     
@@ -153,6 +155,8 @@ public class Robot extends TimedRobot {
         else {
             CommandScheduler.getInstance().cancelAll();
         }
+
+        m_robotContainer.scheduleLimelight();
         
         AutoDisplayHelper.clearAutoPath();
     }

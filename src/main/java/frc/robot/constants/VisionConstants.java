@@ -20,8 +20,8 @@ public abstract class VisionConstants {
     public static final double X_CAMERA_OFFSET = 0.352425; //forward
     public static final double Y_CAMERA_OFFSET = 0.13081; //right
     public static final double Z_CAMERA_OFFSET = 0.2286; //up
-    public static final double ROLL_CAMERA_OFFSET = 0.0523599; //3 degree
-    public static final double YAW_CAMERA_OFFSET = 0; //0.1 degree
+    public static final double ROLL_CAMERA_OFFSET = 3; //3 degree
+    public static final double YAW_CAMERA_OFFSET = 0.1; //0.1 degree
     public static final double PITCH_CAMERA_OFFSET = 0;
     public static final Pose3d CAMERA_OFFSET = new Pose3d(X_CAMERA_OFFSET, Y_CAMERA_OFFSET, Z_CAMERA_OFFSET, 
                                                new Rotation3d(ROLL_CAMERA_OFFSET, PITCH_CAMERA_OFFSET, YAW_CAMERA_OFFSET));                              
@@ -39,8 +39,8 @@ public abstract class VisionConstants {
     public static final double X_CAMERA_OFFSET = -0.038735;   //forward
     public static final double Y_CAMERA_OFFSET = -0.03;   //right
     public static final double Z_CAMERA_OFFSET = 0.6985;  //up
-    public static final double ROLL_CAMERA_OFFSET = 0.017453; //-1 degree
-    public static final double YAW_CAMERA_OFFSET = 0.174533; //10 degrees
+    public static final double ROLL_CAMERA_OFFSET = -1; //-1 degree
+    public static final double YAW_CAMERA_OFFSET = -170; //190 degrees
     public static final double PITCH_CAMERA_OFFSET = 0; //0 degrees
     public static final Pose3d CAMERA_OFFSET = new Pose3d(X_CAMERA_OFFSET, Y_CAMERA_OFFSET, Z_CAMERA_OFFSET, 
                                                new Rotation3d(ROLL_CAMERA_OFFSET, PITCH_CAMERA_OFFSET, YAW_CAMERA_OFFSET));

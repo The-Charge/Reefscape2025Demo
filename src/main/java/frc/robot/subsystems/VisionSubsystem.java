@@ -1,6 +1,9 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.math.geometry.Pose2d;
+
+import static edu.wpi.first.units.Units.DegreesPerSecond;
+
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose3d;
@@ -10,7 +13,10 @@ import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.LimelightHelpers;
 import frc.robot.constants.VisionConstants.ApriltagConstants;
+import frc.robot.constants.VisionConstants.LLFunnelConstants;
+import frc.robot.constants.VisionConstants.LLReefConstants;
 
 public class VisionSubsystem extends SubsystemBase{
   SwerveSubsystem swerve;
@@ -31,19 +37,29 @@ public class VisionSubsystem extends SubsystemBase{
   double alignmentSideOffset;
   NetworkTable table;
 
-  public VisionSubsystem(SwerveSubsystem swerve, String ll_name, Pose3d cameraOffset){
+  public VisionSubsystem(SwerveSubsystem swerve, String ll_name, Pose3d cameraOffset) {
     this.swerve = swerve;
     this.ll_name = ll_name;
+
+    if (ll_name == "limelight-reef") {
+    LimelightHelpers.setCameraPose_RobotSpace(ll_name, LLReefConstants.X_CAMERA_OFFSET, LLReefConstants.Y_CAMERA_OFFSET, LLReefConstants.Z_CAMERA_OFFSET, LLReefConstants.ROLL_CAMERA_OFFSET, 
+        LLReefConstants.PITCH_CAMERA_OFFSET, LLReefConstants.YAW_CAMERA_OFFSET);
+  } else {
+      LimelightHelpers.setCameraPose_RobotSpace(ll_name, LLFunnelConstants.X_CAMERA_OFFSET, LLFunnelConstants.Y_CAMERA_OFFSET,
+        LLFunnelConstants.Z_CAMERA_OFFSET, LLFunnelConstants.ROLL_CAMERA_OFFSET,
+        LLFunnelConstants.PITCH_CAMERA_OFFSET, LLFunnelConstants.YAW_CAMERA_OFFSET);
+    }
+
     //Setup PIDControllers for AlignToTag
     sideController = new PIDController(5, 0, 0);
     sideController.setSetpoint(0.0);
     sideController.setTolerance(ApriltagConstants.TRANSLATION_SIDE_POSE_TOLERANCE);
-    
+
     frontController = new PIDController(5, 0, 0);
     frontController.setSetpoint(0.0);
     frontController.setTolerance(ApriltagConstants.TRANSLATION_FRONT_POSE_TOLERANCE);
   }
-
+  
   @Override
   public void periodic(){
     updateLimelightTracking();
@@ -58,12 +74,21 @@ public class VisionSubsystem extends SubsystemBase{
     ty = table.getEntry("ty").getDouble(0);
     ta = table.getEntry("ta").getDouble(0);
     tv = table.getEntry("tv").getDouble(0);
-    distToCamera = table.getEntry("botpose_orb_wpiblue").getDoubleArray(new Double[] {})[9];
+    Double[] temp = table.getEntry("botpose_orb_wpiblue").getDoubleArray(new Double[] {});
+    if (temp.length == 0) {
+      return;
+    }
+    distToCamera = temp[9];
   
     currentPipeline = table.getEntry("getpipe").getDouble(0);
   }
     
   public Pose2d getEstimatedPose() {
+    double yaw = swerve.getHeading().getDegrees();
+    double yawRate = swerve.getSwerveDrive().getGyro().getYawAngularVelocity().in(DegreesPerSecond);
+    Double[] poseArray = { yaw, yawRate, 0., 0., 0., 0. };
+    table.getEntry("robot_orientation_set").setDoubleArray(poseArray);
+
     Double[] botPoseArray = table.getEntry("botpose_orb_wpiblue").getDoubleArray(new Double[] {});
     if (botPoseArray.length == 0 || botPoseArray[7] == 0) {
       return null;
