@@ -61,6 +61,7 @@ public class ClimbSubsystem extends SubsystemBase {
                     if(TelemetryConstants.climbLevel >= TelemetryConstants.EYE_OF_SAURON) {
                         SmartDashboard.putNumber("Climb VBus", motor.get());
                         SmartDashboard.putNumber("Climb Current", motor.getStatorCurrent().getValueAsDouble());
+                        SmartDashboard.putNumber("Climb Temp (deg C)", motor.getDeviceTemp().getValueAsDouble());
                         if(getCurrentCommand() == null)
                             SmartDashboard.putString("Climb RunningCommand", "None");
                         else
@@ -108,9 +109,12 @@ public class ClimbSubsystem extends SubsystemBase {
     }
     public void vbus(double speed) {
         motor.set(speed);
+        
+        targetTicks = Double.NaN;
+        resetTargetCounter();
     }
     public void stop() {
-        motor.set(0);
+        vbus(0);
     }
 
     public double getAngleDegrees() {
@@ -147,7 +151,7 @@ public class ClimbSubsystem extends SubsystemBase {
         m.getConfigurator().apply(motorConfig);
         
         SoftwareLimitSwitchConfigs softLimits = new SoftwareLimitSwitchConfigs();
-        softLimits.ForwardSoftLimitEnable = softLimits.ReverseSoftLimitEnable = true;
+        softLimits.ForwardSoftLimitEnable = softLimits.ReverseSoftLimitEnable = ClimbConstants.useSoftLimits;
         softLimits.ForwardSoftLimitThreshold = ClimbConstants.maxPosTicks;
         softLimits.ReverseSoftLimitThreshold = ClimbConstants.minPosTicks;
         m.getConfigurator().apply(softLimits);
