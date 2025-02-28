@@ -3,16 +3,16 @@ package frc.robot.commands.climb;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.ClimbSubsystem;
 
-public class ClimbToDegrees extends Command {
+public class ClimbLeverDegrees extends Command {
 
     private ClimbSubsystem climb;
     private double targetDegrees;
     private boolean wait;
 
-    public ClimbToDegrees(ClimbSubsystem climbSub, double degrees) {
+    public ClimbLeverDegrees(ClimbSubsystem climbSub, double degrees) {
         this(climbSub, degrees, false);
     }
-    public ClimbToDegrees(ClimbSubsystem climbSub, double degrees, boolean waitForTarget) {
+    public ClimbLeverDegrees(ClimbSubsystem climbSub, double degrees, boolean waitForTarget) {
         climb = climbSub;
         targetDegrees = degrees;
         wait = waitForTarget;
@@ -22,7 +22,7 @@ public class ClimbToDegrees extends Command {
 
     @Override
     public void initialize() {
-        climb.setTargetAngleDegrees(targetDegrees);
+        climb.setLeverDegrees(targetDegrees);
     }
 
     @Override
@@ -30,6 +30,6 @@ public class ClimbToDegrees extends Command {
         if(!wait)
             return true;
         
-        return climb.isAtTarget();
+        return climb.isLeverIsAtTarget();
     }
 }
