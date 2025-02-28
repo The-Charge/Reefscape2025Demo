@@ -28,6 +28,7 @@ import frc.robot.commands.elev.MoveToInchesManual;
 import frc.robot.commands.elev.MoveToLevel;
 import frc.robot.commands.elev.MoveToLevelManual;
 import frc.robot.commands.elev.MoveToTicksManual;
+import frc.robot.commands.intake.Intake;
 import frc.robot.commands.intake.ManualIntake;
 import frc.robot.commands.swervedrive.drivebase.TeleopDrive;
 import frc.robot.commands.vision.AlignToTag;
@@ -40,6 +41,7 @@ import frc.robot.constants.VisionConstants.LLReefConstants;
 import frc.robot.subsystems.ClimbSubsystem;
 import frc.robot.subsystems.ElevSubsystem;
 import frc.robot.subsystems.ElevSubsystem.Level;
+import frc.robot.subsystems.HeadSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
@@ -53,13 +55,13 @@ public class RobotContainer {
 
     private final CommandXboxController driver1 = new CommandXboxController(0);
     private final CommandXboxController driver2 = new CommandXboxController(1);
-
+    
     private final SwerveSubsystem swerve = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "swerve"));
     private final VisionSubsystem reeflimelight = new VisionSubsystem(swerve, LLReefConstants.LL_NAME, LLReefConstants.CAMERA_OFFSET);
     private final VisionSubsystem funnellimelight = new VisionSubsystem(swerve, LLFunnelConstants.LL_NAME, LLFunnelConstants.CAMERA_OFFSET);
     private final ElevSubsystem elev = new ElevSubsystem();
     private final ClimbSubsystem climb = new ClimbSubsystem();
-    // private final HeadSubsystem head = new HeadSubsystem();
+    private final HeadSubsystem head = new HeadSubsystem();
     private final IntakeSubsystem intake = new IntakeSubsystem();
     // private final AlgaeRemSubsystem algaeRem = new AlgaeRemSubsystem();
     
@@ -78,8 +80,7 @@ public class RobotContainer {
                 () -> driver1.povUpLeft().getAsBoolean(), () -> driver1.povUpRight().getAsBoolean(),
                 () -> driver1.rightBumper().getAsBoolean(),
                 () -> driver1.back().getAsBoolean(),
-                () -> driver1.leftTrigger(SwerveConstants.TRIGGER_DEADBAND).getAsBoolean(),
-                () -> driver1.rightTrigger(SwerveConstants.TRIGGER_DEADBAND).getAsBoolean());
+                () -> driver1.getRightTriggerAxis());
         swerve.setDefaultCommand(teleopDrive);
 
         // intake.setDefaultCommand(new Intake(intake, elev, head));
@@ -93,7 +94,6 @@ public class RobotContainer {
         setupAutoDisplay();
         SmartDashboard.putData("Auto Chooser", autoChooser);
 
-        new LimelightManager(swerve, reeflimelight, funnellimelight).schedule();
 
         Field2d field = new Field2d();
         SmartDashboard.putData("Field", field);
@@ -104,10 +104,10 @@ public class RobotContainer {
         driver1.x().whileTrue(Commands.runOnce(swerve::lock, swerve).repeatedly());
 
         // limelight testing
-        driver1.a().onTrue(Commands.runOnce(swerve::addFakeVisionReading));
+        // driver1.a().onTrue(Commands.runOnce(swerve::addFakeVisionReading));
         driver1.y().onTrue(new DriveToTag(swerve, 0)); //Drive to tag closest to reeflimelight
         driver1.leftBumper().whileTrue(new AlignToTag(swerve, reeflimelight, 7, 1));
-        driver1.rightBumper().whileTrue(new DriveToAlgae(swerve, reeflimelight));
+        driver1.a().whileTrue(new DriveToAlgae(swerve, reeflimelight));
 
         // driver2.a().onTrue(new Climb(climb));
         // driver2.y().onTrue(new Declimb(climb));
@@ -222,7 +222,12 @@ public class RobotContainer {
     public Command getAutonomousCommand() {
         return autoChooser.getSelected();
     }
+
     public SwerveSubsystem getSwerveSubsystem() {
-      return swerve;
+        return swerve;
+    }
+
+    public void scheduleLimelight() {
+        new LimelightManager(swerve, reeflimelight, funnellimelight).schedule();
     }
 }
