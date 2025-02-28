@@ -57,6 +57,7 @@ public abstract class VisionConstants {
     
     public static final double ANGLE_POSE_TOLERANCE = 10; //degrees
     public static final double APRILTAG_POSE_OFFSET = 1; //meters
+    public static final double CENTER_TO_SCORER_OFFSET = 0.352425; //meters
 
     public static final double LEFT_ALIGN_OFFSET = 0;
     public static final double MID_ALIGN_OFFSET = 0;

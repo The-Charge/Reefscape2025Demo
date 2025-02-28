@@ -105,15 +105,6 @@ public class VisionSubsystem extends SubsystemBase{
     double timeStamp = Timer.getFPGATimestamp() - Units.millisecondsToSeconds(botPoseArray[6]);
     return timeStamp;
   }
- 
-  public void UpdateAlignerPID(){
-    sideController.reset();
-    frontController.reset();
-    leftSideAdjust = MathUtil.clamp(sideController.calculate(tx + ApriltagConstants.LEFT_ALIGN_OFFSET,0), -0.2, 0.2);
-    midSideAdjust = MathUtil.clamp(sideController.calculate(tx,0), -0.2, 0.2);
-    rightSideAdjust = MathUtil.clamp(sideController.calculate(tx + ApriltagConstants.RIGHT_ALIGN_OFFSET,0), -0.2, 0.2);
-    frontAdjust = MathUtil.clamp(frontController.calculate(distToCamera, ApriltagConstants.APRILTAG_POSE_OFFSET), -0.5, 0.5);
-  }
   
   public void setPipeline(int index){
     table.getEntry("pipeline").setNumber(index); 
@@ -145,16 +136,10 @@ public class VisionSubsystem extends SubsystemBase{
   public String getName(){
     return ll_name;
   }
-
-  public double getSideAdjustment(double adjustDirection){
-    if (adjustDirection == -1) return leftSideAdjust;
-    else if (adjustDirection == 0) return midSideAdjust;
-    else if (adjustDirection == 1) return rightSideAdjust;
-    return 0;
-  }
-
-  public double getFrontAdjustment(){
-    return frontAdjust;
+  public enum ReefPosition {
+    LEFT,
+    MIDDLE,
+    RIGHT
   }
 }
 
