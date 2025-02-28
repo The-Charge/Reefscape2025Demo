@@ -17,9 +17,10 @@ public class AlignToTag extends Command {
   private ChassisSpeeds alignmentSpeeds;
   private Pose2d tagpose;
   private Rotation2d tagpose_rotation;
+  private ReefPosition reefPos;
   
   private double alignmentSide;
-  public AlignToTag(SwerveSubsystem swerve, VisionSubsystem limelight, int tagid, double alignmentSide){
+  public AlignToTag(SwerveSubsystem swerve, VisionSubsystem limelight, int tagid, double alignmentSide, ReefPosition pos){
       this.swerve = swerve;
       this.limelight = limelight;
       this.alignmentSide = alignmentSide;
@@ -41,6 +42,8 @@ public class AlignToTag extends Command {
     
     SmartDashboard.putNumber("sideval", sideAdjust);
     SmartDashboard.putNumber("frontval", frontAdjust);
+
+    
     alignmentSpeeds = swerve.getTargetSpeeds(sideAdjust, frontAdjust, tagpose_rotation.getSin(), tagpose_rotation.getCos());
     swerve.drive(alignmentSpeeds);
   }
@@ -53,5 +56,10 @@ public class AlignToTag extends Command {
   @Override
   public boolean isFinished() {
     return false;
+  }
+  public enum ReefPosition {
+    LEFT,
+    MIDDLE,
+    RIGHT
   }
 }
