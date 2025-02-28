@@ -25,6 +25,7 @@ public class TeleopDrive extends Command {
 
     private boolean isFieldCentric = true;
     private boolean centricToggleLast = false;
+    private boolean usingPOV = false;
 
     public TeleopDrive(SwerveSubsystem swerve, DoubleSupplier vX, DoubleSupplier vY, DoubleSupplier heading,
             BooleanSupplier povCenter, BooleanSupplier povDown, BooleanSupplier povDownleft,
@@ -62,6 +63,14 @@ public class TeleopDrive extends Command {
         }
         centricToggleLast = centricToggle.getAsBoolean();
 
+        if(heading.getAsDouble() != 0) {
+            usingPOV = false;
+        }
+        else if(!povCenter.getAsBoolean()) {
+            usingPOV = true;
+        }
+
+        // Calculate speed multiplier
         double shiftAmt = -0.9 * shiftScalar.getAsDouble() + 1;
 
         // Calculate rotation
@@ -75,7 +84,7 @@ public class TeleopDrive extends Command {
                 .times(SwerveConstants.DRIVE_SPEED)
                 .times(isFieldCentric ? swerve.isRedAlliance() ? -1 : 1 : 1);
 
-        if (!povCenter.getAsBoolean()) {
+        if (usingPOV) {
             // Drive with POV
             swerve.drive(translation, POVDrive(), isFieldCentric);
         } else if (reefLock.getAsBoolean()) {

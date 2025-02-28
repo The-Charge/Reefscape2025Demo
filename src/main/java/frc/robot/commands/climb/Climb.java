@@ -7,28 +7,24 @@ import frc.robot.subsystems.ClimbSubsystem;
 public class Climb extends Command {
     
     private ClimbSubsystem climb;
-    private boolean wait;
 
     public Climb(ClimbSubsystem climbSub) {
-        this(climbSub, false);
-    }
-    public Climb(ClimbSubsystem climbSub, boolean waitForTarget) {
         climb = climbSub;
-        wait = waitForTarget;
 
         addRequirements(climb);
     }
 
     @Override
     public void initialize() {
-        climb.setTargetAngleDegrees(ClimbConstants.activeDegrees);
+        climb.vbus(ClimbConstants.maxVBus); //relies on soft limits to stop from going too far
+    }
+    @Override
+    public void end(boolean interrupted) {
+        climb.stop();
     }
 
     @Override
     public boolean isFinished() {
-        if(!wait)
-            return true;
-        
-        return climb.isAtTarget();
+        return false;
     }
 }

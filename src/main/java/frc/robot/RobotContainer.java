@@ -19,6 +19,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.climb.Climb;
 import frc.robot.commands.climb.ClimbToDegreesManual;
@@ -28,14 +30,18 @@ import frc.robot.commands.elev.MoveToInchesManual;
 import frc.robot.commands.elev.MoveToLevel;
 import frc.robot.commands.elev.MoveToLevelManual;
 import frc.robot.commands.elev.MoveToTicksManual;
+import frc.robot.commands.head.Shoot;
 import frc.robot.commands.intake.Intake;
 import frc.robot.commands.intake.ManualIntake;
+import frc.robot.commands.leds.LEDManager;
+import frc.robot.commands.swervedrive.drivebase.SwerveZero;
 import frc.robot.commands.swervedrive.drivebase.TeleopDrive;
 import frc.robot.commands.vision.AlignToTag;
 import frc.robot.commands.vision.DriveToAlgae;
 import frc.robot.commands.vision.DriveToTag;
 import frc.robot.commands.vision.LimelightManager;
 import frc.robot.constants.SwerveConstants;
+import frc.robot.constants.TelemetryConstants;
 import frc.robot.constants.VisionConstants.LLFunnelConstants;
 import frc.robot.constants.VisionConstants.LLReefConstants;
 import frc.robot.subsystems.ClimbSubsystem;
@@ -43,6 +49,7 @@ import frc.robot.subsystems.ElevSubsystem;
 import frc.robot.subsystems.ElevSubsystem.Level;
 import frc.robot.subsystems.HeadSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.subsystems.LEDSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
 
@@ -63,9 +70,11 @@ public class RobotContainer {
     private final ClimbSubsystem climb = new ClimbSubsystem();
     private final HeadSubsystem head = new HeadSubsystem();
     private final IntakeSubsystem intake = new IntakeSubsystem();
-    // private final AlgaeRemSubsystem algaeRem = new AlgaeRemSubsystem();
+    private final AlgaeRemSubsystem algaeRem = new AlgaeRemSubsystem();
+    private final LEDSubsystem leds = new LEDSubsystem();
     
     private SendableChooser<Command> autoChooser;
+    private TeleopDrive teleop;
     
     public RobotContainer() {
         TeleopDrive teleopDrive = new TeleopDrive(swerve,
@@ -83,7 +92,8 @@ public class RobotContainer {
                 () -> driver1.getRightTriggerAxis());
         swerve.setDefaultCommand(teleopDrive);
 
-        // intake.setDefaultCommand(new Intake(intake, elev, head));
+        intake.setDefaultCommand(new Intake(intake, elev, head));
+        leds.setDefaultCommand(new LEDManager(leds, head));
         
         configureNamedCommands();
         configureBindings();
@@ -117,19 +127,19 @@ public class RobotContainer {
         driver2.povDown().onTrue(new MoveToLevel(elev, Level.LVL1));
         driver2.leftTrigger(SwerveConstants.TRIGGER_DEADBAND).onTrue(new MoveToLevel(elev, Level.HOME));
         driver2.x().whileTrue(new ManualIntake(intake));
-        // driver2.rightTrigger(SwerveConstants.TRIGGER_DEADBAND).onTrue(new SequentialCommandGroup(
-        //     new Shoot(head),
-        //     new WaitCommand(3),
-        //     new MoveToLevel(elev, Level.HOME)
-        // ));
-        // driver2.rightBumper().onTrue(new SequentialCommandGroup(
-        //     new MoveToLevel(elev, Level.ALGAE_HIGH, true),
-        //     new AlgaeRemSpin(algaeRem)
-        // ));
-        // driver2.leftBumper().onTrue(new SequentialCommandGroup(
-        //     new MoveToLevel(elev, Level.ALGAE_LOW, true),
-        //     new AlgaeRemSpin(algaeRem)
-        // ));
+        driver2.rightTrigger(SwerveConstants.TRIGGER_DEADBAND).onTrue(new SequentialCommandGroup(
+            new Shoot(head, elev),
+            new WaitCommand(1.5),
+            new MoveToLevel(elev, Level.HOME)
+        ));
+        driver2.rightBumper().whileTrue(new SequentialCommandGroup(
+            new MoveToLevel(elev, Level.ALGAE_HIGH, true),
+            new AlgaeRemSpin(algaeRem, false)
+        ));
+        driver2.leftBumper().whileTrue(new SequentialCommandGroup(
+            new MoveToLevel(elev, Level.ALGAE_LOW, true),
+            new AlgaeRemSpin(algaeRem, false)
+        ));
 
         // new Trigger(() -> head.getFunnelSensor()).onTrue(new Index(head).withInterruptBehavior(InterruptionBehavior.kCancelIncoming)); //we don't want the head to do anything until indexing is finished
 
@@ -155,33 +165,39 @@ public class RobotContainer {
         NamedCommands.registerCommand("ElevLevel2", new MoveToLevel(elev, ElevSubsystem.Level.LVL2));
         NamedCommands.registerCommand("ElevLevel3", new MoveToLevel(elev, ElevSubsystem.Level.LVL3));
         NamedCommands.registerCommand("ElevLevel4", new MoveToLevel(elev, ElevSubsystem.Level.LVL4));
+        NamedCommands.registerCommand("ElevAlgaeLow", new MoveToLevel(elev, ElevSubsystem.Level.ALGAE_LOW));
+        NamedCommands.registerCommand("ElevAlgaeHigh", new MoveToLevel(elev, ElevSubsystem.Level.ALGAE_HIGH));
 
-        // NamedCommands.registerCommand("HeadIntake", new Intake(head));
-        // NamedCommands.registerCommand("HeadShoot", new Shoot(head));
+        NamedCommands.registerCommand("HeadShoot", new Shoot(head, elev));
 
-        // NamedCommands.registerCommand("AlgaeRemIn", new AlgaeRemIn(algaeRem));
-        // NamedCommands.registerCommand("AlgaeRemOut", new AlgaeRemOut(algaeRem));
-        // NamedCommands.registerCommand("AlgaeRemSpin", new AlgaeRemSpin(algaeRem));
-        // NamedCommands.registerCommand("AlgaeRemStop", new AlgaeRemStop(algaeRem));
+        NamedCommands.registerCommand("AlgaeRemSpin", new AlgaeRemSpin(algaeRem, true));
     }
     private void addTelemetry() {
         //one time telemetry values, such as dashboard commands
-        SmartDashboard.putData("Elev Manual Move (IN)", new MoveToInchesManual(elev));
-        SmartDashboard.putData("Elev Manual Move (TICKS)", new MoveToTicksManual(elev));
-        SmartDashboard.putData("Elev Manual Move (LVL)", new MoveToLevelManual(elev));
+        if(TelemetryConstants.elevLevel >= TelemetryConstants.HIGH) {
+            SmartDashboard.putData("Elev Manual Move (IN)", new MoveToInchesManual(elev));
+            SmartDashboard.putData("Elev Manual Move (TICKS)", new MoveToTicksManual(elev));
+            SmartDashboard.putData("Elev Manual Move (LVL)", new MoveToLevelManual(elev));
+        }
 
-        SmartDashboard.putData("Climb Manual Climb (DEG)", new ClimbToDegreesManual(climb));
-        SmartDashboard.putData("Climb Manual Climb (TICKS)", new ClimbToTicksManual(climb));
-        SmartDashboard.putData("Climb Manual", new Climb(climb));
-        SmartDashboard.putData("Declimb Manual", new Declimb(climb));
+        if(TelemetryConstants.climbLevel >= TelemetryConstants.HIGH) {
+            SmartDashboard.putData("Climb Manual Climb (DEG)", new ClimbToDegreesManual(climb));
+            SmartDashboard.putData("Climb Manual Climb (TICKS)", new ClimbToTicksManual(climb));
+            SmartDashboard.putData("Climb Manual", new Climb(climb));
+            SmartDashboard.putData("Declimb Manual", new Declimb(climb));
+        }
 
-        // SmartDashboard.putData("Head Intake", new Intake(head));
-        // SmartDashboard.putData("Head Shoot", new Shoot(head));
+        // if(TelemetryConstants.headLevel >= TelemetryConstants.HIGH) {
+        //     SmartDashboard.putData("Head Intake", new Intake(head));
+        //     SmartDashboard.putData("Head Shoot", new Shoot(head));
+        // }
 
-        // SmartDashboard.putData("AlgaeRem In", new AlgaeRemIn(algaeRem));
-        // SmartDashboard.putData("AlgaeRem Out", new AlgaeRemOut(algaeRem));
-        // SmartDashboard.putData("AlgaeRem Spin", new AlgaeRemSpin(algaeRem));
-        // SmartDashboard.putData("AlgaeRem Stop", new AlgaeRemStop(algaeRem));
+        // if(TelemetryConstants.algaeRemLevel >= TelemetryConstants.HIGH) {
+        //     SmartDashboard.putData("AlgaeRem In", new AlgaeRemIn(algaeRem));
+        //     SmartDashboard.putData("AlgaeRem Out", new AlgaeRemOut(algaeRem));
+        //     SmartDashboard.putData("AlgaeRem Spin", new AlgaeRemSpin(algaeRem));
+        //     SmartDashboard.putData("AlgaeRem Stop", new AlgaeRemStop(algaeRem));
+        // }
     }
     private void setupAutoDisplay() {
         //update the displayed auto path in smartdashboard when ever the selection is changed
@@ -225,6 +241,15 @@ public class RobotContainer {
 
     public SwerveSubsystem getSwerveSubsystem() {
         return swerve;
+    }
+    public HeadSubsystem getHeadSubsystem() {
+        return head;
+    }
+    public void setTeleopDefaultCommand() {
+        swerve.setDefaultCommand(teleop);
+    }
+    public void clearTeleopDefaultCommand() {
+        swerve.setDefaultCommand(new SwerveZero(swerve));
     }
 
     public void scheduleLimelight() {

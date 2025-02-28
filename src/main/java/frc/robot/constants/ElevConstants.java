@@ -19,14 +19,13 @@ public abstract class ElevConstants {
     public static final double targetThresholdInches = 0.2;
     public static final double targetThresholdSeconds = 0.1;
 
-    //lowest funnel position is about 16.769 in from ground
     public static final double homeInches = 0;
-    public static final double lvl1Inches = 18 - 16.769;
-    public static final double lvl2Inches = 31.72 - 16.769;
-    public static final double lvl3Inches = 47.59 - 16.769;
-    public static final double lvl4Inches = 71.87 - 16.769;
-    public static final double algaeLowInches = 0;
-    public static final double algaeHighInches = 0;
+    public static final double lvl1Inches = 9;
+    public static final double lvl2Inches = 18;
+    public static final double lvl3Inches = 34;
+    public static final double lvl4Inches = 57;
+    public static final double algaeLowInches = 10;
+    public static final double algaeHighInches = 20;
 
     public static final String overrideInName = "Elev Target Override (In)";
     public static final String overrideTicksName = "Elev Target Override (Ticks)";
