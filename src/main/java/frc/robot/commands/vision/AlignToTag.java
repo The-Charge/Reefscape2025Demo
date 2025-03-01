@@ -46,7 +46,7 @@ public class AlignToTag extends Command {
   }
   @Override 
   public void execute() {
-    sideController.reset();
+    // sideController.reset();
     frontController.reset();
     tx = limelight.getTX();
     leftSideAdjust = MathUtil.clamp(sideController.calculate(tx + ApriltagConstants.LEFT_ALIGN_OFFSET,0), -0.2, 0.2);

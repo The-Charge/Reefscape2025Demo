@@ -19,9 +19,12 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.algaerem.AlgaeRemSpin;
 import frc.robot.commands.climb.Climb;
 import frc.robot.commands.climb.ClimbToDegreesManual;
@@ -110,17 +113,28 @@ public class RobotContainer {
         Field2d field = new Field2d();
         SmartDashboard.putData("Field", field);
     }
+    private DriveToTag dtt;
+    private DriveToTag setupDtt() {
+        this.dtt = new DriveToTag(swerve, 0, ReefPosition.MIDDLE, () -> -MathUtil.applyDeadband(driver1.getLeftY(), SwerveConstants.LEFT_Y_DEADBAND), () -> -MathUtil.applyDeadband(driver1.getLeftX(), SwerveConstants.LEFT_X_DEADBAND), () -> -MathUtil.applyDeadband(driver1.getRightX(), SwerveConstants.RIGHT_X_DEADBAND), driver1.y());
+        return this.dtt;
+    }
 
     private void configureBindings() {
         driver1.b().onTrue(Commands.runOnce(swerve::zeroGyroWithAlliance));
         driver1.x().whileTrue(Commands.runOnce(swerve::lock, swerve).repeatedly());
 
         // limelight testing
-        // driver1.a().onTrue(Commands.runOnce(swerve::addFakeVisionReading));
-        driver1.y().onTrue(new DriveToTag(swerve, 8, ReefPosition.MIDDLE)); //Drive to tag closest to reeflimelight
-        // driver1.leftBumper().whileTrue(new AlignToTag(swerve, reeflimelight, 0, 1, null));
+        // driver1.a().onTrue(Commands.runOnce(swerve::addFakeVision(Reading));
+        
+        driver1.y().whileTrue(setupDtt()); //Drive to tag closest to reeflimelight
+        // driver1.leftTrigger(SwerveConstants.TRIGGER_DEADBAND).onChange(new InstantCommand() {@Override public void execute(){dtt.end(true);System.out.println("Cancelling dtt");}});
+        
+        new Trigger(() -> ((MathUtil.applyDeadband(Math.abs(driver1.getLeftX()), SwerveConstants.LEFT_X_DEADBAND) > 0 || MathUtil.applyDeadband(Math.abs(driver1.getLeftY()), SwerveConstants.LEFT_Y_DEADBAND) > 0.1) && dtt != null)).onTrue(new InstantCommand() {@Override public void execute(){dtt.end(true);}});
+        
+        // () -> dtt.end()
+        // driver1.leftBumper().whileTrue(new AlignToTag(swerve, reeflimelight, 0, 1, null)); // BROKEN
         driver1.a().whileTrue(new DriveToAlgae(swerve, reeflimelight));
-
+        
         // driver2.a().onTrue(new Climb(climb));
         // driver2.y().onTrue(new Declimb(climb));
         driver2.povUp().onTrue(new MoveToLevel(elev, Level.LVL4));
