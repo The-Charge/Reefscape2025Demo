@@ -28,8 +28,8 @@ import frc.robot.commands.algaemanip.AlgaeManipRetract;
 import frc.robot.commands.algaemanip.AlgaeManipSpin;
 import frc.robot.commands.algaerem.AlgaeRemSpin;
 import frc.robot.commands.climb.Climb;
-import frc.robot.commands.climb.ClimbToDegreesManual;
-import frc.robot.commands.climb.ClimbToTicksManual;
+import frc.robot.commands.climb.ClimbClampDegreesManual;
+import frc.robot.commands.climb.ClimbLeverDegreesManual;
 import frc.robot.commands.climb.Declimb;
 import frc.robot.commands.elev.MoveToInchesManual;
 import frc.robot.commands.elev.MoveToLevel;
@@ -190,8 +190,8 @@ public class RobotContainer {
         }
 
         if(TelemetryConstants.climbLevel >= TelemetryConstants.HIGH) {
-            SmartDashboard.putData("Climb Manual Climb (DEG)", new ClimbToDegreesManual(climb));
-            SmartDashboard.putData("Climb Manual Climb (TICKS)", new ClimbToTicksManual(climb));
+            SmartDashboard.putData("Climb Lever Manual (DEG)", new ClimbLeverDegreesManual(climb));
+            SmartDashboard.putData("Climb Clamp Manual (DEG)", new ClimbClampDegreesManual(climb));
             SmartDashboard.putData("Climb Manual", new Climb(climb));
             SmartDashboard.putData("Declimb Manual", new Declimb(climb));
         }
