@@ -37,7 +37,6 @@ import frc.robot.commands.intake.ManualIntake;
 import frc.robot.commands.leds.LEDManager;
 import frc.robot.commands.swervedrive.drivebase.SwerveZero;
 import frc.robot.commands.swervedrive.drivebase.TeleopDrive;
-import frc.robot.commands.vision.AlignToTag;
 import frc.robot.commands.vision.DriveToAlgae;
 import frc.robot.commands.vision.DriveToTag;
 import frc.robot.commands.vision.LimelightManager;
@@ -49,12 +48,12 @@ import frc.robot.subsystems.AlgaeRemSubsystem;
 import frc.robot.subsystems.ClimbSubsystem;
 import frc.robot.subsystems.ElevSubsystem;
 import frc.robot.subsystems.ElevSubsystem.Level;
-import frc.robot.subsystems.VisionSubsystem.ReefPosition;
 import frc.robot.subsystems.HeadSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.LEDSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
+import frc.robot.subsystems.VisionSubsystem.ReefPosition;
 
 /**
 * This class is where the bulk of the robot should be declared. Since Command-based is a "declarative" paradigm, very
@@ -119,7 +118,7 @@ public class RobotContainer {
         // limelight testing
         // driver1.a().onTrue(Commands.runOnce(swerve::addFakeVisionReading));
         driver1.y().onTrue(new DriveToTag(swerve, 8, ReefPosition.MIDDLE)); //Drive to tag closest to reeflimelight
-        driver1.leftBumper().whileTrue(new AlignToTag(swerve, reeflimelight, 0, 1, null));
+        // driver1.leftBumper().whileTrue(new AlignToTag(swerve, reeflimelight, 0, 1, null));
         driver1.a().whileTrue(new DriveToAlgae(swerve, reeflimelight));
 
         // driver2.a().onTrue(new Climb(climb));

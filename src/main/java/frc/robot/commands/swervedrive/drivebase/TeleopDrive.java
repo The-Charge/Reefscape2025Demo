@@ -3,11 +3,9 @@ package frc.robot.commands.swervedrive.drivebase;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.constants.SwerveConstants;
 import frc.robot.subsystems.SwerveSubsystem;
@@ -25,7 +23,10 @@ public class TeleopDrive extends Command {
 
     private boolean isFieldCentric = true;
     private boolean centricToggleLast = false;
-    private boolean usingPOV = false;
+
+    private enum MODE {JOYSTICK, POV, REEF};
+
+    private MODE Mode = MODE.JOYSTICK;
 
     public TeleopDrive(SwerveSubsystem swerve, DoubleSupplier vX, DoubleSupplier vY, DoubleSupplier heading,
             BooleanSupplier povCenter, BooleanSupplier povDown, BooleanSupplier povDownleft,
@@ -63,11 +64,13 @@ public class TeleopDrive extends Command {
         }
         centricToggleLast = centricToggle.getAsBoolean();
 
-        if(heading.getAsDouble() != 0) {
-            usingPOV = false;
-        }
-        else if(!povCenter.getAsBoolean()) {
-            usingPOV = true;
+        // reefLock get priority, then POV, then normal
+        if (reefLock.getAsBoolean()) {
+            Mode = MODE.REEF;
+        } else if(!povCenter.getAsBoolean()) {
+            Mode = MODE.POV;
+        } else if (heading.getAsDouble() != 0) {
+            Mode = MODE.JOYSTICK;
         }
 
         // Calculate speed multiplier
@@ -84,15 +87,19 @@ public class TeleopDrive extends Command {
                 .times(SwerveConstants.DRIVE_SPEED)
                 .times(isFieldCentric ? swerve.isRedAlliance() ? -1 : 1 : 1);
 
-        if (usingPOV) {
+        switch (Mode) {
+        case POV:
             // Drive with POV
             swerve.drive(translation, POVDrive(), isFieldCentric);
-        } else if (reefLock.getAsBoolean()) {
+            break;
+        case REEF:
             // Drive with Reef Rotation
             swerve.drive(translation, ReefLock(), isFieldCentric);
-        } else {
+            break;
+        default:
             // Drive normally
             swerve.drive(translation, rotationSpeed, isFieldCentric);
+            break;
         }
     }
 
