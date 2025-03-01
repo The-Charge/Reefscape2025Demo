@@ -196,17 +196,13 @@ public class RobotContainer {
             SmartDashboard.putData("Declimb Manual", new Declimb(climb));
         }
 
-        // if(TelemetryConstants.headLevel >= TelemetryConstants.HIGH) {
-        //     SmartDashboard.putData("Head Intake", new Intake(head));
-        //     SmartDashboard.putData("Head Shoot", new Shoot(head));
-        // }
+        if(TelemetryConstants.headLevel >= TelemetryConstants.HIGH) {
+            SmartDashboard.putData("Head Shoot", new Shoot(head, elev));
+        }
 
-        // if(TelemetryConstants.algaeRemLevel >= TelemetryConstants.HIGH) {
-        //     SmartDashboard.putData("AlgaeRem In", new AlgaeRemIn(algaeRem));
-        //     SmartDashboard.putData("AlgaeRem Out", new AlgaeRemOut(algaeRem));
-        //     SmartDashboard.putData("AlgaeRem Spin", new AlgaeRemSpin(algaeRem));
-        //     SmartDashboard.putData("AlgaeRem Stop", new AlgaeRemStop(algaeRem));
-        // }
+        if(TelemetryConstants.algaeRemLevel >= TelemetryConstants.HIGH) {
+            SmartDashboard.putData("AlgaeRem In", new AlgaeRemSpin(algaeRem, true));
+        }
 
         if(TelemetryConstants.algaeManipLevel >= TelemetryConstants.HIGH) {
             SmartDashboard.putData("AlgaeManip Out", new AlgaeManipDeploy(algaeManip));

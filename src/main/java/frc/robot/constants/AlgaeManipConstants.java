@@ -6,7 +6,7 @@ import swervelib.parser.PIDFConfig;
 
 public abstract class AlgaeManipConstants {
     
-    public static final int pivotID = 0;
+    public static final int pivotID = 6;
     public static final int pivotCurrentLimit = 25;
     public static final IdleMode pivotIdle = IdleMode.kBrake;
     public static final boolean pivotInverted = false;

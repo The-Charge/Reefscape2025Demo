@@ -23,7 +23,7 @@ public abstract class ClimbConstants {
     public static final double leverSafeDegrees = 100;
     public static final double leverActiveDegrees = 130;
 
-    public static final int clampID = -1;
+    public static final int clampID = 5;
     public static final double clampMaxVBus = 0.5;
     public static final double clampMaxCurrent = 40;
     public static final InvertedValue clampInverted = InvertedValue.Clockwise_Positive;
