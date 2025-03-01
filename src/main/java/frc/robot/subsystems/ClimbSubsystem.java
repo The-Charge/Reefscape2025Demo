@@ -103,6 +103,8 @@ public class ClimbSubsystem extends SubsystemBase {
 
         if(ClimbConstants.leverUseSoftLimits)
             leverTargetTicks = MathUtil.clamp(ticks, ClimbConstants.leverMinPosTicks, ClimbConstants.leverMaxPosTicks);
+        else
+            leverTargetTicks = ticks;
         
         PositionDutyCycle request = new PositionDutyCycle(leverTargetTicks).withSlot(0);
         lever.setControl(request);
@@ -158,6 +160,8 @@ public class ClimbSubsystem extends SubsystemBase {
     public void setClampTicks(double ticks) {
         if(ClimbConstants.clampUseSoftLimits)
             clampTargetTicks = MathUtil.clamp(ticks, ClimbConstants.clampMinPosTicks, ClimbConstants.clampMaxPosTicks);
+        else
+            clampTargetTicks = ticks;
         
         PositionDutyCycle request = new PositionDutyCycle(clampTargetTicks).withSlot(0);
         clamp.setControl(request);
@@ -204,7 +208,7 @@ public class ClimbSubsystem extends SubsystemBase {
         return evalClampState(getClampDegrees());
     }
     public boolean isClampIsAtTarget() {
-        return leverIsAtTarget;
+        return clampIsAtTarget;
     }
 
     private void configureMotor(TalonFX m, double maxVbus, NeutralModeValue neutralMode, InvertedValue inverted, double maxCurrent, PIDFConfig pidf, double minTicks, double maxTicks, boolean useSoftLimits) {

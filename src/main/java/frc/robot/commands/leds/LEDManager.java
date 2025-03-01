@@ -40,8 +40,8 @@ public class LEDManager extends Command {
     @Override
     public void execute() {
         if(DriverStation.isDisabled()) {
-            if(!disabledLast)
-                breathe.reset();
+            // if(!disabledLast)
+            //     breathe.reset();
 
             breathe.update();
             breathe.evaluate(leds.fullBuff());

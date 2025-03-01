@@ -21,8 +21,8 @@ public abstract class SwerveConstants {
 
     public static final boolean useCosineCompensator = true;
 
-    public static final boolean useAngularCompensationTeleop = true;
-    public static final boolean useAngularCompensationAuton = true;
+    public static final boolean useAngularCompensationTeleop = false;
+    public static final boolean useAngularCompensationAuton = false;
     public static final double angularCompensation = -10;
 
     public static final PIDConstants pathPlannerTranslationPID = new PIDConstants(5, 0, 0);

@@ -68,8 +68,8 @@ public class RobotContainer {
     private final CommandXboxController driver2 = new CommandXboxController(1);
 
     private final SwerveSubsystem swerve = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "swerve"));
-    private final VisionSubsystem reeflimelight = new VisionSubsystem(swerve, LLReefConstants.LL_NAME, LLReefConstants.CAMERA_OFFSET);
-    private final VisionSubsystem funnellimelight = new VisionSubsystem(swerve, LLFunnelConstants.LL_NAME, LLFunnelConstants.CAMERA_OFFSET);
+    // private final VisionSubsystem reeflimelight = new VisionSubsystem(swerve, LLReefConstants.LL_NAME, LLReefConstants.CAMERA_OFFSET);
+    // private final VisionSubsystem funnellimelight = new VisionSubsystem(swerve, LLFunnelConstants.LL_NAME, LLFunnelConstants.CAMERA_OFFSET);
     private final ElevSubsystem elev = new ElevSubsystem();
     private final ClimbSubsystem climb = new ClimbSubsystem();
     private final HeadSubsystem head = new HeadSubsystem();
@@ -110,7 +110,7 @@ public class RobotContainer {
         setupAutoDisplay();
         SmartDashboard.putData("Auto Chooser", autoChooser);
 
-        new LimelightManager(swerve, reeflimelight, funnellimelight).schedule();
+        // new LimelightManager(swerve, reeflimelight, funnellimelight).schedule();
 
         Field2d field = new Field2d();
         SmartDashboard.putData("Field", field);
@@ -121,7 +121,7 @@ public class RobotContainer {
         driver1.x().whileTrue(Commands.runOnce(swerve::lock, swerve).repeatedly());
         
         driver2.a().onTrue(new Climb(climb));
-        driver2.y().onTrue(new Declimb(climb));
+        // driver2.y().onTrue(new Declimb(climb));
         driver2.povUp().onTrue(new MoveToLevel(elev, Level.LVL4));
         driver2.povRight().onTrue(new MoveToLevel(elev, Level.LVL3));
         driver2.povLeft().onTrue(new MoveToLevel(elev, Level.LVL2));

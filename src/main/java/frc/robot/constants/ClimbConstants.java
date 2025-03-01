@@ -29,14 +29,14 @@ public abstract class ClimbConstants {
     public static final InvertedValue clampInverted = InvertedValue.Clockwise_Positive;
     public static final NeutralModeValue clampNeutralMode = NeutralModeValue.Brake;
     
-    public static final PIDFConfig clampPIDF = new PIDFConfig(0, 0, 0, 0);
-    public static final double clampMinPosTicks = 0;
-    public static final double clampMaxPosTicks = Double.MAX_VALUE;
+    public static final PIDFConfig clampPIDF = new PIDFConfig(0.1, 0, 0, 0);
+    public static final double clampMinPosTicks = -0.5;
+    public static final double clampMaxPosTicks = 8;
     public static final boolean clampUseSoftLimits = false;
-    public static final double clampTickToDegConversion = 1;
+    public static final double clampTickToDegConversion = 1; //hasn't been set but doesn't matter
 
-    public static final double clampRestingDegrees = 0;
-    public static final double clampActiveDegrees = 10;
+    public static final double clampRestingDegrees = 0 * clampTickToDegConversion;
+    public static final double clampActiveDegrees = 7.5 * clampTickToDegConversion;
 
     public static final double targetThresholdDegrees = 1.5;
     public static final double targetThresholdSeconds = 0.1;
