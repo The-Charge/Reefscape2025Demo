@@ -20,7 +20,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -69,8 +68,8 @@ public class RobotContainer {
     private final CommandXboxController driver2 = new CommandXboxController(1);
     
     private final SwerveSubsystem swerve = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "swerve"));
-    private final VisionSubsystem reeflimelight = new VisionSubsystem(swerve, LLReefConstants.LL_NAME, LLReefConstants.CAMERA_OFFSET);
-    private final VisionSubsystem funnellimelight = new VisionSubsystem(swerve, LLFunnelConstants.LL_NAME, LLFunnelConstants.CAMERA_OFFSET);
+    private final VisionSubsystem reeflimelight = new VisionSubsystem(LLReefConstants.LL_NAME, LLReefConstants.CAMERA_OFFSET);
+    private final VisionSubsystem funnellimelight = new VisionSubsystem(LLFunnelConstants.LL_NAME, LLFunnelConstants.CAMERA_OFFSET);
     private final ElevSubsystem elev = new ElevSubsystem();
     private final ClimbSubsystem climb = new ClimbSubsystem();
     private final HeadSubsystem head = new HeadSubsystem();
@@ -79,10 +78,10 @@ public class RobotContainer {
     private final LEDSubsystem leds = new LEDSubsystem();
     
     private SendableChooser<Command> autoChooser;
-    private TeleopDrive teleop;
+    private TeleopDrive teleopDrive;
     
     public RobotContainer() {
-        TeleopDrive teleopDrive = new TeleopDrive(swerve,
+        teleopDrive = new TeleopDrive(swerve,
                 () -> -MathUtil.applyDeadband(driver1.getLeftY(), SwerveConstants.LEFT_Y_DEADBAND),
                 () -> -MathUtil.applyDeadband(driver1.getLeftX(), SwerveConstants.LEFT_X_DEADBAND),
                 () -> -MathUtil.applyDeadband(driver1.getRightX(), SwerveConstants.RIGHT_X_DEADBAND),
@@ -262,7 +261,7 @@ public class RobotContainer {
         return head;
     }
     public void setTeleopDefaultCommand() {
-        swerve.setDefaultCommand(teleop);
+        swerve.setDefaultCommand(teleopDrive);
     }
     public void clearTeleopDefaultCommand() {
         swerve.setDefaultCommand(new SwerveZero(swerve));

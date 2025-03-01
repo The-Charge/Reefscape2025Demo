@@ -24,9 +24,9 @@ public class TeleopDrive extends Command {
     private boolean isFieldCentric = true;
     private boolean centricToggleLast = false;
 
-    private enum MODE {JOYSTICK, POV, REEF};
+    private enum Mode {JOYSTICK, POV, REEF};
 
-    private MODE Mode = MODE.JOYSTICK;
+    private Mode mode = Mode.JOYSTICK;
 
     public TeleopDrive(SwerveSubsystem swerve, DoubleSupplier vX, DoubleSupplier vY, DoubleSupplier heading,
             BooleanSupplier povCenter, BooleanSupplier povDown, BooleanSupplier povDownleft,
@@ -66,11 +66,11 @@ public class TeleopDrive extends Command {
 
         // reefLock get priority, then POV, then normal
         if (reefLock.getAsBoolean()) {
-            Mode = MODE.REEF;
+            mode = Mode.REEF;
         } else if(!povCenter.getAsBoolean()) {
-            Mode = MODE.POV;
+            mode = Mode.POV;
         } else if (heading.getAsDouble() != 0) {
-            Mode = MODE.JOYSTICK;
+            mode = Mode.JOYSTICK;
         }
 
         // Calculate speed multiplier
@@ -87,7 +87,7 @@ public class TeleopDrive extends Command {
                 .times(SwerveConstants.DRIVE_SPEED)
                 .times(isFieldCentric ? swerve.isRedAlliance() ? -1 : 1 : 1);
 
-        switch (Mode) {
+        switch (mode) {
         case POV:
             // Drive with POV
             swerve.drive(translation, POVDrive(), isFieldCentric);

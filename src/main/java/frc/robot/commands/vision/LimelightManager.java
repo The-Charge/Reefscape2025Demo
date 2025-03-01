@@ -1,5 +1,7 @@
 package frc.robot.commands.vision;
 
+import static edu.wpi.first.units.Units.DegreesPerSecond;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -30,8 +32,12 @@ public class LimelightManager extends Command {
     @Override
     public void execute() {
         Pose2d avgPose;
-        Pose2d reefPose = reefLimelight.getEstimatedPose();
-        Pose2d funnelPose = funnelLimelight.getEstimatedPose();
+
+        double yaw = swerve.getHeading().getDegrees();
+        double yawRate = swerve.getSwerveDrive().getGyro().getYawAngularVelocity().in(DegreesPerSecond);
+
+        Pose2d reefPose = reefLimelight.getEstimatedPose(yaw, yawRate);
+        Pose2d funnelPose = funnelLimelight.getEstimatedPose(yaw, yawRate);
 
         if (reefPose == null && funnelPose == null) {
             return;
