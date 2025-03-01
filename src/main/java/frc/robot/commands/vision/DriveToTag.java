@@ -46,25 +46,28 @@ public class DriveToTag extends InstantCommand {
         break;
     }
     double x, y;
-    Rotation2d rot;
+    Rotation2d rot2d;
     if (tagid == 0) { 
-      x = swerve.getClosestTagPose().getX() + ApriltagConstants.CENTER_TO_SCORER_OFFSET * Math.cos(swerve.getClosestTagPose().getRotation().getRadians());
-      y = swerve.getClosestTagPose().getY() + ApriltagConstants.CENTER_TO_SCORER_OFFSET * Math.sin(swerve.getClosestTagPose().getRotation().getRadians());
-      rot = swerve.getClosestTagPose().getRotation().minus(Rotation2d.k180deg);
-    } else {
-      x = ApriltagConstants.TAG_POSES[tagid].getX() + ApriltagConstants.CENTER_TO_SCORER_OFFSET * Math.cos(ApriltagConstants.TAG_POSES[tagid].getRotation().getZ());
-      y = ApriltagConstants.TAG_POSES[tagid].getY() + ApriltagConstants.CENTER_TO_SCORER_OFFSET * Math.sin(ApriltagConstants.TAG_POSES[tagid].getRotation().getZ());
-          rot = ApriltagConstants.TAG_POSES[tagid].getRotation().toRotation2d().minus(Rotation2d.k180deg);
+      rot2d = swerve.getClosestTagPose().getRotation();
+      x = swerve.getClosestTagPose().getX() + (ApriltagConstants.CENTER_TO_SCORER_OFFSET + offset) * Math.cos(rot2d.getRadians());
+      y = swerve.getClosestTagPose().getY() + (ApriltagConstants.CENTER_TO_SCORER_OFFSET + offset) * Math.sin(rot2d.getRadians());
+      
+    } 
+    else {
+      rot2d = ApriltagConstants.TAG_POSES[tagid].getRotation().toRotation2d();
+      x = ApriltagConstants.TAG_POSES[tagid].getX() + (ApriltagConstants.CENTER_TO_SCORER_OFFSET + offset) * Math.cos(rot2d.getRadians());
+      y = ApriltagConstants.TAG_POSES[tagid].getY() + (ApriltagConstants.CENTER_TO_SCORER_OFFSET + offset) * Math.sin(rot2d.getRadians()); 
     }
-
+    rot2d = rot2d.minus(Rotation2d.k180deg);
+// keep stash, subtract 180 from rot, use getRot.to2d as the final rot
     List<Waypoint> waypoints = PathPlannerPath.waypointsFromPoses(
-      new Pose2d(x, y, rot)
+      new Pose2d(x, y, rot2d)
     );
 
     PathConstraints constraints = new PathConstraints(SwerveConstants.MAX_SPEED, 3.0, 2 * Math.PI, 4 * Math.PI);
 
     // Create the path using the waypoints created above
-    PathPlannerPath path = new PathPlannerPath(waypoints, constraints, null, new GoalEndState(0.0, rot));
+    PathPlannerPath path = new PathPlannerPath(waypoints, constraints, null, new GoalEndState(0.0, rot2d));
 
     // Prevent the path from being flipped if the coordinates are already correct
     path.preventFlipping = true;
@@ -75,7 +78,7 @@ public class DriveToTag extends InstantCommand {
     SmartDashboard.putNumber("tag y", y);
     SmartDashboard.putNumber("swerve x", swerve.getPose().getX());
     SmartDashboard.putNumber("swerve y", swerve.getPose().getY());
-    intendedPose = new Pose2d(x,y,new Rotation2d(ApriltagConstants.TAG_POSES[tagid].toPose2d().getRotation().getRadians() - Math.PI));
+    intendedPose = new Pose2d(x,y,rot2d);
     
     drivetoPose = swerve.driveToPose(intendedPose);
     drivetoPose.schedule();
