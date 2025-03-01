@@ -22,6 +22,10 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.commands.algaemanip.AlgaeManipDeploy;
+import frc.robot.commands.algaemanip.AlgaeManipRetract;
+import frc.robot.commands.algaemanip.AlgaeManipSpin;
 import frc.robot.commands.algaerem.AlgaeRemSpin;
 import frc.robot.commands.climb.Climb;
 import frc.robot.commands.climb.ClimbClampDegreesManual;
@@ -42,6 +46,7 @@ import frc.robot.constants.SwerveConstants;
 import frc.robot.constants.TelemetryConstants;
 import frc.robot.constants.VisionConstants.LLFunnelConstants;
 import frc.robot.constants.VisionConstants.LLReefConstants;
+import frc.robot.subsystems.AlgaeManipSubsystem;
 import frc.robot.subsystems.AlgaeRemSubsystem;
 import frc.robot.subsystems.ClimbSubsystem;
 import frc.robot.subsystems.ElevSubsystem;
@@ -71,6 +76,7 @@ public class RobotContainer {
     private final IntakeSubsystem intake = new IntakeSubsystem();
     private final AlgaeRemSubsystem algaeRem = new AlgaeRemSubsystem();
     private final LEDSubsystem leds = new LEDSubsystem();
+    private final AlgaeManipSubsystem algaeManip = new AlgaeManipSubsystem();
     
     private SendableChooser<Command> autoChooser;
     private TeleopDrive teleop;
@@ -88,7 +94,7 @@ public class RobotContainer {
             () -> driver1.povUpLeft().getAsBoolean(), () -> driver1.povUpRight().getAsBoolean(),
             () -> driver1.rightBumper().getAsBoolean(),
             () -> driver1.back().getAsBoolean(),
-            () -> driver1.leftTrigger(SwerveConstants.TRIGGER_DEADBAND).getAsBoolean(),
+            // () -> driver1.leftTrigger(SwerveConstants.TRIGGER_DEADBAND).getAsBoolean(),
             () -> driver1.rightTrigger(SwerveConstants.TRIGGER_DEADBAND).getAsBoolean()
         );
 
@@ -135,6 +141,10 @@ public class RobotContainer {
             new MoveToLevel(elev, Level.ALGAE_LOW, true),
             new AlgaeRemSpin(algaeRem, false)
         ));
+        new Trigger(() -> driver2.getLeftY() <= -SwerveConstants.TRIGGER_DEADBAND).whileTrue(new AlgaeManipSpin(algaeManip, true));
+        new Trigger(() -> driver2.getLeftY() >= SwerveConstants.TRIGGER_DEADBAND).whileTrue(new AlgaeManipSpin(algaeManip, false));
+        new Trigger(() -> driver2.getLeftX() >= SwerveConstants.TRIGGER_DEADBAND).whileTrue(new AlgaeManipRetract(algaeManip));
+        new Trigger(() -> driver2.getLeftX() <= -SwerveConstants.TRIGGER_DEADBAND).whileTrue(new AlgaeManipDeploy(algaeManip));
 
         // new Trigger(() -> head.getFunnelSensor()).onTrue(new Index(head).withInterruptBehavior(InterruptionBehavior.kCancelIncoming)); //we don't want the head to do anything until indexing is finished
 
@@ -197,6 +207,13 @@ public class RobotContainer {
         //     SmartDashboard.putData("AlgaeRem Spin", new AlgaeRemSpin(algaeRem));
         //     SmartDashboard.putData("AlgaeRem Stop", new AlgaeRemStop(algaeRem));
         // }
+
+        if(TelemetryConstants.algaeManipLevel >= TelemetryConstants.HIGH) {
+            SmartDashboard.putData("AlgaeManip Out", new AlgaeManipDeploy(algaeManip));
+            SmartDashboard.putData("AlgaeManip In", new AlgaeManipRetract(algaeManip));
+            SmartDashboard.putData("AlgaeManip Intake", new AlgaeManipSpin(algaeManip, true));
+            SmartDashboard.putData("AlgaeManip Outtake", new AlgaeManipSpin(algaeManip, false));
+        }
     }
     private void setupAutoDisplay() {
         //update the displayed auto path in smartdashboard when ever the selection is changed

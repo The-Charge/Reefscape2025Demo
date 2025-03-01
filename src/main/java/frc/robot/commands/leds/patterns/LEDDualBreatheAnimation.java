@@ -5,7 +5,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.util.Color;
 import frc.robot.subsystems.LEDSubsystem.Animation;
 
-public class LEDBreatheAnimation extends Animation {
+public class LEDDualBreatheAnimation extends Animation {
     
     private final Color col1, col2;
     private final double timeOn, timeOff;
@@ -16,7 +16,7 @@ public class LEDBreatheAnimation extends Animation {
     private double modTime, lastModTime;
     private Color outCol;
 
-    public LEDBreatheAnimation(Color col1, Color col2, double timeOn, double timeOff, double transitionPercentage) {
+    public LEDDualBreatheAnimation(Color col1, Color col2, double timeOn, double timeOff, double transitionPercentage) {
         this.col1 = col1;
         this.col2 = col2;
         this.timeOn = timeOn;
