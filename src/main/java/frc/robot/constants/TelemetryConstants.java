@@ -22,5 +22,6 @@ public abstract class TelemetryConstants {
     public static final int ledLevel = HIGH;
     public static final SwerveDriveTelemetry.TelemetryVerbosity swerveLevel = TelemetryVerbosity.HIGH;
     public static final int visionLevel = HIGH;
+    public static final int algaeManipLevel = HIGH;
     public static final int robotLevel = HIGH; //whole robot telemetry, such as PDP
 }
