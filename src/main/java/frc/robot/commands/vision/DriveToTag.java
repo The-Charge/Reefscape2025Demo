@@ -3,6 +3,7 @@ package frc.robot.commands.vision;
 import edu.wpi.first.apriltag.AprilTag;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.constants.VisionConstants.ApriltagConstants;
@@ -20,6 +21,7 @@ public class DriveToTag extends InstantCommand {
   public DriveToTag(SwerveSubsystem swerve, int tagid, VisionSubsystem.ReefPosition reefPos){
       this.swerve = swerve;
       this.tagid = tagid;
+      this.reefPos = reefPos;
       addRequirements(swerve);
   }
  
@@ -34,7 +36,7 @@ public class DriveToTag extends InstantCommand {
         offset = ApriltagConstants.RIGHT_ALIGN_OFFSET;
         break;
       default:
-      break;
+        break;
     }
     double x, y;
     if (tagid == 0) { 
@@ -45,7 +47,10 @@ public class DriveToTag extends InstantCommand {
       x = ApriltagConstants.TAG_POSES[tagid].getX() + ApriltagConstants.CENTER_TO_SCORER_OFFSET * Math.cos(ApriltagConstants.TAG_POSES[tagid].getRotation().getZ());
       y = ApriltagConstants.TAG_POSES[tagid].getY() + ApriltagConstants.CENTER_TO_SCORER_OFFSET * Math.sin(ApriltagConstants.TAG_POSES[tagid].getRotation().getZ()); 
     }
-
+    SmartDashboard.putNumber("tag x", x);
+    SmartDashboard.putNumber("tag y", y);
+    SmartDashboard.putNumber("swerve x", swerve.getPose().getX());
+    SmartDashboard.putNumber("swerve y", swerve.getPose().getY());
     intendedPose = new Pose2d(x,y,new Rotation2d(ApriltagConstants.TAG_POSES[tagid].toPose2d().getRotation().getRadians() - Math.PI));
     
     drivetoPose = swerve.driveToPose(intendedPose);

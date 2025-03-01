@@ -44,6 +44,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Config;
 import frc.robot.constants.SwerveConstants;
+import frc.robot.constants.TelemetryConstants;
 import frc.robot.constants.VisionConstants.ApriltagConstants;
 import swervelib.SwerveController;
 import swervelib.SwerveDrive;
@@ -53,7 +54,6 @@ import swervelib.parser.SwerveControllerConfiguration;
 import swervelib.parser.SwerveDriveConfiguration;
 import swervelib.parser.SwerveParser;
 import swervelib.telemetry.SwerveDriveTelemetry;
-import swervelib.telemetry.SwerveDriveTelemetry.TelemetryVerbosity;
 
 public class SwerveSubsystem extends SubsystemBase
 {

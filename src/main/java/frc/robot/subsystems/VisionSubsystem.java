@@ -64,7 +64,7 @@ public class VisionSubsystem extends SubsystemBase{
   public void periodic(){
     updateLimelightTracking();
     //UpdateLocalization();
-    UpdateAlignerPID();
+    // UpdateAlignerPID();
   }
   
   public void updateLimelightTracking(){ 
