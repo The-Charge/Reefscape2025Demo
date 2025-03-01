@@ -119,7 +119,7 @@ public class RobotContainer {
         // limelight testing
         // driver1.a().onTrue(Commands.runOnce(swerve::addFakeVisionReading));
         driver1.y().onTrue(new DriveToTag(swerve, 8, ReefPosition.MIDDLE)); //Drive to tag closest to reeflimelight
-        driver1.leftBumper().whileTrue(new AlignToTag(swerve, reeflimelight, 7, 1, null));
+        driver1.leftBumper().whileTrue(new AlignToTag(swerve, reeflimelight, 0, 1, null));
         driver1.a().whileTrue(new DriveToAlgae(swerve, reeflimelight));
 
         // driver2.a().onTrue(new Climb(climb));
