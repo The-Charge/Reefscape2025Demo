@@ -46,12 +46,12 @@ public class AlignToTag extends Command {
   }
   @Override 
   public void execute() {
-    // sideController.reset();
+    // sideController.reset(); UNCOMMENT THIS IF YOU WANT TO USE THIS COMMAND (rn gives npe)
     frontController.reset();
     tx = limelight.getTX();
     leftSideAdjust = MathUtil.clamp(sideController.calculate(tx + ApriltagConstants.LEFT_ALIGN_OFFSET,0), -0.2, 0.2);
     midSideAdjust = MathUtil.clamp(sideController.calculate(tx,0), -0.2, 0.2);
-    rightSideAdjust = MathUtil.clamp(sideController.calculate(tx + ApriltagConstants.RIGHT_ALIGN_OFFSET,0), -0.2, 0.2);
+    rightSideAdjust = MathUtil.clamp(sideController.calculate(tx + ApriltagConstants.RIGHT_ALIGN_OFFSET,0), -0.2, 0.2); // may want to use Trans2d(frontval, -sideval) and scale vector based on magnitude instead of clamping
     tagpose = swerve.getClosestReefTagPose();
     tagpose_rotation = tagpose.getRotation().minus(new Rotation2d(Math.PI));
 

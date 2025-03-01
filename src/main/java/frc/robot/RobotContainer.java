@@ -114,7 +114,7 @@ public class RobotContainer {
     }
     private DriveToTag dtt;
     private DriveToTag setupDtt() {
-        this.dtt = new DriveToTag(swerve, 0, ReefPosition.MIDDLE, () -> -MathUtil.applyDeadband(driver1.getLeftY(), SwerveConstants.LEFT_Y_DEADBAND), () -> -MathUtil.applyDeadband(driver1.getLeftX(), SwerveConstants.LEFT_X_DEADBAND), () -> -MathUtil.applyDeadband(driver1.getRightX(), SwerveConstants.RIGHT_X_DEADBAND), driver1.y());
+        this.dtt = new DriveToTag(swerve, 0, ReefPosition.LEFT, () -> -MathUtil.applyDeadband(driver1.getLeftY(), SwerveConstants.LEFT_Y_DEADBAND), () -> -MathUtil.applyDeadband(driver1.getLeftX(), SwerveConstants.LEFT_X_DEADBAND), () -> -MathUtil.applyDeadband(driver1.getRightX(), SwerveConstants.RIGHT_X_DEADBAND), driver1.y());
         return this.dtt;
     }
 

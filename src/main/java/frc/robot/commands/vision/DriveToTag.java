@@ -1,5 +1,6 @@
 package frc.robot.commands.vision;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
@@ -58,16 +59,22 @@ public class DriveToTag extends Command {
     }
     double x, y;
     Rotation2d rot2d;
+    double rot;
     if (tagid == 0) { 
       rot2d = swerve.getClosestTagPose().getRotation();
-      x = swerve.getClosestTagPose().getX() + (ApriltagConstants.CENTER_TO_SCORER_OFFSET + offset) * Math.cos(rot2d.getRadians());
-      y = swerve.getClosestTagPose().getY() + (ApriltagConstants.CENTER_TO_SCORER_OFFSET + offset) * Math.sin(rot2d.getRadians());
+      rot = rot2d.getRadians();
+      if (rot > Math.PI) rot -= Math.PI;
+      x = swerve.getClosestTagPose().getX() + (ApriltagConstants.CENTER_TO_SCORER_OFFSET)*Math.cos(rot2d.getRadians()) - offset*Math.sin(rot);
+      y = swerve.getClosestTagPose().getY() + (ApriltagConstants.CENTER_TO_SCORER_OFFSET)*Math.sin(rot2d.getRadians()) + offset*Math.cos(rot);
     } else {
       rot2d = ApriltagConstants.TAG_POSES[tagid].getRotation().toRotation2d();
-      x = ApriltagConstants.TAG_POSES[tagid].getX() + (ApriltagConstants.CENTER_TO_SCORER_OFFSET + offset) * Math.cos(rot2d.getRadians());
-      y = ApriltagConstants.TAG_POSES[tagid].getY() + (ApriltagConstants.CENTER_TO_SCORER_OFFSET + offset) * Math.sin(rot2d.getRadians()); 
+      rot = rot2d.getRadians();
+      if (rot > Math.PI) rot -= Math.PI;
+      x = ApriltagConstants.TAG_POSES[tagid].getX() + (ApriltagConstants.CENTER_TO_SCORER_OFFSET)*Math.cos(rot2d.getRadians()) - offset*Math.sin(rot);
+      y = ApriltagConstants.TAG_POSES[tagid].getY() + (ApriltagConstants.CENTER_TO_SCORER_OFFSET)*Math.sin(rot2d.getRadians()) + offset*Math.cos(rot); 
     }
-    rot2d = rot2d.minus(Rotation2d.k180deg);
+    if (!(tagid == 1 || tagid == 2 || tagid == 12 || tagid == 13)) rot2d = rot2d.minus(Rotation2d.k180deg);
+    
 
     List<Waypoint> waypoints = PathPlannerPath.waypointsFromPoses(
       swerve.getPose(),

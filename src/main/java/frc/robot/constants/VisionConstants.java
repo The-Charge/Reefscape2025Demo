@@ -59,7 +59,7 @@ public abstract class VisionConstants {
     public static final double APRILTAG_POSE_OFFSET = 1; //meters
     public static final double CENTER_TO_SCORER_OFFSET = 0.352425 * 2; //meters
 
-    public static final double LEFT_ALIGN_OFFSET = 0;
+    public static final double LEFT_ALIGN_OFFSET = -1; // scoring pipes are +/- 6.47 inches from center of reef tags
     public static final double MID_ALIGN_OFFSET = 0;
     public static final double RIGHT_ALIGN_OFFSET = 0;
 
