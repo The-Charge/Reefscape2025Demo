@@ -88,7 +88,7 @@ public class RobotContainer {
             () -> driver1.povUpLeft().getAsBoolean(), () -> driver1.povUpRight().getAsBoolean(),
             () -> driver1.rightBumper().getAsBoolean(),
             () -> driver1.back().getAsBoolean(),
-            () -> driver1.leftTrigger(SwerveConstants.TRIGGER_DEADBAND).getAsBoolean(),
+            // () -> driver1.leftTrigger(SwerveConstants.TRIGGER_DEADBAND).getAsBoolean(),
             () -> driver1.rightTrigger(SwerveConstants.TRIGGER_DEADBAND).getAsBoolean()
         );
 
