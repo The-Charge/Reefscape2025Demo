@@ -56,7 +56,7 @@ public class AlignToTag extends Command {
     tagpose_rotation = tagpose.getRotation().minus(new Rotation2d(Math.PI));
 
     frontAdjust = MathUtil.clamp(frontController.calculate(limelight.getDistToCamera(), ApriltagConstants.APRILTAG_POSE_OFFSET), -1, 1);
-    sideAdjust = MathUtil.clamp(sideController.calculate(tx, 0) -1, 1); // current error = atan((dsin(theta) + k)/(dcos(theta))) - theta; theta = tx, d = getDistToCamera, k = LEFT/RIGHT ALIGN OFFSET. Or use getY instead of TX
+    sideAdjust = MathUtil.clamp(sideController.calculate(tx, 0), -1, 1); // current error = atan((dsin(theta) + k)/(dcos(theta))) - theta; theta = tx, d = getDistToCamera, k = LEFT/RIGHT ALIGN OFFSET. Or use getY instead of TX
     
     SmartDashboard.putNumber("sideval", sideAdjust);
     SmartDashboard.putNumber("frontval", frontAdjust);

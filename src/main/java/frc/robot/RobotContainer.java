@@ -22,6 +22,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.commands.algaerem.AlgaeRemSpin;
 import frc.robot.commands.climb.Climb;
 import frc.robot.commands.climb.ClimbToDegreesManual;
 import frc.robot.commands.climb.ClimbToTicksManual;
@@ -44,6 +45,7 @@ import frc.robot.constants.SwerveConstants;
 import frc.robot.constants.TelemetryConstants;
 import frc.robot.constants.VisionConstants.LLFunnelConstants;
 import frc.robot.constants.VisionConstants.LLReefConstants;
+import frc.robot.subsystems.AlgaeRemSubsystem;
 import frc.robot.subsystems.ClimbSubsystem;
 import frc.robot.subsystems.ElevSubsystem;
 import frc.robot.subsystems.ElevSubsystem.Level;
@@ -115,8 +117,8 @@ public class RobotContainer {
 
         // limelight testing
         // driver1.a().onTrue(Commands.runOnce(swerve::addFakeVisionReading));
-        driver1.y().onTrue(new DriveToTag(swerve, 0)); //Drive to tag closest to reeflimelight
-        driver1.leftBumper().whileTrue(new AlignToTag(swerve, reeflimelight, 7, 1));
+        driver1.y().onTrue(new DriveToTag(swerve, 0, null)); //Drive to tag closest to reeflimelight
+        driver1.leftBumper().whileTrue(new AlignToTag(swerve, reeflimelight, 7, 1, null));
         driver1.a().whileTrue(new DriveToAlgae(swerve, reeflimelight));
 
         // driver2.a().onTrue(new Climb(climb));
