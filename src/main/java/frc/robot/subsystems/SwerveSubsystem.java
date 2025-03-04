@@ -739,16 +739,26 @@ public class SwerveSubsystem extends SubsystemBase
     return swerveDrive;
   }
   
-  public Pose2d getClosestReefTagPose(){
+  public Pose2d getClosestReefTagPose() {
     final List<Pose2d> tagPoses = new ArrayList<>();
     for (int i = 1; i <= 22; i++) {
-            if (i == 4 || i == 5 || i == 14 || i == 15 || i == 3 || i == 16 || i == 1 || i == 2 || i == 12 || i == 12)
-                continue;
-            tagPoses.add(ApriltagConstants.TAG_POSES[i].toPose2d());
-        }
-        return swerveDrive.getPose().nearest(tagPoses);
+      if (i == 4 || i == 5 || i == 14 || i == 15 || i == 3 || i == 16 || i == 1 || i == 2 || i == 12 || i == 13)
+        continue;
+      tagPoses.add(ApriltagConstants.TAG_POSES[i].toPose2d());
+    }
+    return swerveDrive.getPose().nearest(tagPoses);
   }
 
+  public Pose2d getClosestStationTagPose() {
+    final List<Pose2d> tagPoses = new ArrayList<>();
+    for (int i = 1; i <= 22; i++) {
+      if (!(i == 1 || i == 2 || i == 12 || i == 13))
+        continue;
+      tagPoses.add(ApriltagConstants.TAG_POSES[i].toPose2d());
+    }
+    return swerveDrive.getPose().nearest(tagPoses);
+  }
+  
   public Pose2d getClosestTagPose(){ //Ignores barge and processor
     final List<Pose2d> tagPoses = new ArrayList<>();
     for (int i = 1; i <= 22; i++) {
@@ -764,6 +774,28 @@ public class SwerveSubsystem extends SubsystemBase
     for (int i = 1; i <= 22; i++) {
       if (temp.equals(ApriltagConstants.TAG_POSES[i].toPose2d())) {
         return i;
+      }
+    }
+    return -1;
+  }
+
+  public int getClosestTagIDReef() {
+    Pose2d temp = getClosestReefTagPose();
+    int[] array = {6,7,8,9,10,11,17,18,19,20,21,22};
+    for (int num : array) {
+      if (temp.equals(ApriltagConstants.TAG_POSES[num].toPose2d())) {
+        return num;
+      }
+    }
+    return -1;
+  }
+
+  public int getClosestTagIDStation() {
+    Pose2d temp = getClosestStationTagPose();
+    int[] array = { 1, 2, 12, 13 };
+    for (int num : array) {
+      if (temp.equals(ApriltagConstants.TAG_POSES[num].toPose2d())) {
+        return num;
       }
     }
     return -1;

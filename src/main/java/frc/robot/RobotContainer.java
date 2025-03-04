@@ -91,7 +91,7 @@ public class RobotContainer {
                 () -> driver1.povLeft().getAsBoolean(), () -> driver1.povRight().getAsBoolean(),
                 () -> driver1.povUp().getAsBoolean(),
                 () -> driver1.povUpLeft().getAsBoolean(), () -> driver1.povUpRight().getAsBoolean(),
-                () -> driver1.rightBumper().getAsBoolean(),
+                () -> driver1.leftTrigger(SwerveConstants.TRIGGER_DEADBAND).getAsBoolean(),
                 () -> driver1.back().getAsBoolean(),
                 () -> driver1.getRightTriggerAxis());
         swerve.setDefaultCommand(teleopDrive);
@@ -113,8 +113,8 @@ public class RobotContainer {
         SmartDashboard.putData("Field", field);
     }
     private DriveToTag dtt;
-    private DriveToTag setupDtt() {
-        this.dtt = new DriveToTag(swerve, 0, ReefPosition.LEFT, () -> -MathUtil.applyDeadband(driver1.getLeftY(), SwerveConstants.LEFT_Y_DEADBAND), () -> -MathUtil.applyDeadband(driver1.getLeftX(), SwerveConstants.LEFT_X_DEADBAND), () -> -MathUtil.applyDeadband(driver1.getRightX(), SwerveConstants.RIGHT_X_DEADBAND), driver1.y());
+    private DriveToTag setupDtt(ReefPosition side, boolean reef) {
+        this.dtt = new DriveToTag(swerve, reef, side);
         return this.dtt;
     }
 
@@ -125,7 +125,9 @@ public class RobotContainer {
         // limelight testing
         // driver1.a().onTrue(Commands.runOnce(swerve::addFakeVision(Reading));
         
-        driver1.y().whileTrue(setupDtt()); //Drive to tag closest to reeflimelight
+        driver1.rightBumper().whileTrue(setupDtt(ReefPosition.RIGHT, true)); //Drive to tag closest to reeflimelight
+        driver1.leftBumper().whileTrue(setupDtt(ReefPosition.LEFT, true)); //Drive to tag closest to reeflimelight
+        driver1.y().whileTrue(setupDtt(ReefPosition.MIDDLE, false)); //Drive to tag closest to reeflimelight
         // driver1.leftTrigger(SwerveConstants.TRIGGER_DEADBAND).onChange(new InstantCommand() {@Override public void execute(){dtt.end(true);System.out.println("Cancelling dtt");}});
         
         new Trigger(() -> ((MathUtil.applyDeadband(Math.abs(driver1.getLeftX()), SwerveConstants.LEFT_X_DEADBAND) > 0 || MathUtil.applyDeadband(Math.abs(driver1.getLeftY()), SwerveConstants.LEFT_Y_DEADBAND) > 0.1) && dtt != null)).onTrue(new InstantCommand() {@Override public void execute(){dtt.end(true);}});

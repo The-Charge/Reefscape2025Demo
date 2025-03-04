@@ -1,9 +1,6 @@
 package frc.robot.commands.vision;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.function.BooleanSupplier;
-import java.util.function.DoubleSupplier;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.path.GoalEndState;
@@ -13,10 +10,9 @@ import com.pathplanner.lib.path.Waypoint;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.constants.SwerveConstants;
 import frc.robot.constants.VisionConstants.ApriltagConstants;
 import frc.robot.subsystems.SwerveSubsystem;
@@ -26,20 +22,14 @@ import frc.robot.subsystems.VisionSubsystem.ReefPosition;
 public class DriveToTag extends Command {
   private final SwerveSubsystem swerve;
   private Command drivetoPose;
-  private Pose2d intendedPose;
-  private int tagid; 
+  private int tagid;
+  private boolean reef;
   private ReefPosition reefPos;
-  private DoubleSupplier vX, vY, heading;
-  private BooleanSupplier buttonY;
 
-  public DriveToTag(SwerveSubsystem swerve, int tagid, VisionSubsystem.ReefPosition reefPos, DoubleSupplier vX, DoubleSupplier vY, DoubleSupplier heading, BooleanSupplier buttonY){
+  public DriveToTag(SwerveSubsystem swerve, boolean reef, VisionSubsystem.ReefPosition reefPos){
       this.swerve = swerve;
-      this.tagid = tagid;
+      this.reef = reef;
       this.reefPos = reefPos;
-      this.vX = vX;
-      this.vY = vY;
-      this.heading = heading;
-      this.buttonY = buttonY;
 
       addRequirements(swerve);
   }
@@ -47,6 +37,13 @@ public class DriveToTag extends Command {
   @Override
   public void initialize() {
     double offset = 0;
+
+    if (reef) {
+      tagid = swerve.getClosestTagIDReef();
+    } else {
+      tagid = swerve.getClosestTagIDStation();
+    }
+
     switch (reefPos) {
       case LEFT:
         offset = ApriltagConstants.LEFT_ALIGN_OFFSET;
@@ -55,25 +52,22 @@ public class DriveToTag extends Command {
         offset = ApriltagConstants.RIGHT_ALIGN_OFFSET;
         break;
       default:
+        offset = ApriltagConstants.MID_ALIGN_OFFSET;
         break;
     }
     double x, y;
     Rotation2d rot2d;
     double rot;
-    if (tagid == 0) { 
-      rot2d = swerve.getClosestTagPose().getRotation();
-      rot = rot2d.getRadians();
-      if (rot > Math.PI) rot -= Math.PI;
-      x = swerve.getClosestTagPose().getX() + (ApriltagConstants.CENTER_TO_SCORER_OFFSET)*Math.cos(rot2d.getRadians()) - offset*Math.sin(rot);
-      y = swerve.getClosestTagPose().getY() + (ApriltagConstants.CENTER_TO_SCORER_OFFSET)*Math.sin(rot2d.getRadians()) + offset*Math.cos(rot);
-    } else {
-      rot2d = ApriltagConstants.TAG_POSES[tagid].getRotation().toRotation2d();
-      rot = rot2d.getRadians();
-      if (rot > Math.PI) rot -= Math.PI;
-      x = ApriltagConstants.TAG_POSES[tagid].getX() + (ApriltagConstants.CENTER_TO_SCORER_OFFSET)*Math.cos(rot2d.getRadians()) - offset*Math.sin(rot);
-      y = ApriltagConstants.TAG_POSES[tagid].getY() + (ApriltagConstants.CENTER_TO_SCORER_OFFSET)*Math.sin(rot2d.getRadians()) + offset*Math.cos(rot); 
+
+    rot2d = ApriltagConstants.TAG_POSES[tagid].getRotation().toRotation2d();
+    rot = rot2d.getRadians();
+    if (rot > Math.PI) rot -= Math.PI;
+    x = ApriltagConstants.TAG_POSES[tagid].getX() + (Units.inchesToMeters(15))*Math.cos(rot2d.getRadians()) - (ApriltagConstants.CENTER_TO_SCORER_OFFSET + offset)*Math.sin(rot);
+    y = ApriltagConstants.TAG_POSES[tagid].getY() + (Units.inchesToMeters(15))*Math.sin(rot2d.getRadians()) + (ApriltagConstants.CENTER_TO_SCORER_OFFSET + offset)*Math.cos(rot); 
+    
+    if (!(tagid == 1 || tagid == 2 || tagid == 12 || tagid == 13)) {
+      rot2d = rot2d.minus(Rotation2d.k180deg);
     }
-    if (!(tagid == 1 || tagid == 2 || tagid == 12 || tagid == 13)) rot2d = rot2d.minus(Rotation2d.k180deg);
     
 
     List<Waypoint> waypoints = PathPlannerPath.waypointsFromPoses(
@@ -96,37 +90,16 @@ public class DriveToTag extends Command {
 
     // run the path
     drivetoPose = AutoBuilder.followPath(path).withInterruptBehavior(InterruptionBehavior.kCancelSelf);
-
-  }
-   
-  @Override 
-  public void execute() {
-    // System.out.println("in execute");
     drivetoPose.schedule();
-    // if (drivetoPose != null) drivetoPose.schedule();
   }
 
   @Override
   public void end(boolean interrupted) {
-    // if (interrupted) System.out.println("in cancel...");
-    // else System.out.println("interrupted false");
-    
-    if (drivetoPose != null) drivetoPose.cancel();
-    // swerve.drive(Translation2d.kZero, 0, false);
+    drivetoPose.cancel();
   }
 
   @Override
   public boolean isFinished() {
-    // System.out.println("in isFinished");
-    
-    // if (drivetoPose != null && drivetoPose.isFinished()) {
-    //   System.out.println("im done");
-    // } else {
-    //   System.out.println("not done");
-    // }
-    // boolean isf = vX.getAsDouble() != 0 || vY.getAsDouble() != 0 || heading.getAsDouble() != 0;
-    // System.out.println("ISF ISF ISF ISF ISF ISF\n\n\n" + isf + "\n" + isf + "\n" + isf + "\n" + isf +"\n" + isf +"\n" + isf +"\n" + isf +"\n" + isf + "\n\n");
-    return false;
-    // return isf;
+    return drivetoPose.isFinished();
   }
 }
