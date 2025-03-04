@@ -17,7 +17,10 @@ public class VisionSubsystem extends SubsystemBase {
   public VisionSubsystem(String ll_name, Pose3d cameraOffset) {
     this.ll_name = ll_name;
 
-    LimelightHelpers.setCameraPose_RobotSpace(ll_name, cameraOffset.getX(), cameraOffset.getY(), cameraOffset.getZ(), cameraOffset.getRotation().getX(), cameraOffset.getRotation().getY(), cameraOffset.getRotation().getZ());
+    LimelightHelpers.setCameraPose_RobotSpace(ll_name, cameraOffset.getX(), cameraOffset.getY(), cameraOffset.getZ(),
+        cameraOffset.getRotation().getX(), cameraOffset.getRotation().getY(), cameraOffset.getRotation().getZ());
+    
+        setPipeline(1);
   }
 
   public Pose2d getEstimatedPose(double yaw, double yawRate) {

@@ -97,7 +97,9 @@ public class DriveToTag extends Command {
 
   @Override
   public void end(boolean interrupted) {
-    drivetoPose.cancel();
+    if (drivetoPose != null) {
+      drivetoPose.cancel();
+    }
   }
 
   @Override
