@@ -24,10 +24,7 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.commands.algaemanip.AlgaeManipDeploy;
-import frc.robot.commands.algaemanip.AlgaeManipRetract;
-import frc.robot.commands.algaemanip.AlgaeManipSpin;
+import frc.robot.commands.IntakeRumble;
 import frc.robot.commands.algaerem.AlgaeRemSpin;
 import frc.robot.commands.climb.Climb;
 import frc.robot.commands.climb.ClimbClampDegreesManual;
@@ -45,12 +42,8 @@ import frc.robot.commands.swervedrive.drivebase.SwerveZero;
 import frc.robot.commands.swervedrive.drivebase.TeleopDrive;
 import frc.robot.commands.vision.DriveToAlgae;
 import frc.robot.commands.vision.DriveToTag;
-import frc.robot.commands.vision.LimelightManager;
 import frc.robot.constants.SwerveConstants;
 import frc.robot.constants.TelemetryConstants;
-import frc.robot.constants.VisionConstants.LLFunnelConstants;
-import frc.robot.constants.VisionConstants.LLReefConstants;
-import frc.robot.subsystems.AlgaeManipSubsystem;
 import frc.robot.subsystems.AlgaeRemSubsystem;
 import frc.robot.subsystems.ClimbSubsystem;
 import frc.robot.subsystems.ElevSubsystem;
@@ -59,7 +52,6 @@ import frc.robot.subsystems.HeadSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.LEDSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
-import frc.robot.subsystems.VisionSubsystem;
 import frc.robot.subsystems.VisionSubsystem.ReefPosition;
 
 /**
@@ -103,7 +95,7 @@ public class RobotContainer {
         swerve.setDefaultCommand(teleopDrive);
 
         intake.setDefaultCommand(new Intake(intake, elev, head));
-        leds.setDefaultCommand(new LEDManager(leds, head));
+        leds.setDefaultCommand(new LEDManager(leds, head, driver1, driver2));
         
         configureNamedCommands();
         configureBindings();
@@ -281,5 +273,8 @@ public class RobotContainer {
 
     public void scheduleLimelight() {
         new LimelightManager(swerve, reeflimelight, funnellimelight).schedule();
+    }
+    public void scheduleControllerRumble() {
+        new IntakeRumble(head, driver1, driver2).schedule();
     }
 }

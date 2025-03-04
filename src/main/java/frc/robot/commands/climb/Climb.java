@@ -35,6 +35,6 @@ public class Climb extends Command {
 
     @Override
     public boolean isFinished() {
-        return false;
+        return climb.getLeverDegrees() >= ClimbConstants.leverActiveDegrees;
     }
 }

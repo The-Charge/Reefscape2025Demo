@@ -168,6 +168,7 @@ public class Robot extends TimedRobot {
         m_robotContainer.setMotorBrake(true);
         AutoDisplayHelper.clearAutoPath();
         m_robotContainer.getHeadSubsystem().recheckHasCoral();
+        m_robotContainer.scheduleControllerRumble();
     }
     
     /**
