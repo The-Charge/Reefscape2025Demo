@@ -125,15 +125,12 @@ public class RobotContainer {
         // limelight testing
         // driver1.a().onTrue(Commands.runOnce(swerve::addFakeVision(Reading));
         
-        driver1.rightBumper().whileTrue(setupDtt(ReefPosition.RIGHT, true)); //Drive to tag closest to reeflimelight
-        driver1.leftBumper().whileTrue(setupDtt(ReefPosition.LEFT, true)); //Drive to tag closest to reeflimelight
-        driver1.y().whileTrue(setupDtt(ReefPosition.MIDDLE, false)); //Drive to tag closest to reeflimelight
-        // driver1.leftTrigger(SwerveConstants.TRIGGER_DEADBAND).onChange(new InstantCommand() {@Override public void execute(){dtt.end(true);System.out.println("Cancelling dtt");}});
+        driver1.rightBumper().whileTrue(setupDtt(ReefPosition.RIGHT, true)); //Drive to closest tag
+        driver1.leftBumper().whileTrue(setupDtt(ReefPosition.LEFT, true));
+        driver1.y().whileTrue(setupDtt(ReefPosition.MIDDLE, false));
         
         new Trigger(() -> ((MathUtil.applyDeadband(Math.abs(driver1.getLeftX()), SwerveConstants.LEFT_X_DEADBAND) > 0 || MathUtil.applyDeadband(Math.abs(driver1.getLeftY()), SwerveConstants.LEFT_Y_DEADBAND) > 0.1) && dtt != null)).onTrue(new InstantCommand() {@Override public void execute(){dtt.end(true);}});
         
-        // () -> dtt.end()
-        // driver1.leftBumper().whileTrue(new AlignToTag(swerve, reeflimelight, 0, 1, null)); // BROKEN
         driver1.a().whileTrue(new DriveToAlgae(swerve, reeflimelight));
         
         // driver2.a().onTrue(new Climb(climb));

@@ -14,6 +14,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.constants.SwerveConstants;
+import frc.robot.constants.TelemetryConstants;
 import frc.robot.constants.VisionConstants.ApriltagConstants;
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
@@ -83,11 +84,12 @@ public class DriveToTag extends Command {
     // Prevent the path from being flipped if the coordinates are already correct
     path.preventFlipping = true;
 
-    SmartDashboard.putNumber("tag x", x);
-    SmartDashboard.putNumber("tag y", y);
-    SmartDashboard.putNumber("swerve x", swerve.getPose().getX());
-    SmartDashboard.putNumber("swerve y", swerve.getPose().getY());
-
+    if (TelemetryConstants.visionLevel >= TelemetryConstants.EYE_OF_SAURON) {
+      SmartDashboard.putNumber("tag x", x);
+      SmartDashboard.putNumber("tag y", y);
+      SmartDashboard.putNumber("swerve x", swerve.getPose().getX());
+      SmartDashboard.putNumber("swerve y", swerve.getPose().getY());
+    }
     // run the path
     drivetoPose = AutoBuilder.followPath(path).withInterruptBehavior(InterruptionBehavior.kCancelSelf);
     drivetoPose.schedule();
