@@ -21,7 +21,8 @@ public class Declimb extends Command {
 
     @Override
     public void initialize() {
-        climb.setTargetAngleDegrees(ClimbConstants.restingDegrees);
+        climb.setLeverState(ClimbSubsystem.State.RESTING);
+        climb.setClampState(ClimbSubsystem.State.RESTING);
     }
 
     @Override
@@ -29,6 +30,6 @@ public class Declimb extends Command {
         if(!wait)
             return true;
         
-        return climb.isAtTarget();
+        return climb.isLeverIsAtTarget() && climb.isClampIsAtTarget();
     }
 }
