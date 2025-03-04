@@ -76,7 +76,7 @@ public class RobotContainer {
     private final IntakeSubsystem intake = new IntakeSubsystem();
     private final AlgaeRemSubsystem algaeRem = new AlgaeRemSubsystem();
     private final LEDSubsystem leds = new LEDSubsystem();
-    private final AlgaeManipSubsystem algaeManip = new AlgaeManipSubsystem();
+    // private final AlgaeManipSubsystem algaeManip = new AlgaeManipSubsystem();
     
     private SendableChooser<Command> autoChooser;
     private TeleopDrive teleop;
@@ -141,10 +141,10 @@ public class RobotContainer {
             new MoveToLevel(elev, Level.ALGAE_LOW, true),
             new AlgaeRemSpin(algaeRem, false)
         ));
-        new Trigger(() -> driver2.getLeftY() <= -SwerveConstants.TRIGGER_DEADBAND).whileTrue(new AlgaeManipSpin(algaeManip, true));
-        new Trigger(() -> driver2.getLeftY() >= SwerveConstants.TRIGGER_DEADBAND).whileTrue(new AlgaeManipSpin(algaeManip, false));
-        new Trigger(() -> driver2.getLeftX() >= SwerveConstants.TRIGGER_DEADBAND).whileTrue(new AlgaeManipRetract(algaeManip));
-        new Trigger(() -> driver2.getLeftX() <= -SwerveConstants.TRIGGER_DEADBAND).whileTrue(new AlgaeManipDeploy(algaeManip));
+        // new Trigger(() -> driver2.getLeftY() <= -SwerveConstants.TRIGGER_DEADBAND).whileTrue(new AlgaeManipSpin(algaeManip, true));
+        // new Trigger(() -> driver2.getLeftY() >= SwerveConstants.TRIGGER_DEADBAND).whileTrue(new AlgaeManipSpin(algaeManip, false));
+        // new Trigger(() -> driver2.getLeftX() >= SwerveConstants.TRIGGER_DEADBAND).whileTrue(new AlgaeManipRetract(algaeManip));
+        // new Trigger(() -> driver2.getLeftX() <= -SwerveConstants.TRIGGER_DEADBAND).whileTrue(new AlgaeManipDeploy(algaeManip));
 
         // new Trigger(() -> head.getFunnelSensor()).onTrue(new Index(head).withInterruptBehavior(InterruptionBehavior.kCancelIncoming)); //we don't want the head to do anything until indexing is finished
 
@@ -204,12 +204,12 @@ public class RobotContainer {
             SmartDashboard.putData("AlgaeRem In", new AlgaeRemSpin(algaeRem, true));
         }
 
-        if(TelemetryConstants.algaeManipLevel >= TelemetryConstants.HIGH) {
-            SmartDashboard.putData("AlgaeManip Out", new AlgaeManipDeploy(algaeManip));
-            SmartDashboard.putData("AlgaeManip In", new AlgaeManipRetract(algaeManip));
-            SmartDashboard.putData("AlgaeManip Intake", new AlgaeManipSpin(algaeManip, true));
-            SmartDashboard.putData("AlgaeManip Outtake", new AlgaeManipSpin(algaeManip, false));
-        }
+        // if(TelemetryConstants.algaeManipLevel >= TelemetryConstants.HIGH) {
+        //     SmartDashboard.putData("AlgaeManip Out", new AlgaeManipDeploy(algaeManip));
+        //     SmartDashboard.putData("AlgaeManip In", new AlgaeManipRetract(algaeManip));
+        //     SmartDashboard.putData("AlgaeManip Intake", new AlgaeManipSpin(algaeManip, true));
+        //     SmartDashboard.putData("AlgaeManip Outtake", new AlgaeManipSpin(algaeManip, false));
+        // }
     }
     private void setupAutoDisplay() {
         //update the displayed auto path in smartdashboard when ever the selection is changed
