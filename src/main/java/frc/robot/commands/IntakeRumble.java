@@ -14,7 +14,7 @@ public class IntakeRumble extends Command {
     private boolean hasCoralLast;
     private Timer rumbleTimer;
 
-    private final double rumbleTime = 2; //secs
+    private final double rumbleTime = 0.75; //secs
 
     public IntakeRumble(HeadSubsystem headSub, CommandXboxController driver1, CommandXboxController driver2) {
         head = headSub;
@@ -26,6 +26,7 @@ public class IntakeRumble extends Command {
     public void initialize() {
         hasCoralLast = false;
         rumbleTimer = new Timer();
+        rumbleTimer.stop();
     }
     @Override
     public void execute() {
@@ -45,6 +46,8 @@ public class IntakeRumble extends Command {
             rumbleTimer.stop();
             rumbleTimer.reset();
         }
+
+        hasCoralLast = hasCoral;
     }
 
     @Override

@@ -24,7 +24,7 @@ public class LEDManager extends Command {
     private final LEDPattern endgame;
 
     private final double endgameSecs = 20; //seconds left for endgame
-    private final double endgameDisplayTime = 3; //amount of time the endgame pattern is displayed for
+    private final double endgameDisplayTime = 20; //amount of time the endgame pattern is displayed for
 
     private boolean endgameLast;
 

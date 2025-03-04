@@ -92,7 +92,6 @@ public class RobotContainer {
 
         intake.setDefaultCommand(new Intake(intake, elev, head));
         leds.setDefaultCommand(new LEDManager(leds, head, driver1, driver2));
-        new IntakeRumble(head, driver1, driver2).schedule();
         
         configureNamedCommands();
         configureBindings();
@@ -254,5 +253,8 @@ public class RobotContainer {
     }
     public void clearTeleopDefaultCommand() {
         swerve.setDefaultCommand(new SwerveZero(swerve));
+    }
+    public void scheduleControllerRumble() {
+        new IntakeRumble(head, driver1, driver2).schedule();
     }
 }
