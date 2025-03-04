@@ -4,7 +4,9 @@ import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.LEDPattern;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.leds.patterns.LEDDualBreatheAnimation;
 import frc.robot.constants.LEDConstants;
 import frc.robot.subsystems.HeadSubsystem;
@@ -14,6 +16,7 @@ public class LEDManager extends Command {
     
     private final LEDSubsystem leds;
     private final HeadSubsystem head;
+    private final CommandXboxController driver1, driver2;
     
     private final LEDDualBreatheAnimation breathe;
     private final LEDPattern hasCoral;
@@ -21,14 +24,18 @@ public class LEDManager extends Command {
     private final LEDPattern endgame;
 
     private final double endgameSecs = 20; //seconds left for endgame
-    private final double endgameDisplayTime = 1; //amount of time the endgame pattern is displayed for
+    private final double endgameDisplayTime = 3; //amount of time the endgame pattern is displayed for
 
-    private boolean disabledLast;
+    private boolean endgameLast;
 
-    public LEDManager(LEDSubsystem ledSub, HeadSubsystem headSub) {
+    public LEDManager(LEDSubsystem ledSub, HeadSubsystem headSub, CommandXboxController driver1, CommandXboxController driver2) {
         leds = ledSub;
         head = headSub;
+        this.driver1 = driver1;
+        this.driver2 = driver2;
         addRequirements(leds);
+
+        endgameLast = false;
 
         breathe = new LEDDualBreatheAnimation(LEDConstants.chargeGreen, LEDConstants.chargeGold, 4, 0.2, 0.4);
         hasCoral = LEDPattern.solid(LEDConstants.white);
@@ -40,27 +47,37 @@ public class LEDManager extends Command {
     @Override
     public void execute() {
         if(DriverStation.isDisabled()) {
-            // if(!disabledLast)
-            //     breathe.reset();
-
             breathe.update();
             breathe.evaluate(leds.fullBuff());
             return;
         }
 
-        if(DriverStation.isTeleopEnabled() && Timer.getMatchTime() <= endgameSecs && Timer.getMatchTime() >= endgameSecs - endgameDisplayTime) {
-            endgame.applyTo(leds.fullBuff());
-            return;
+        if(DriverStation.isTeleopEnabled()) {
+            if(Timer.getMatchTime() <= endgameSecs && Timer.getMatchTime() >= endgameSecs - endgameDisplayTime) {
+                endgame.applyTo(leds.fullBuff());
+                
+                if(!endgameLast) {
+                    driver1.setRumble(RumbleType.kBothRumble, 1);
+                    driver2.setRumble(RumbleType.kBothRumble, 1);
+                }
+
+                endgameLast = true;
+                return;
+            }
+            else if(Timer.getMatchTime() < endgameSecs - endgameDisplayTime && endgameLast) {
+                endgameLast = false;
+                driver1.setRumble(RumbleType.kBothRumble, 0);
+                driver2.setRumble(RumbleType.kBothRumble, 0);
+                return;
+            }
+
+            if(head.getHasCoral()) {
+                hasCoral.applyTo(leds.fullBuff());
+                return;
+            }
+    
+            noCoral.applyTo(leds.fullBuff());
         }
-
-        if(head.getHasCoral()) {
-            hasCoral.applyTo(leds.fullBuff());
-            return;
-        }
-
-        noCoral.applyTo(leds.fullBuff());
-
-        disabledLast = DriverStation.isDisabled();
     }
 
     @Override
