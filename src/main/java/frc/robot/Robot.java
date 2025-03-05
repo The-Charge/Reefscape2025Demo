@@ -92,6 +92,8 @@ public class Robot extends TimedRobot {
         m_robotContainer.setMotorBrake(true);
         disabledTimer.reset();
         disabledTimer.start();
+        m_robotContainer.stopRumble();
+        m_robotContainer.getLEDManager().resetEndgameStarted();
     }
     
     @Override

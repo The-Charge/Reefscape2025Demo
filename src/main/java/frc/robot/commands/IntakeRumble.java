@@ -24,7 +24,7 @@ public class IntakeRumble extends Command {
 
     @Override
     public void initialize() {
-        hasCoralLast = false;
+        hasCoralLast = true; //don't rumble when the robot is enabled with a coral already in it
         rumbleTimer = null;
     }
     @Override

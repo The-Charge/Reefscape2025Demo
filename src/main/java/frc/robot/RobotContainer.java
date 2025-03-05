@@ -13,6 +13,7 @@ import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -72,6 +73,7 @@ public class RobotContainer {
     
     private SendableChooser<Command> autoChooser;
     private TeleopDrive teleop;
+    private LEDManager ledManager;
     
     public RobotContainer() {
         teleop = new TeleopDrive(swerve,
@@ -90,8 +92,10 @@ public class RobotContainer {
             () -> driver1.rightTrigger(SwerveConstants.TRIGGER_DEADBAND).getAsBoolean()
         );
 
+        ledManager = new LEDManager(leds, head, driver1, driver2);
+
         intake.setDefaultCommand(new Intake(intake, elev, head));
-        leds.setDefaultCommand(new LEDManager(leds, head, driver1, driver2));
+        leds.setDefaultCommand(ledManager);
         
         configureNamedCommands();
         configureBindings();
@@ -257,5 +261,12 @@ public class RobotContainer {
     }
     public void scheduleControllerRumble() {
         new IntakeRumble(head, driver1, driver2).schedule();
+    }
+    public void stopRumble() {
+        driver1.setRumble(RumbleType.kBothRumble, 0);
+        driver2.setRumble(RumbleType.kBothRumble, 0);
+    }
+    public LEDManager getLEDManager() {
+        return ledManager;
     }
 }
