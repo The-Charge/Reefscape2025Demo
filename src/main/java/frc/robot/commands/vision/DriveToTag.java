@@ -26,7 +26,7 @@ public class DriveToTag extends Command {
   private int tagid;
   private boolean reef;
   private ReefPosition reefPos;
-
+  
   public DriveToTag(SwerveSubsystem swerve, boolean reef, VisionSubsystem.ReefPosition reefPos){
       this.swerve = swerve;
       this.reef = reef;
@@ -62,14 +62,20 @@ public class DriveToTag extends Command {
 
     rot2d = ApriltagConstants.TAG_POSES[tagid].getRotation().toRotation2d();
     rot = rot2d.getRadians();
-    if (rot > Math.PI) rot -= Math.PI;
-    x = ApriltagConstants.TAG_POSES[tagid].getX() + (Units.inchesToMeters(15))*Math.cos(rot2d.getRadians()) - (ApriltagConstants.CENTER_TO_SCORER_OFFSET + offset)*Math.sin(rot);
-    y = ApriltagConstants.TAG_POSES[tagid].getY() + (Units.inchesToMeters(15))*Math.sin(rot2d.getRadians()) + (ApriltagConstants.CENTER_TO_SCORER_OFFSET + offset)*Math.cos(rot); 
+
+    
+    x = ApriltagConstants.TAG_POSES[tagid].getX() + (Units.inchesToMeters(15))*Math.cos(rot) - (ApriltagConstants.CENTER_TO_SCORER_OFFSET + offset)*Math.sin(rot);
+    y = ApriltagConstants.TAG_POSES[tagid].getY() + (Units.inchesToMeters(15))*Math.sin(rot) + (ApriltagConstants.CENTER_TO_SCORER_OFFSET + offset)*Math.cos(rot); 
     
     if (!(tagid == 1 || tagid == 2 || tagid == 12 || tagid == 13)) {
       rot2d = rot2d.minus(Rotation2d.k180deg);
     }
     
+    SmartDashboard.putNumber("rotation", rot);
+    SmartDashboard.putNumber("x vert", 15*Math.cos(rot));
+    SmartDashboard.putNumber("y vert", 15*Math.sin(rot));
+    SmartDashboard.putNumber("x horiz", -15*Math.sin(rot));
+    SmartDashboard.putNumber("y horiz", 15*Math.cos(rot));
 
     List<Waypoint> waypoints = PathPlannerPath.waypointsFromPoses(
       swerve.getPose(),
@@ -105,5 +111,10 @@ public class DriveToTag extends Command {
   @Override
   public boolean isFinished() {
     return drivetoPose.isFinished();
+  }
+
+  public Command getDriveToPose() {
+  
+    return drivetoPose;
   }
 }

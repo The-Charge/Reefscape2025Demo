@@ -7,6 +7,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.LimelightHelpers;
 import frc.robot.LimelightHelpers.RawFiducial;
@@ -18,7 +19,7 @@ public class VisionSubsystem extends SubsystemBase {
     this.ll_name = ll_name;
 
     LimelightHelpers.setCameraPose_RobotSpace(ll_name, cameraOffset.getX(), cameraOffset.getY(), cameraOffset.getZ(),
-        cameraOffset.getRotation().getX(), cameraOffset.getRotation().getY(), cameraOffset.getRotation().getZ());
+        Units.radiansToDegrees(cameraOffset.getRotation().getX()), Units.radiansToDegrees(cameraOffset.getRotation().getY()), Units.radiansToDegrees(cameraOffset.getRotation().getZ()));
     
         setPipeline(1);
   }
@@ -26,10 +27,10 @@ public class VisionSubsystem extends SubsystemBase {
   public Pose2d getEstimatedPose(double yaw, double yawRate) {
     NetworkTable table = NetworkTableInstance.getDefault().getTable(ll_name);
 
-    Double[] poseArray = { yaw, yawRate, 0., 0., 0., 0. };
-    table.getEntry("robot_orientation_set").setDoubleArray(poseArray);
+    // Double[] poseArray = { yaw, yawRate, 0., 0., 0., 0. };
+    // table.getEntry("robot_orientation_set").setDoubleArray(poseArray);
 
-    Double[] botPoseArray = table.getEntry("botpose_orb_wpiblue").getDoubleArray(new Double[] {});
+    Double[] botPoseArray = table.getEntry("botpose_wpiblue").getDoubleArray(new Double[] {});
     if (botPoseArray.length == 0 || botPoseArray[7] == 0) {
       return null;
     }
@@ -41,7 +42,7 @@ public class VisionSubsystem extends SubsystemBase {
   public double getPoseTimestamp() {
     NetworkTable table = NetworkTableInstance.getDefault().getTable(ll_name);
 
-    Double[] botPoseArray = table.getEntry("botpose_orb_wpiblue").getDoubleArray(new Double[] {});
+    Double[] botPoseArray = table.getEntry("botpose_wpiblue").getDoubleArray(new Double[] {});
     if (botPoseArray.length == 0) {
       return Double.NaN;
     }
@@ -60,6 +61,20 @@ public class VisionSubsystem extends SubsystemBase {
 
   public int getTagID() {
     return (int) LimelightHelpers.getFiducialID(ll_name);
+  }
+
+  public double getAmbiguity() {
+    Double[] array = NetworkTableInstance.getDefault().getTable(ll_name).getEntry("rawfiducials")
+        .getDoubleArray(new Double[] {});
+    if (array.length == 0) {
+      return Double.NaN;
+    }
+    double avg = 0;
+    double arrlen = array.length / 7;
+    for (int i = 1; i <= arrlen; i++) {
+      avg += array[i * 7 - 1] / arrlen;
+    }
+    return avg;
   }
 
   public double getTX() {

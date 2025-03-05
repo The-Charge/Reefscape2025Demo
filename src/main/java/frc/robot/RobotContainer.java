@@ -42,8 +42,11 @@ import frc.robot.commands.swervedrive.drivebase.SwerveZero;
 import frc.robot.commands.swervedrive.drivebase.TeleopDrive;
 import frc.robot.commands.vision.DriveToAlgae;
 import frc.robot.commands.vision.DriveToTag;
+import frc.robot.commands.vision.LimelightManager;
 import frc.robot.constants.SwerveConstants;
 import frc.robot.constants.TelemetryConstants;
+import frc.robot.constants.VisionConstants.LLFunnelConstants;
+import frc.robot.constants.VisionConstants.LLReefConstants;
 import frc.robot.subsystems.AlgaeRemSubsystem;
 import frc.robot.subsystems.ClimbSubsystem;
 import frc.robot.subsystems.ElevSubsystem;
@@ -52,6 +55,7 @@ import frc.robot.subsystems.HeadSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.LEDSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
+import frc.robot.subsystems.VisionSubsystem;
 import frc.robot.subsystems.VisionSubsystem.ReefPosition;
 
 /**
@@ -127,7 +131,7 @@ public class RobotContainer {
         driver1.leftBumper().whileTrue(setupDtt(ReefPosition.LEFT, true));
         driver1.y().whileTrue(setupDtt(ReefPosition.MIDDLE, false));
         
-        new Trigger(() -> ((MathUtil.applyDeadband(Math.abs(driver1.getLeftX()), SwerveConstants.LEFT_X_DEADBAND) > 0 || MathUtil.applyDeadband(Math.abs(driver1.getLeftY()), SwerveConstants.LEFT_Y_DEADBAND) > 0.1) && dtt != null)).onTrue(new InstantCommand() {@Override public void execute(){dtt.end(true);}});
+        new Trigger(() -> ((MathUtil.applyDeadband(Math.abs(driver1.getLeftX()), SwerveConstants.LEFT_X_DEADBAND) > 0 || MathUtil.applyDeadband(Math.abs(driver1.getLeftY()), SwerveConstants.LEFT_Y_DEADBAND) > 0.1) && dtt != null)).onTrue(new InstantCommand() {@Override public void execute(){if (dtt.getDriveToPose() != null)dtt.getDriveToPose().end(true);}});
         
         driver1.a().whileTrue(new DriveToAlgae(swerve, reeflimelight));
         
