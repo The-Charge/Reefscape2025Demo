@@ -25,8 +25,7 @@ public class IntakeRumble extends Command {
     @Override
     public void initialize() {
         hasCoralLast = false;
-        rumbleTimer = new Timer();
-        rumbleTimer.stop();
+        rumbleTimer = null;
     }
     @Override
     public void execute() {
@@ -36,15 +35,14 @@ public class IntakeRumble extends Command {
             driver1.setRumble(RumbleType.kBothRumble, 1);
             driver2.setRumble(RumbleType.kBothRumble, 1);
 
-            rumbleTimer.reset();
+            rumbleTimer = new Timer();
             rumbleTimer.start();
         }
-        else if(rumbleTimer.hasElapsed(rumbleTime)) {
+        else if(rumbleTimer != null && rumbleTimer.hasElapsed(rumbleTime)) {
             driver1.setRumble(RumbleType.kBothRumble, 0);
             driver2.setRumble(RumbleType.kBothRumble, 0);
 
-            rumbleTimer.stop();
-            rumbleTimer.reset();
+            rumbleTimer = null;
         }
 
         hasCoralLast = hasCoral;

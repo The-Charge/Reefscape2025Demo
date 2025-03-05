@@ -114,23 +114,24 @@ public class RobotContainer {
         
         driver2.a().onTrue(new Climb(climb));
         // driver2.y().onTrue(new Declimb(climb));
-        driver2.povUp().onTrue(new MoveToLevel(elev, Level.LVL4));
-        driver2.povRight().onTrue(new MoveToLevel(elev, Level.LVL3));
-        driver2.povLeft().onTrue(new MoveToLevel(elev, Level.LVL2));
-        driver2.povDown().onTrue(new MoveToLevel(elev, Level.LVL1));
-        driver2.leftTrigger(SwerveConstants.TRIGGER_DEADBAND).onTrue(new MoveToLevel(elev, Level.HOME));
+        driver2.povUp().onTrue(new MoveToLevel(elev, head, Level.LVL4));
+        driver2.povRight().onTrue(new MoveToLevel(elev, head, Level.LVL3));
+        driver2.povLeft().onTrue(new MoveToLevel(elev, head, Level.LVL2));
+        driver2.povDown().onTrue(new MoveToLevel(elev, head, Level.LVL1));
+        driver2.leftTrigger(SwerveConstants.TRIGGER_DEADBAND).onTrue(new MoveToLevel(elev, head, Level.HOME));
         driver2.x().whileTrue(new ManualIntake(intake));
-        driver2.rightTrigger(SwerveConstants.TRIGGER_DEADBAND).onTrue(new SequentialCommandGroup(
-            new Shoot(head, elev),
-            new WaitCommand(1.5),
-            new MoveToLevel(elev, Level.HOME)
-        ));
+        // driver2.rightTrigger(SwerveConstants.TRIGGER_DEADBAND).onTrue(new SequentialCommandGroup(
+        //     new Shoot(head, elev),
+        //     new WaitCommand(1.5),
+        //     new MoveToLevel(elev, Level.HOME)
+        // ));
+        driver2.rightTrigger(SwerveConstants.TRIGGER_DEADBAND).onTrue(new Shoot(head, elev));
         driver2.rightBumper().whileTrue(new SequentialCommandGroup(
-            new MoveToLevel(elev, Level.ALGAE_HIGH, true),
+            new MoveToLevel(elev, head, Level.ALGAE_HIGH, true),
             new AlgaeRemSpin(algaeRem, false)
         ));
         driver2.leftBumper().whileTrue(new SequentialCommandGroup(
-            new MoveToLevel(elev, Level.ALGAE_LOW, true),
+            new MoveToLevel(elev, head, Level.ALGAE_LOW, true),
             new AlgaeRemSpin(algaeRem, false)
         ));
         // new Trigger(() -> driver2.getLeftY() <= -SwerveConstants.TRIGGER_DEADBAND).whileTrue(new AlgaeManipSpin(algaeManip, true));
@@ -161,13 +162,13 @@ public class RobotContainer {
          * <Subsytem><Action>
          * Use PascalCase
          */
-        NamedCommands.registerCommand("ElevHome", new MoveToLevel(elev, ElevSubsystem.Level.HOME));
-        NamedCommands.registerCommand("ElevLevel1", new MoveToLevel(elev, ElevSubsystem.Level.LVL1));
-        NamedCommands.registerCommand("ElevLevel2", new MoveToLevel(elev, ElevSubsystem.Level.LVL2));
-        NamedCommands.registerCommand("ElevLevel3", new MoveToLevel(elev, ElevSubsystem.Level.LVL3));
-        NamedCommands.registerCommand("ElevLevel4", new MoveToLevel(elev, ElevSubsystem.Level.LVL4));
-        NamedCommands.registerCommand("ElevAlgaeLow", new MoveToLevel(elev, ElevSubsystem.Level.ALGAE_LOW));
-        NamedCommands.registerCommand("ElevAlgaeHigh", new MoveToLevel(elev, ElevSubsystem.Level.ALGAE_HIGH));
+        NamedCommands.registerCommand("ElevHome", new MoveToLevel(elev, head, ElevSubsystem.Level.HOME));
+        NamedCommands.registerCommand("ElevLevel1", new MoveToLevel(elev, head, ElevSubsystem.Level.LVL1));
+        NamedCommands.registerCommand("ElevLevel2", new MoveToLevel(elev, head, ElevSubsystem.Level.LVL2));
+        NamedCommands.registerCommand("ElevLevel3", new MoveToLevel(elev, head, ElevSubsystem.Level.LVL3));
+        NamedCommands.registerCommand("ElevLevel4", new MoveToLevel(elev, head, ElevSubsystem.Level.LVL4));
+        NamedCommands.registerCommand("ElevAlgaeLow", new MoveToLevel(elev, head, ElevSubsystem.Level.ALGAE_LOW));
+        NamedCommands.registerCommand("ElevAlgaeHigh", new MoveToLevel(elev, head, ElevSubsystem.Level.ALGAE_HIGH));
 
         NamedCommands.registerCommand("HeadShoot", new Shoot(head, elev));
 
