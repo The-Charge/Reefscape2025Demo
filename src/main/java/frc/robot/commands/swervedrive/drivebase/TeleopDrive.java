@@ -9,6 +9,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.constants.SwerveConstants;
 import frc.robot.constants.VisionConstants.ApriltagConstants;
@@ -23,7 +24,8 @@ public class TeleopDrive extends Command {
             povUpRight;
     private final BooleanSupplier reefLock;
     private final BooleanSupplier centricToggle;
-    private final BooleanSupplier shiftHalf, shiftQuarter;
+    // private final BooleanSupplier shiftHalf
+    private final BooleanSupplier shiftQuarter;
 
     private boolean isFieldCentric = true;
     private boolean centricToggleLast = false;
@@ -33,7 +35,7 @@ public class TeleopDrive extends Command {
             BooleanSupplier povCenter, BooleanSupplier povDown, BooleanSupplier povDownleft,
             BooleanSupplier povDownRight, BooleanSupplier povLeft, BooleanSupplier povRight, BooleanSupplier povUp,
             BooleanSupplier povUpLeft, BooleanSupplier povUpRight, BooleanSupplier reefLock,
-            BooleanSupplier centricToggle, BooleanSupplier shiftHalf, BooleanSupplier shiftQuarter) {
+            BooleanSupplier centricToggle, /*BooleanSupplier shiftHalf,*/ BooleanSupplier shiftQuarter) {
         this.swerve = swerve;
         this.vX = vX;
         this.vY = vY;
@@ -49,13 +51,14 @@ public class TeleopDrive extends Command {
         this.povUpRight = povUpRight;
         this.reefLock = reefLock;
         this.centricToggle = centricToggle;
-        this.shiftHalf = shiftHalf;
+        // this.shiftHalf = shiftHalf;
         this.shiftQuarter = shiftQuarter;
         addRequirements(swerve);
     }
 
     @Override
     public void initialize() {
+        SmartDashboard.putBoolean("Swerve IsFieldCentric", isFieldCentric);
     }
 
     @Override
@@ -63,6 +66,7 @@ public class TeleopDrive extends Command {
         // Handle field-centric toggle
         if (centricToggle.getAsBoolean() && !centricToggleLast) {
             isFieldCentric = !isFieldCentric;
+            SmartDashboard.putBoolean("Swerve IsFieldCentric", isFieldCentric);
         }
         centricToggleLast = centricToggle.getAsBoolean();
 
@@ -77,8 +81,8 @@ public class TeleopDrive extends Command {
         double shiftScalar = 1;
         if (shiftQuarter.getAsBoolean())
             shiftScalar = 0.25;
-        else if (shiftHalf.getAsBoolean())
-            shiftScalar = 0.5;
+        // else if (shiftHalf.getAsBoolean())
+        //     shiftScalar = 0.5;
 
         // Calculate rotation
         double rotationSpeed = heading.getAsDouble() * swerve.getSwerveController().config.maxAngularVelocity;

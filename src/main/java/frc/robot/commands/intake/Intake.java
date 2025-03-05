@@ -11,6 +11,7 @@ public class Intake extends Command {
     private final IntakeSubsystem intake;
     private final ElevSubsystem elev;
     private final HeadSubsystem head;
+
     private ElevSubsystem.Level lastLevel = ElevSubsystem.Level.UNKNOWN;
     private boolean lastHadCoral = false;
     private boolean startupCheck;

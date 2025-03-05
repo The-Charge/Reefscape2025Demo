@@ -15,12 +15,13 @@ public abstract class TelemetryConstants {
      * Please set everything to the lowest you can during competition to reduce load on rio and radio
      */
     public static final int algaeRemLevel = HIGH;
-    public static final int climbLevel = EYE_OF_SAURON;
+    public static final int climbLevel = HIGH;
     public static final int elevLevel = HIGH;
     public static final int headLevel = HIGH;
     public static final int intakeLevel = HIGH;
     public static final int ledLevel = HIGH;
     public static final SwerveDriveTelemetry.TelemetryVerbosity swerveLevel = TelemetryVerbosity.HIGH;
     public static final int visionLevel = HIGH;
+    public static final int algaeManipLevel = HIGH;
     public static final int robotLevel = HIGH; //whole robot telemetry, such as PDP
 }

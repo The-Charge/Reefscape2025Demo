@@ -7,6 +7,7 @@ import frc.robot.subsystems.ClimbSubsystem;
 public class Climb extends Command {
     
     private ClimbSubsystem climb;
+    private boolean startedLever;
 
     public Climb(ClimbSubsystem climbSub) {
         climb = climbSub;
@@ -16,15 +17,24 @@ public class Climb extends Command {
 
     @Override
     public void initialize() {
-        climb.vbus(ClimbConstants.maxVBus); //relies on soft limits to stop from going too far
+        startedLever = false;
+
+        climb.setClampState(ClimbSubsystem.State.ACTIVE);
+    }
+    @Override
+    public void execute() {
+        if(climb.isClampIsAtTarget() && !startedLever) {
+            climb.leverVBus(ClimbConstants.leverMaxVBus); //relies on soft limits to stop from going too far
+            startedLever = true;
+        }
     }
     @Override
     public void end(boolean interrupted) {
-        climb.stop();
+        climb.leverStop();
     }
 
     @Override
     public boolean isFinished() {
-        return false;
+        return climb.getLeverDegrees() >= ClimbConstants.leverActiveDegrees;
     }
 }
