@@ -100,6 +100,8 @@ public class RobotContainer {
                 () -> driver1.getRightTriggerAxis());
         swerve.setDefaultCommand(teleopDrive);
 
+        ledManager = new LEDManager(leds, head, driver1, driver2);
+
         intake.setDefaultCommand(new Intake(intake, elev, head));
         leds.setDefaultCommand(ledManager);
         
