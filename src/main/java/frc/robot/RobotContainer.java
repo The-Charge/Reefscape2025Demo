@@ -20,9 +20,11 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.IntakeRumble;
 import frc.robot.commands.algaerem.AlgaeRemSpin;
 import frc.robot.commands.climb.Climb;
@@ -40,8 +42,13 @@ import frc.robot.commands.intake.ManualIntake;
 import frc.robot.commands.leds.LEDManager;
 import frc.robot.commands.swervedrive.drivebase.SwerveZero;
 import frc.robot.commands.swervedrive.drivebase.TeleopDrive;
+import frc.robot.commands.vision.DriveToAlgae;
+import frc.robot.commands.vision.DriveToTag;
+import frc.robot.commands.vision.LimelightManager;
 import frc.robot.constants.SwerveConstants;
 import frc.robot.constants.TelemetryConstants;
+import frc.robot.constants.VisionConstants.LLFunnelConstants;
+import frc.robot.constants.VisionConstants.LLReefConstants;
 import frc.robot.subsystems.AlgaeRemSubsystem;
 import frc.robot.subsystems.ClimbSubsystem;
 import frc.robot.subsystems.ElevSubsystem;
@@ -50,6 +57,8 @@ import frc.robot.subsystems.HeadSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.LEDSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
+import frc.robot.subsystems.VisionSubsystem;
+import frc.robot.subsystems.VisionSubsystem.ReefPosition;
 
 /**
 * This class is where the bulk of the robot should be declared. Since Command-based is a "declarative" paradigm, very
@@ -60,10 +69,10 @@ public class RobotContainer {
 
     private final CommandXboxController driver1 = new CommandXboxController(0);
     private final CommandXboxController driver2 = new CommandXboxController(1);
-
+    
     private final SwerveSubsystem swerve = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "swerve"));
-    // private final VisionSubsystem reeflimelight = new VisionSubsystem(swerve, LLReefConstants.LL_NAME, LLReefConstants.CAMERA_OFFSET);
-    // private final VisionSubsystem funnellimelight = new VisionSubsystem(swerve, LLFunnelConstants.LL_NAME, LLFunnelConstants.CAMERA_OFFSET);
+    private final VisionSubsystem reeflimelight = new VisionSubsystem(LLReefConstants.LL_NAME, LLReefConstants.CAMERA_OFFSET);
+    private final VisionSubsystem funnellimelight = new VisionSubsystem(LLFunnelConstants.LL_NAME, LLFunnelConstants.CAMERA_OFFSET);
     private final ElevSubsystem elev = new ElevSubsystem();
     private final ClimbSubsystem climb = new ClimbSubsystem();
     private final HeadSubsystem head = new HeadSubsystem();
@@ -73,25 +82,24 @@ public class RobotContainer {
     // private final AlgaeManipSubsystem algaeManip = new AlgaeManipSubsystem();
     
     private SendableChooser<Command> autoChooser;
-    private TeleopDrive teleop;
+    private TeleopDrive teleopDrive;
     private LEDManager ledManager;
     
     public RobotContainer() {
-        teleop = new TeleopDrive(swerve,
-            () -> -MathUtil.applyDeadband(driver1.getLeftY(), SwerveConstants.LEFT_Y_DEADBAND),
-            () -> -MathUtil.applyDeadband(driver1.getLeftX(), SwerveConstants.LEFT_X_DEADBAND),
-            () -> -MathUtil.applyDeadband(driver1.getRightX(), SwerveConstants.RIGHT_X_DEADBAND),
-            () -> driver1.povCenter().getAsBoolean(),
-            () -> driver1.povDown().getAsBoolean(), () -> driver1.povDownLeft().getAsBoolean(),
-            () -> driver1.povDownRight().getAsBoolean(),
-            () -> driver1.povLeft().getAsBoolean(), () -> driver1.povRight().getAsBoolean(),
-            () -> driver1.povUp().getAsBoolean(),
-            () -> driver1.povUpLeft().getAsBoolean(), () -> driver1.povUpRight().getAsBoolean(),
-            () -> driver1.rightBumper().getAsBoolean(),
-            () -> driver1.back().getAsBoolean(),
-            // () -> driver1.leftTrigger(SwerveConstants.TRIGGER_DEADBAND).getAsBoolean(),
-            () -> driver1.rightTrigger(SwerveConstants.TRIGGER_DEADBAND).getAsBoolean()
-        );
+        teleopDrive = new TeleopDrive(swerve,
+                () -> -MathUtil.applyDeadband(driver1.getLeftY(), SwerveConstants.LEFT_Y_DEADBAND),
+                () -> -MathUtil.applyDeadband(driver1.getLeftX(), SwerveConstants.LEFT_X_DEADBAND),
+                () -> -MathUtil.applyDeadband(driver1.getRightX(), SwerveConstants.RIGHT_X_DEADBAND),
+                () -> driver1.povCenter().getAsBoolean(),
+                () -> driver1.povDown().getAsBoolean(), () -> driver1.povDownLeft().getAsBoolean(),
+                () -> driver1.povDownRight().getAsBoolean(),
+                () -> driver1.povLeft().getAsBoolean(), () -> driver1.povRight().getAsBoolean(),
+                () -> driver1.povUp().getAsBoolean(),
+                () -> driver1.povUpLeft().getAsBoolean(), () -> driver1.povUpRight().getAsBoolean(),
+                () -> driver1.leftTrigger(SwerveConstants.TRIGGER_DEADBAND).getAsBoolean(),
+                () -> driver1.back().getAsBoolean(),
+                () -> driver1.getRightTriggerAxis());
+        swerve.setDefaultCommand(teleopDrive);
 
         ledManager = new LEDManager(leds, head, driver1, driver2);
 
@@ -107,15 +115,30 @@ public class RobotContainer {
         setupAutoDisplay();
         SmartDashboard.putData("Auto Chooser", autoChooser);
 
-        // new LimelightManager(swerve, reeflimelight, funnellimelight).schedule();
 
         Field2d field = new Field2d();
         SmartDashboard.putData("Field", field);
+    }
+    private DriveToTag dtt;
+    private DriveToTag setupDtt(ReefPosition side, boolean reef) {
+        this.dtt = new DriveToTag(swerve, reef, side);
+        return this.dtt;
     }
 
     private void configureBindings() {
         driver1.b().onTrue(Commands.runOnce(swerve::zeroGyroWithAlliance));
         driver1.x().whileTrue(Commands.runOnce(swerve::lock, swerve).repeatedly());
+
+        // limelight testing
+        // driver1.a().onTrue(Commands.runOnce(swerve::addFakeVision(Reading));
+        
+        driver1.rightBumper().whileTrue(setupDtt(ReefPosition.RIGHT, true)); //Drive to closest tag
+        driver1.leftBumper().whileTrue(setupDtt(ReefPosition.LEFT, true));
+        driver1.y().whileTrue(setupDtt(ReefPosition.MIDDLE, false));
+        
+        new Trigger(() -> ((MathUtil.applyDeadband(Math.abs(driver1.getLeftX()), SwerveConstants.LEFT_X_DEADBAND) > 0 || MathUtil.applyDeadband(Math.abs(driver1.getLeftY()), SwerveConstants.LEFT_Y_DEADBAND) > 0.1) && dtt != null)).onTrue(new InstantCommand() {@Override public void execute(){if (dtt.getDriveToPose() != null)dtt.getDriveToPose().end(true);}});
+        
+        driver1.a().whileTrue(new DriveToAlgae(swerve, reeflimelight));
         
         driver2.a().onTrue(new Climb(climb));
         // driver2.y().onTrue(new Declimb(climb));
@@ -145,10 +168,6 @@ public class RobotContainer {
         // new Trigger(() -> driver2.getLeftX() <= -SwerveConstants.TRIGGER_DEADBAND).whileTrue(new AlgaeManipDeploy(algaeManip));
 
         // new Trigger(() -> head.getFunnelSensor()).onTrue(new Index(head).withInterruptBehavior(InterruptionBehavior.kCancelIncoming)); //we don't want the head to do anything until indexing is finished
-
-        // driverXbox.a().onTrue(Commands.runOnce(swerve::addFakeVisionReading));
-        // driverXbox.y().whileTrue(new DriveToTag(swerve, m_limelight, 7));
-        // driverXbox.leftBumper().onTrue(Commands.runOnce(m_limelight::adjustDriverPipeline));
 
         //driverXbox.b().whileTrue(
         //    swerve.driveToPose(
@@ -249,17 +268,22 @@ public class RobotContainer {
     public Command getAutonomousCommand() {
         return autoChooser.getSelected();
     }
+
     public SwerveSubsystem getSwerveSubsystem() {
-      return swerve;
+        return swerve;
     }
     public HeadSubsystem getHeadSubsystem() {
         return head;
     }
     public void setTeleopDefaultCommand() {
-        swerve.setDefaultCommand(teleop);
+        swerve.setDefaultCommand(teleopDrive);
     }
     public void clearTeleopDefaultCommand() {
         swerve.setDefaultCommand(new SwerveZero(swerve));
+    }
+
+    public void scheduleLimelight() {
+        new LimelightManager(swerve, reeflimelight, funnellimelight).schedule();
     }
     public void scheduleControllerRumble() {
         new IntakeRumble(head, driver1, driver2).schedule();

@@ -1,74 +1,115 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
-
 package frc.robot.commands.vision;
+
+import java.util.List;
+
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.path.GoalEndState;
+import com.pathplanner.lib.path.PathConstraints;
+import com.pathplanner.lib.path.PathPlannerPath;
+import com.pathplanner.lib.path.Waypoint;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
+import frc.robot.constants.SwerveConstants;
+import frc.robot.constants.TelemetryConstants;
 import frc.robot.constants.VisionConstants.ApriltagConstants;
-import frc.robot.constants.VisionConstants.LLReefConstants;
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
-import limelight.Limelight;
+import frc.robot.subsystems.VisionSubsystem.ReefPosition;
 
+public class DriveToTag extends Command {
+  private final SwerveSubsystem swerve;
+  private Command drivetoPose;
+  private int tagid;
+  private boolean reef;
+  private ReefPosition reefPos;
+  
+  public DriveToTag(SwerveSubsystem swerve, boolean reef, VisionSubsystem.ReefPosition reefPos){
+      this.swerve = swerve;
+      this.reef = reef;
+      this.reefPos = reefPos;
 
-/**
- * An example command that uses an example subsystem.
- */
-
-public class DriveToTag extends InstantCommand {
-    private final SwerveSubsystem swerve;
-    private Command drivetoPose;
-    private VisionSubsystem limelight;
-    private Pose2d intendedPose;
-    private int tagid; 
-
-    public DriveToTag(SwerveSubsystem swerve, VisionSubsystem limelight, int tagid){
-        this.swerve = swerve;
-        this.limelight = limelight;
-        this.tagid = tagid;
-        addRequirements(swerve);
-        addRequirements(limelight);
-        
-    }
+      addRequirements(swerve);
+  }
  
   @Override
   public void initialize() {
-    if (tagid == 0 && limelight.getTagID() > 0) tagid = (int) NetworkTableInstance.getDefault().getTable(limelight.getName()).getEntry("tid").getDouble(0);;
-    if (tagid > 0){
-      intendedPose = new Pose2d(
-        ApriltagConstants.TAG_POSES[tagid].getX() + ApriltagConstants.APRILTAG_POSE_OFFSET * Math.cos(ApriltagConstants.TAG_POSES[tagid].getRotation().getZ()),
-        ApriltagConstants.TAG_POSES[tagid].getY() + ApriltagConstants.APRILTAG_POSE_OFFSET * Math.sin(ApriltagConstants.TAG_POSES[tagid].getRotation().getZ()), 
-        new Rotation2d(ApriltagConstants.TAG_POSES[tagid].toPose2d().getRotation().getRadians() - Math.PI)
-      );
+    double offset = 0;
 
-    drivetoPose = swerve.driveToPose(intendedPose);
-    drivetoPose.schedule();
+    if (reef) {
+      tagid = swerve.getClosestTagIDReef();
+    } else {
+      tagid = swerve.getClosestTagIDStation();
     }
-   
-}
 
-  @Override 
-  public void execute() {
+    switch (reefPos) {
+      case LEFT:
+        offset = ApriltagConstants.LEFT_ALIGN_OFFSET;
+        break;
+      case RIGHT:
+        offset = ApriltagConstants.RIGHT_ALIGN_OFFSET;
+        break;
+      default:
+        offset = ApriltagConstants.MID_ALIGN_OFFSET;
+        break;
+    }
+    double x, y;
+    Rotation2d rot2d;
+    double rot;
+
+    rot2d = ApriltagConstants.TAG_POSES[tagid].getRotation().toRotation2d();
+    rot = rot2d.getRadians();
+
     
+    x = ApriltagConstants.TAG_POSES[tagid].getX() + (Units.inchesToMeters(16))*Math.cos(rot) - (ApriltagConstants.CENTER_TO_SCORER_OFFSET + offset)*Math.sin(rot);
+    y = ApriltagConstants.TAG_POSES[tagid].getY() + (Units.inchesToMeters(16))*Math.sin(rot) + (ApriltagConstants.CENTER_TO_SCORER_OFFSET + offset)*Math.cos(rot); 
+    
+    List<Waypoint> waypoints = PathPlannerPath.waypointsFromPoses(
+      new Pose2d(swerve.getPose().getTranslation(), new Rotation2d(x-swerve.getPose().getX(), y-swerve.getPose().getY())),
+      new Pose2d(x, y, rot2d.minus(Rotation2d.k180deg))
+    );
+
+    if (!(tagid == 1 || tagid == 2 || tagid == 12 || tagid == 13)) {
+      rot2d = rot2d.minus(Rotation2d.k180deg);
+    }
+
+    PathConstraints constraints = new PathConstraints(SwerveConstants.MAX_SPEED, 1.0, 2 * Math.PI, 4 * Math.PI);
+
+    // Create the path using the waypoints created above
+    PathPlannerPath path = new PathPlannerPath(waypoints, constraints, null, new GoalEndState(0.0, rot2d));
+
+    // Prevent the path from being flipped if the coordinates are already correct
+    path.preventFlipping = true;
+
+    if (TelemetryConstants.visionLevel >= TelemetryConstants.EYE_OF_SAURON) {
+      SmartDashboard.putNumber("tag x", x);
+      SmartDashboard.putNumber("tag y", y);
+      SmartDashboard.putNumber("swerve x", swerve.getPose().getX());
+      SmartDashboard.putNumber("swerve y", swerve.getPose().getY());
+    }
+    // run the path
+    drivetoPose = AutoBuilder.followPath(path).withInterruptBehavior(InterruptionBehavior.kCancelSelf);
+    drivetoPose.schedule();
   }
 
-  // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    drivetoPose.cancel();
-    SmartDashboard.putBoolean("DriveToTag Scheduled", false);
+    if (drivetoPose != null) {
+      drivetoPose.cancel();
+    }
   }
 
-  // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return drivetoPose != null;
+    // return drivetoPose.isFinished();
+    return false;
   }
 
+  public Command getDriveToPose() {
+  
+    return drivetoPose;
+  }
 }

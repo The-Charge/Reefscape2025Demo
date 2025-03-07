@@ -40,12 +40,12 @@ public class HeadSubsystem extends SubsystemBase {
 
         headLeft.set(0);
         headRight.set(0);
-
-        createSensorTriggers();
     }
 
     @Override
     public void periodic() {
+        hasCoral = getShooterSensor();
+
         if(TelemetryConstants.headLevel >= TelemetryConstants.LOW) {
             SmartDashboard.putNumber("Head VBus L", headLeft.get());
             SmartDashboard.putNumber("Head VBus R", headRight.get());
@@ -104,16 +104,5 @@ public class HeadSubsystem extends SubsystemBase {
         config.inverted(inverted);
 
         m.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-    }
-    private void createSensorTriggers() {
-        new Trigger(() -> getShooterSensor()).onTrue(new InstantCommand(() -> {
-            hasCoral = true;
-        }));
-        new Trigger(() -> getShooterSensor()).onFalse(new SequentialCommandGroup(
-            new WaitCommand(HeadConstants.hasCoralDeactivationDelay),
-            new InstantCommand(() -> {
-                hasCoral = false;
-            })
-        ));
     }
 }
