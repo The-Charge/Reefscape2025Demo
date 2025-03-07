@@ -13,8 +13,8 @@ import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.Filesystem;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -22,7 +22,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.IntakeRumble;
@@ -36,19 +35,16 @@ import frc.robot.commands.elev.MoveToLevel;
 import frc.robot.commands.elev.MoveToLevelManual;
 import frc.robot.commands.elev.MoveToTicksManual;
 import frc.robot.commands.head.Shoot;
+import frc.robot.commands.head.ShootSlow;
 import frc.robot.commands.head.WaitForHasCoral;
 import frc.robot.commands.intake.Intake;
 import frc.robot.commands.intake.ManualIntake;
 import frc.robot.commands.leds.LEDManager;
 import frc.robot.commands.swervedrive.drivebase.SwerveZero;
 import frc.robot.commands.swervedrive.drivebase.TeleopDrive;
-import frc.robot.commands.vision.DriveToAlgae;
 import frc.robot.commands.vision.DriveToTag;
-import frc.robot.commands.vision.LimelightManager;
 import frc.robot.constants.SwerveConstants;
 import frc.robot.constants.TelemetryConstants;
-import frc.robot.constants.VisionConstants.LLFunnelConstants;
-import frc.robot.constants.VisionConstants.LLReefConstants;
 import frc.robot.subsystems.AlgaeRemSubsystem;
 import frc.robot.subsystems.ClimbSubsystem;
 import frc.robot.subsystems.ElevSubsystem;
@@ -57,7 +53,6 @@ import frc.robot.subsystems.HeadSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.LEDSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
-import frc.robot.subsystems.VisionSubsystem;
 import frc.robot.subsystems.VisionSubsystem.ReefPosition;
 
 /**
@@ -71,8 +66,8 @@ public class RobotContainer {
     private final CommandXboxController driver2 = new CommandXboxController(1);
     
     private final SwerveSubsystem swerve = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "swerve"));
-    private final VisionSubsystem reeflimelight = new VisionSubsystem(LLReefConstants.LL_NAME, LLReefConstants.CAMERA_OFFSET);
-    private final VisionSubsystem funnellimelight = new VisionSubsystem(LLFunnelConstants.LL_NAME, LLFunnelConstants.CAMERA_OFFSET);
+    // private final VisionSubsystem reeflimelight = new VisionSubsystem(LLReefConstants.LL_NAME, LLReefConstants.CAMERA_OFFSET);
+    // private final VisionSubsystem funnellimelight = new VisionSubsystem(LLFunnelConstants.LL_NAME, LLFunnelConstants.CAMERA_OFFSET);
     private final ElevSubsystem elev = new ElevSubsystem();
     private final ClimbSubsystem climb = new ClimbSubsystem();
     private final HeadSubsystem head = new HeadSubsystem();
@@ -138,7 +133,7 @@ public class RobotContainer {
         
         new Trigger(() -> ((MathUtil.applyDeadband(Math.abs(driver1.getLeftX()), SwerveConstants.LEFT_X_DEADBAND) > 0 || MathUtil.applyDeadband(Math.abs(driver1.getLeftY()), SwerveConstants.LEFT_Y_DEADBAND) > 0.1) && dtt != null)).onTrue(new InstantCommand() {@Override public void execute(){if (dtt.getDriveToPose() != null)dtt.getDriveToPose().end(true);}});
         
-        driver1.a().whileTrue(new DriveToAlgae(swerve, reeflimelight));
+        // driver1.a().whileTrue(new DriveToAlgae(swerve, reeflimelight));
         
         driver2.a().onTrue(new Climb(climb));
         // driver2.y().onTrue(new Declimb(climb));
@@ -186,15 +181,16 @@ public class RobotContainer {
          * <Subsytem><Action>
          * Use PascalCase
          */
-        NamedCommands.registerCommand("ElevHome", new MoveToLevel(elev, head, ElevSubsystem.Level.HOME));
-        NamedCommands.registerCommand("ElevLevel1", new MoveToLevel(elev, head, ElevSubsystem.Level.LVL1));
-        NamedCommands.registerCommand("ElevLevel2", new MoveToLevel(elev, head, ElevSubsystem.Level.LVL2));
-        NamedCommands.registerCommand("ElevLevel3", new MoveToLevel(elev, head, ElevSubsystem.Level.LVL3));
-        NamedCommands.registerCommand("ElevLevel4", new MoveToLevel(elev, head, ElevSubsystem.Level.LVL4));
-        NamedCommands.registerCommand("ElevAlgaeLow", new MoveToLevel(elev, head, ElevSubsystem.Level.ALGAE_LOW));
-        NamedCommands.registerCommand("ElevAlgaeHigh", new MoveToLevel(elev, head, ElevSubsystem.Level.ALGAE_HIGH));
+        NamedCommands.registerCommand("ElevHome", new MoveToLevel(elev, head, ElevSubsystem.Level.HOME, true));
+        NamedCommands.registerCommand("ElevLevel1", new MoveToLevel(elev, head, ElevSubsystem.Level.LVL1, true));
+        NamedCommands.registerCommand("ElevLevel2", new MoveToLevel(elev, head, ElevSubsystem.Level.LVL2, true));
+        NamedCommands.registerCommand("ElevLevel3", new MoveToLevel(elev, head, ElevSubsystem.Level.LVL3, true));
+        NamedCommands.registerCommand("ElevLevel4", new MoveToLevel(elev, head, ElevSubsystem.Level.LVL4, true));
+        NamedCommands.registerCommand("ElevAlgaeLow", new MoveToLevel(elev, head, ElevSubsystem.Level.ALGAE_LOW, true));
+        NamedCommands.registerCommand("ElevAlgaeHigh", new MoveToLevel(elev, head, ElevSubsystem.Level.ALGAE_HIGH, true));
 
         NamedCommands.registerCommand("HeadShoot", new Shoot(head, elev));
+        NamedCommands.registerCommand("HeadShootSlow", new ShootSlow(head, elev));
         NamedCommands.registerCommand("HeadWaitForCoral", new WaitForHasCoral(head));
 
         NamedCommands.registerCommand("AlgaeRemSpin", new AlgaeRemSpin(algaeRem, true));
@@ -283,7 +279,7 @@ public class RobotContainer {
     }
 
     public void scheduleLimelight() {
-        new LimelightManager(swerve, reeflimelight, funnellimelight).schedule();
+        // new LimelightManager(swerve, reeflimelight, funnellimelight).schedule();
     }
     public void scheduleControllerRumble() {
         new IntakeRumble(head, driver1, driver2).schedule();

@@ -112,16 +112,16 @@
     },
     {
       "anchor": {
-        "x": 5.09524,
-        "y": 5.075437679
+        "x": 5.343,
+        "y": 5.039
       },
       "prevControl": {
-        "x": -8.881784197001252e-16,
-        "y": 8.881784197001252e-16
+        "x": 0.24775999999999865,
+        "y": -0.03643767899999961
       },
       "nextControl": {
-        "x": -8.881784197001252e-16,
-        "y": 8.881784197001252e-16
+        "x": 0.24775999999999865,
+        "y": -0.03643767899999961
       },
       "isLocked": true,
       "linkedName": "BackLeftCenter"
@@ -417,8 +417,8 @@
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 3.0,
-    "maxAcceleration": 3.0,
+    "maxVelocity": 1.0,
+    "maxAcceleration": 1.5,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,

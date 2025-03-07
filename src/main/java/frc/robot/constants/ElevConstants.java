@@ -20,7 +20,7 @@ public abstract class ElevConstants {
     public static final double targetThresholdSeconds = 0.1;
 
     public static final double homeInches = 0;
-    public static final double lvl1Inches = 9;
+    public static final double lvl1Inches = 13.5;
     public static final double lvl2Inches = 18;
     public static final double lvl3Inches = 34;
     public static final double lvl4Inches = 56.7;

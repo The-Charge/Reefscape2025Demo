@@ -105,7 +105,7 @@ public class Robot extends TimedRobot {
         disabledTimer.reset();
         disabledTimer.start();
         m_robotContainer.stopRumble();
-        m_robotContainer.scheduleLimelight();
+        // m_robotContainer.scheduleLimelight();
         m_robotContainer.getLEDManager().resetEndgameStarted();
     }
     
@@ -136,7 +136,7 @@ public class Robot extends TimedRobot {
             m_autonomousCommand.schedule();
         }
 
-        m_robotContainer.scheduleLimelight();
+        // m_robotContainer.scheduleLimelight();
 
         m_robotContainer.displayAuto();
         m_robotContainer.getHeadSubsystem().recheckHasCoral();
