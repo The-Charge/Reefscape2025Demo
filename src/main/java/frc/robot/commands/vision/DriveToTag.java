@@ -104,7 +104,8 @@ public class DriveToTag extends Command {
 
   @Override
   public boolean isFinished() {
-    return drivetoPose.isFinished();
+    // return drivetoPose.isFinished();
+    return false;
   }
 
   public Command getDriveToPose() {

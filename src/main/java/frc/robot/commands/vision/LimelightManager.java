@@ -43,24 +43,36 @@ public class LimelightManager extends Command {
         double reefAmbig = reefLimelight.getAmbiguity();
         double funnelAmbig = funnelLimelight.getAmbiguity();
 
+        int reefCount = reefLimelight.getTagCount();
+        int funnelCount = funnelLimelight.getTagCount();
+
         SmartDashboard.putNumber("reef ambig", reefAmbig);
         SmartDashboard.putNumber("funnel ambig", funnelAmbig);
         
         SmartDashboard.putBoolean("reef estimated", false);
         SmartDashboard.putBoolean("funnel estimated", false);
 
-        if (reefPose != null && funnelPose != null) {
-            if (reefAmbig < funnelAmbig) {
+        boolean reefEstim = (reefPose != null && reefAmbig < 0.2 || reefCount > 1);
+        boolean funnelEstim = (reefPose != null && reefAmbig < 0.2 || funnelCount > 1);
+
+        if (reefEstim && funnelEstim) {
+            if (reefCount > funnelCount) {
+                SmartDashboard.putBoolean("reef estimated", true);
+                swerve.addVisionReading(reefPose, reefTime);
+            } else if (reefCount < funnelCount) {
+                SmartDashboard.putBoolean("funnel estimated", true);
+                swerve.addVisionReading(funnelPose, funnelTime);
+            } else if (reefAmbig < funnelAmbig) {
                 SmartDashboard.putBoolean("reef estimated", true);
                 swerve.addVisionReading(reefPose, reefTime);
             } else {
                 SmartDashboard.putBoolean("funnel estimated", true);
                 swerve.addVisionReading(funnelPose, funnelTime);
             }
-        } else if (reefPose != null && reefAmbig < 0.2) {
+        } else if (reefEstim) {
             SmartDashboard.putBoolean("reef estimated", true);
             swerve.addVisionReading(reefPose, reefTime);
-        } else if (funnelPose != null && funnelAmbig < 0.2) {
+        } else if (funnelEstim) {
             SmartDashboard.putBoolean("funnel estimated", true);
             swerve.addVisionReading(funnelPose, funnelTime);
         }

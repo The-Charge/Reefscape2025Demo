@@ -7,7 +7,6 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.LimelightHelpers;
 import frc.robot.LimelightHelpers.RawFiducial;
@@ -99,6 +98,10 @@ public class VisionSubsystem extends SubsystemBase {
       return -1;
     }
     return fids[1].distToCamera;
+  }
+
+  public int getTagCount() {
+    return LimelightHelpers.getBotPoseEstimate_wpiBlue(ll_name).tagCount;
   }
 
   public String getName() {
