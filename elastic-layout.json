@@ -617,7 +617,7 @@
             }
           },
           {
-            "title": "Lever Temp (°C)",
+            "title": "Lever Temp (ï¿½C)",
             "x": 1344.0,
             "y": 448.0,
             "width": 128.0,
@@ -658,7 +658,7 @@
             }
           },
           {
-            "title": "Clamp Temp (°C)",
+            "title": "Clamp Temp (ï¿½C)",
             "x": 1344.0,
             "y": 576.0,
             "width": 128.0,

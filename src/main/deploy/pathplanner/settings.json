@@ -2,7 +2,13 @@
   "robotWidth": 0.762,
   "robotLength": 0.762,
   "holonomicMode": true,
-  "pathFolders": [],
+  "pathFolders": [
+    "2 L4 Coral B-LeftSource",
+    "2 L4 Coral C-RightSource",
+    "3 L4 Coral A-LeftSource",
+    "A-JustMove",
+    "2 L4 Coral B-FLR"
+  ],
   "autoFolders": [],
   "defaultMaxVel": 3.0,
   "defaultMaxAccel": 3.0,

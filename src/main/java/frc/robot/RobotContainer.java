@@ -36,6 +36,7 @@ import frc.robot.commands.elev.MoveToLevel;
 import frc.robot.commands.elev.MoveToLevelManual;
 import frc.robot.commands.elev.MoveToTicksManual;
 import frc.robot.commands.head.Shoot;
+import frc.robot.commands.head.WaitForHasCoral;
 import frc.robot.commands.intake.Intake;
 import frc.robot.commands.intake.ManualIntake;
 import frc.robot.commands.leds.LEDManager;
@@ -194,6 +195,7 @@ public class RobotContainer {
         NamedCommands.registerCommand("ElevAlgaeHigh", new MoveToLevel(elev, head, ElevSubsystem.Level.ALGAE_HIGH));
 
         NamedCommands.registerCommand("HeadShoot", new Shoot(head, elev));
+        NamedCommands.registerCommand("HeadWaitForCoral", new WaitForHasCoral(head));
 
         NamedCommands.registerCommand("AlgaeRemSpin", new AlgaeRemSpin(algaeRem, true));
     }

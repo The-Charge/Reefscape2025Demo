@@ -3,32 +3,37 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.0,
-        "y": 7.0
+        "x": 5.489249999999999,
+        "y": 4.922
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.0,
-        "y": 7.0
+        "x": 5.099249999999999,
+        "y": 5.77025
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "BackLeftRight"
     },
     {
       "anchor": {
-        "x": 4.53375,
-        "y": 7.0
+        "x": 1.60875,
+        "y": 7.369249999999999
       },
       "prevControl": {
-        "x": 3.5337500000000004,
-        "y": 7.0
+        "x": 3.5685000000000002,
+        "y": 7.2132499999999995
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "LeftSource"
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.7329133858267675,
+      "rotationDegrees": -54.0
+    }
+  ],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [],
@@ -42,13 +47,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": -54.0
   },
   "reversed": false,
-  "folder": null,
+  "folder": "2 L4 Coral B-LeftSource",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": -119.99999999999999
   },
   "useDefaultConstraints": true
 }
