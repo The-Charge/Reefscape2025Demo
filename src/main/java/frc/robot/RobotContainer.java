@@ -8,21 +8,52 @@ import java.io.File;
 import java.util.Optional;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Filesystem;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.commands.IntakeRumble;
+import frc.robot.commands.algaerem.AlgaeRemSpin;
+import frc.robot.commands.climb.Climb;
+import frc.robot.commands.climb.ClimbClampDegreesManual;
+import frc.robot.commands.climb.ClimbLeverDegreesManual;
+import frc.robot.commands.climb.Declimb;
+import frc.robot.commands.elev.MoveToInchesManual;
+import frc.robot.commands.elev.MoveToLevel;
+import frc.robot.commands.elev.MoveToLevelManual;
+import frc.robot.commands.elev.MoveToTicksManual;
+import frc.robot.commands.head.Shoot;
+import frc.robot.commands.head.ShootSlow;
+import frc.robot.commands.head.WaitForHasCoral;
+import frc.robot.commands.intake.Intake;
+import frc.robot.commands.intake.ManualIntake;
+import frc.robot.commands.leds.LEDManager;
+import frc.robot.commands.swervedrive.drivebase.SwerveZero;
 import frc.robot.commands.swervedrive.drivebase.TeleopDrive;
+import frc.robot.commands.vision.DriveToTag;
 import frc.robot.constants.SwerveConstants;
+import frc.robot.constants.TelemetryConstants;
+import frc.robot.subsystems.AlgaeRemSubsystem;
+import frc.robot.subsystems.ClimbSubsystem;
+import frc.robot.subsystems.ElevSubsystem;
+import frc.robot.subsystems.ElevSubsystem.Level;
+import frc.robot.subsystems.HeadSubsystem;
+import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.subsystems.LEDSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
-import frc.robot.subsystems.VisionSubsystem;
+import frc.robot.subsystems.VisionSubsystem.ReefPosition;
 
 /**
 * This class is where the bulk of the robot should be declared. Since Command-based is a "declarative" paradigm, very
@@ -31,37 +62,44 @@ import frc.robot.subsystems.VisionSubsystem;
 */
 public class RobotContainer {
 
-    private final CommandXboxController driverXbox = new CommandXboxController(0);
-    // private final Joystick buttonBox = new Joystick(1);
-
+    private final CommandXboxController driver1 = new CommandXboxController(0);
+    private final CommandXboxController driver2 = new CommandXboxController(1);
+    
     private final SwerveSubsystem swerve = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "swerve"));
-    private final VisionSubsystem m_limelight = new VisionSubsystem(swerve);
-    // private final ElevSubsystem elev = new ElevSubsystem();
-    // private final ClimbSubsystem climb = new ClimbSubsystem();
-    // private final HeadSubsystem head = new HeadSubsystem();
-    // private final IntakeSubsystem intake = new IntakeSubsystem();
-    // private final AlgaeRemSubsystem algaeRem = new AlgaeRemSubsystem();
+    // private final VisionSubsystem reeflimelight = new VisionSubsystem(LLReefConstants.LL_NAME, LLReefConstants.CAMERA_OFFSET);
+    // private final VisionSubsystem funnellimelight = new VisionSubsystem(LLFunnelConstants.LL_NAME, LLFunnelConstants.CAMERA_OFFSET);
+    private final ElevSubsystem elev = new ElevSubsystem();
+    private final ClimbSubsystem climb = new ClimbSubsystem();
+    private final HeadSubsystem head = new HeadSubsystem();
+    private final IntakeSubsystem intake = new IntakeSubsystem();
+    private final AlgaeRemSubsystem algaeRem = new AlgaeRemSubsystem();
+    private final LEDSubsystem leds = new LEDSubsystem();
+    // private final AlgaeManipSubsystem algaeManip = new AlgaeManipSubsystem();
     
     private SendableChooser<Command> autoChooser;
+    private TeleopDrive teleopDrive;
+    private LEDManager ledManager;
     
     public RobotContainer() {
-        TeleopDrive teleopDrive = new TeleopDrive(swerve,
-                () -> -MathUtil.applyDeadband(driverXbox.getLeftY(), SwerveConstants.LEFT_Y_DEADBAND),
-                () -> -MathUtil.applyDeadband(driverXbox.getLeftX(), SwerveConstants.LEFT_X_DEADBAND),
-                () -> -MathUtil.applyDeadband(driverXbox.getRightX(), SwerveConstants.RIGHT_X_DEADBAND),
-                () -> driverXbox.povCenter().getAsBoolean(),
-                () -> driverXbox.povDown().getAsBoolean(), () -> driverXbox.povDownLeft().getAsBoolean(),
-                () -> driverXbox.povDownRight().getAsBoolean(),
-                () -> driverXbox.povLeft().getAsBoolean(), () -> driverXbox.povRight().getAsBoolean(),
-                () -> driverXbox.povUp().getAsBoolean(),
-                () -> driverXbox.povUpLeft().getAsBoolean(), () -> driverXbox.povUpRight().getAsBoolean(),
-                () -> driverXbox.rightBumper().getAsBoolean(),
-                () -> driverXbox.back().getAsBoolean(),
-                () -> driverXbox.leftTrigger(SwerveConstants.TRIGGER_DEADBAND).getAsBoolean(),
-                () -> driverXbox.rightTrigger(SwerveConstants.TRIGGER_DEADBAND).getAsBoolean());
+        teleopDrive = new TeleopDrive(swerve,
+                () -> -MathUtil.applyDeadband(driver1.getLeftY(), SwerveConstants.LEFT_Y_DEADBAND),
+                () -> -MathUtil.applyDeadband(driver1.getLeftX(), SwerveConstants.LEFT_X_DEADBAND),
+                () -> -MathUtil.applyDeadband(driver1.getRightX(), SwerveConstants.RIGHT_X_DEADBAND),
+                () -> driver1.povCenter().getAsBoolean(),
+                () -> driver1.povDown().getAsBoolean(), () -> driver1.povDownLeft().getAsBoolean(),
+                () -> driver1.povDownRight().getAsBoolean(),
+                () -> driver1.povLeft().getAsBoolean(), () -> driver1.povRight().getAsBoolean(),
+                () -> driver1.povUp().getAsBoolean(),
+                () -> driver1.povUpLeft().getAsBoolean(), () -> driver1.povUpRight().getAsBoolean(),
+                () -> driver1.leftTrigger(SwerveConstants.TRIGGER_DEADBAND).getAsBoolean(),
+                () -> driver1.back().getAsBoolean(),
+                () -> driver1.getRightTriggerAxis());
         swerve.setDefaultCommand(teleopDrive);
 
-        // intake.setDefaultCommand(new Intake(intake, elev, head));
+        ledManager = new LEDManager(leds, head, driver1, driver2);
+
+        intake.setDefaultCommand(new Intake(intake, elev, head));
+        leds.setDefaultCommand(ledManager);
         
         configureNamedCommands();
         configureBindings();
@@ -72,29 +110,59 @@ public class RobotContainer {
         setupAutoDisplay();
         SmartDashboard.putData("Auto Chooser", autoChooser);
 
+
         Field2d field = new Field2d();
         SmartDashboard.putData("Field", field);
     }
+    private DriveToTag dtt;
+    private DriveToTag setupDtt(ReefPosition side, boolean reef) {
+        this.dtt = new DriveToTag(swerve, reef, side);
+        return this.dtt;
+    }
 
     private void configureBindings() {
-        driverXbox.b().onTrue(Commands.runOnce(swerve::zeroGyroWithAlliance));
-        driverXbox.x().whileTrue(Commands.runOnce(swerve::lock, swerve).repeatedly());
-        // new Trigger(() -> buttonBox.getRawButton(1)).onTrue(new InstantCommand(elev::stop));
-        // new Trigger(() -> buttonBox.getRawButton(2)).onTrue(new MoveToInches(elev, 0));
-        // new Trigger(() -> buttonBox.getRawButton(3)).onTrue(new MoveToLevel(elev, ElevSubsystem.Level.LVL1));
-        // new Trigger(() -> buttonBox.getRawButton(4)).onTrue(new MoveToLevel(elev, ElevSubsystem.Level.LVL2));
-        // new Trigger(() -> buttonBox.getRawButton(5)).onTrue(new MoveToLevel(elev, ElevSubsystem.Level.LVL3));
-        // new Trigger(() -> buttonBox.getRawButton(6)).onTrue(new MoveToLevel(elev, ElevSubsystem.Level.LVL4));
+        driver1.b().onTrue(Commands.runOnce(swerve::zeroGyroWithAlliance));
+        driver1.x().whileTrue(Commands.runOnce(swerve::lock, swerve).repeatedly());
 
-        // new Trigger(() -> buttonBox.getRawButton(1)).onTrue(new InstantCommand(climb::stop));
-        // new Trigger(() -> buttonBox.getRawButton(2)).onTrue(new Climb(climb));
-        // new Trigger(() -> buttonBox.getRawButton(3)).onTrue(new Declimb(climb));
+        // limelight testing
+        // driver1.a().onTrue(Commands.runOnce(swerve::addFakeVision(Reading));
+        
+        driver1.rightBumper().whileTrue(setupDtt(ReefPosition.RIGHT, true)); //Drive to closest tag
+        driver1.leftBumper().whileTrue(setupDtt(ReefPosition.LEFT, true));
+        driver1.y().whileTrue(setupDtt(ReefPosition.MIDDLE, false));
+        
+        new Trigger(() -> ((MathUtil.applyDeadband(Math.abs(driver1.getLeftX()), SwerveConstants.LEFT_X_DEADBAND) > 0 || MathUtil.applyDeadband(Math.abs(driver1.getLeftY()), SwerveConstants.LEFT_Y_DEADBAND) > 0.1) && dtt != null)).onTrue(new InstantCommand() {@Override public void execute(){if (dtt.getDriveToPose() != null)dtt.getDriveToPose().end(true);}});
+        
+        // driver1.a().whileTrue(new DriveToAlgae(swerve, reeflimelight));
+        
+        driver2.a().onTrue(new Climb(climb));
+        // driver2.y().onTrue(new Declimb(climb));
+        driver2.povUp().onTrue(new MoveToLevel(elev, head, Level.LVL4));
+        driver2.povRight().onTrue(new MoveToLevel(elev, head, Level.LVL3));
+        driver2.povLeft().onTrue(new MoveToLevel(elev, head, Level.LVL2));
+        driver2.povDown().onTrue(new MoveToLevel(elev, head, Level.LVL1));
+        driver2.leftTrigger(SwerveConstants.TRIGGER_DEADBAND).onTrue(new MoveToLevel(elev, head, Level.HOME));
+        driver2.x().whileTrue(new ManualIntake(intake));
+        // driver2.rightTrigger(SwerveConstants.TRIGGER_DEADBAND).onTrue(new SequentialCommandGroup(
+        //     new Shoot(head, elev),
+        //     new WaitCommand(1.5),
+        //     new MoveToLevel(elev, Level.HOME)
+        // ));
+        driver2.rightTrigger(SwerveConstants.TRIGGER_DEADBAND).onTrue(new Shoot(head, elev));
+        driver2.rightBumper().whileTrue(new SequentialCommandGroup(
+            new MoveToLevel(elev, head, Level.ALGAE_HIGH, true),
+            new AlgaeRemSpin(algaeRem, false)
+        ));
+        driver2.leftBumper().whileTrue(new SequentialCommandGroup(
+            new MoveToLevel(elev, head, Level.ALGAE_LOW, true),
+            new AlgaeRemSpin(algaeRem, false)
+        ));
+        // new Trigger(() -> driver2.getLeftY() <= -SwerveConstants.TRIGGER_DEADBAND).whileTrue(new AlgaeManipSpin(algaeManip, true));
+        // new Trigger(() -> driver2.getLeftY() >= SwerveConstants.TRIGGER_DEADBAND).whileTrue(new AlgaeManipSpin(algaeManip, false));
+        // new Trigger(() -> driver2.getLeftX() >= SwerveConstants.TRIGGER_DEADBAND).whileTrue(new AlgaeManipRetract(algaeManip));
+        // new Trigger(() -> driver2.getLeftX() <= -SwerveConstants.TRIGGER_DEADBAND).whileTrue(new AlgaeManipDeploy(algaeManip));
 
-        // new Trigger(() -> buttonBox.getRawButton(1)).onTrue(new Intake(head));
-        // new Trigger(() -> buttonBox.getRawButton(2)).onTrue(new Shoot(head));
-        // driverXbox.a().onTrue(Commands.runOnce(swerve::addFakeVisionReading));
-        // driverXbox.y().whileTrue(new DriveToTag(swerve, m_limelight, 7));
-        // driverXbox.leftBumper().onTrue(Commands.runOnce(m_limelight::adjustDriverPipeline));
+        // new Trigger(() -> head.getFunnelSensor()).onTrue(new Index(head).withInterruptBehavior(InterruptionBehavior.kCancelIncoming)); //we don't want the head to do anything until indexing is finished
 
         //driverXbox.b().whileTrue(
         //    swerve.driveToPose(
@@ -113,38 +181,49 @@ public class RobotContainer {
          * <Subsytem><Action>
          * Use PascalCase
          */
-        // NamedCommands.registerCommand("ElevHome", new MoveToLevel(elev, ElevSubsystem.Level.HOME));
-        // NamedCommands.registerCommand("ElevLevel1", new MoveToLevel(elev, ElevSubsystem.Level.LVL1));
-        // NamedCommands.registerCommand("ElevLevel2", new MoveToLevel(elev, ElevSubsystem.Level.LVL2));
-        // NamedCommands.registerCommand("ElevLevel3", new MoveToLevel(elev, ElevSubsystem.Level.LVL3));
-        // NamedCommands.registerCommand("ElevLevel4", new MoveToLevel(elev, ElevSubsystem.Level.LVL4));
+        NamedCommands.registerCommand("ElevHome", new MoveToLevel(elev, head, ElevSubsystem.Level.HOME, true));
+        NamedCommands.registerCommand("ElevLevel1", new MoveToLevel(elev, head, ElevSubsystem.Level.LVL1, true));
+        NamedCommands.registerCommand("ElevLevel2", new MoveToLevel(elev, head, ElevSubsystem.Level.LVL2, true));
+        NamedCommands.registerCommand("ElevLevel3", new MoveToLevel(elev, head, ElevSubsystem.Level.LVL3, true));
+        NamedCommands.registerCommand("ElevLevel4", new MoveToLevel(elev, head, ElevSubsystem.Level.LVL4, true));
+        NamedCommands.registerCommand("ElevAlgaeLow", new MoveToLevel(elev, head, ElevSubsystem.Level.ALGAE_LOW, true));
+        NamedCommands.registerCommand("ElevAlgaeHigh", new MoveToLevel(elev, head, ElevSubsystem.Level.ALGAE_HIGH, true));
 
-        // NamedCommands.registerCommand("HeadIntake", new Intake(head));
-        // NamedCommands.registerCommand("HeadShoot", new Shoot(head));
+        NamedCommands.registerCommand("HeadShoot", new Shoot(head, elev));
+        NamedCommands.registerCommand("HeadShootSlow", new ShootSlow(head, elev));
+        NamedCommands.registerCommand("HeadWaitForCoral", new WaitForHasCoral(head));
 
-        // NamedCommands.registerCommand("AlgaeRemIn", new AlgaeRemIn(algaeRem));
-        // NamedCommands.registerCommand("AlgaeRemOut", new AlgaeRemOut(algaeRem));
-        // NamedCommands.registerCommand("AlgaeRemSpin", new AlgaeRemSpin(algaeRem));
-        // NamedCommands.registerCommand("AlgaeRemStop", new AlgaeRemStop(algaeRem));
+        NamedCommands.registerCommand("AlgaeRemSpin", new AlgaeRemSpin(algaeRem, true));
     }
     private void addTelemetry() {
         //one time telemetry values, such as dashboard commands
-        // SmartDashboard.putData("Elev Manual Move (IN)", new MoveToInchesManual(elev));
-        // SmartDashboard.putData("Elev Manual Move (TICKS)", new MoveToTicksManual(elev));
-        // SmartDashboard.putData("Elev Manual Move (LVL)", new MoveToLevelManual(elev));
+        if(TelemetryConstants.elevLevel >= TelemetryConstants.HIGH) {
+            SmartDashboard.putData("Elev Manual Move (IN)", new MoveToInchesManual(elev));
+            SmartDashboard.putData("Elev Manual Move (TICKS)", new MoveToTicksManual(elev));
+            SmartDashboard.putData("Elev Manual Move (LVL)", new MoveToLevelManual(elev));
+        }
 
-        // SmartDashboard.putData("Climb Manual Climb (DEG)", new ClimbToDegreesManual(climb));
-        // SmartDashboard.putData("Climb Manual Climb (TICKS)", new ClimbToTicksManual(climb));
-        // SmartDashboard.putData("Climb Manual", new Climb(climb));
-        // SmartDashboard.putData("Declimb Manual", new Declimb(climb));
+        if(TelemetryConstants.climbLevel >= TelemetryConstants.HIGH) {
+            SmartDashboard.putData("Climb Lever Manual (DEG)", new ClimbLeverDegreesManual(climb));
+            SmartDashboard.putData("Climb Clamp Manual (DEG)", new ClimbClampDegreesManual(climb));
+            SmartDashboard.putData("Climb Manual", new Climb(climb));
+            SmartDashboard.putData("Declimb Manual", new Declimb(climb));
+        }
 
-        // SmartDashboard.putData("Head Intake", new Intake(head));
-        // SmartDashboard.putData("Head Shoot", new Shoot(head));
+        if(TelemetryConstants.headLevel >= TelemetryConstants.HIGH) {
+            SmartDashboard.putData("Head Shoot", new Shoot(head, elev));
+        }
 
-        // SmartDashboard.putData("AlgaeRem In", new AlgaeRemIn(algaeRem));
-        // SmartDashboard.putData("AlgaeRem Out", new AlgaeRemOut(algaeRem));
-        // SmartDashboard.putData("AlgaeRem Spin", new AlgaeRemSpin(algaeRem));
-        // SmartDashboard.putData("AlgaeRem Stop", new AlgaeRemStop(algaeRem));
+        if(TelemetryConstants.algaeRemLevel >= TelemetryConstants.HIGH) {
+            SmartDashboard.putData("AlgaeRem In", new AlgaeRemSpin(algaeRem, true));
+        }
+
+        // if(TelemetryConstants.algaeManipLevel >= TelemetryConstants.HIGH) {
+        //     SmartDashboard.putData("AlgaeManip Out", new AlgaeManipDeploy(algaeManip));
+        //     SmartDashboard.putData("AlgaeManip In", new AlgaeManipRetract(algaeManip));
+        //     SmartDashboard.putData("AlgaeManip Intake", new AlgaeManipSpin(algaeManip, true));
+        //     SmartDashboard.putData("AlgaeManip Outtake", new AlgaeManipSpin(algaeManip, false));
+        // }
     }
     private void setupAutoDisplay() {
         //update the displayed auto path in smartdashboard when ever the selection is changed
@@ -185,7 +264,31 @@ public class RobotContainer {
     public Command getAutonomousCommand() {
         return autoChooser.getSelected();
     }
+
     public SwerveSubsystem getSwerveSubsystem() {
-      return swerve;
+        return swerve;
+    }
+    public HeadSubsystem getHeadSubsystem() {
+        return head;
+    }
+    public void setTeleopDefaultCommand() {
+        swerve.setDefaultCommand(teleopDrive);
+    }
+    public void clearTeleopDefaultCommand() {
+        swerve.setDefaultCommand(new SwerveZero(swerve));
+    }
+
+    public void scheduleLimelight() {
+        // new LimelightManager(swerve, reeflimelight, funnellimelight).schedule();
+    }
+    public void scheduleControllerRumble() {
+        new IntakeRumble(head, driver1, driver2).schedule();
+    }
+    public void stopRumble() {
+        driver1.setRumble(RumbleType.kBothRumble, 0);
+        driver2.setRumble(RumbleType.kBothRumble, 0);
+    }
+    public LEDManager getLEDManager() {
+        return ledManager;
     }
 }
