@@ -21,7 +21,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.IntakeRumble;
@@ -86,18 +88,19 @@ public class RobotContainer {
     
     public RobotContainer() {
         teleopDrive = new TeleopDrive(swerve,
-                () -> -MathUtil.applyDeadband(driver1.getLeftY(), SwerveConstants.LEFT_Y_DEADBAND),
-                () -> -MathUtil.applyDeadband(driver1.getLeftX(), SwerveConstants.LEFT_X_DEADBAND),
-                () -> -MathUtil.applyDeadband(driver1.getRightX(), SwerveConstants.RIGHT_X_DEADBAND),
-                () -> driver1.povCenter().getAsBoolean(),
-                () -> driver1.povDown().getAsBoolean(), () -> driver1.povDownLeft().getAsBoolean(),
-                () -> driver1.povDownRight().getAsBoolean(),
-                () -> driver1.povLeft().getAsBoolean(), () -> driver1.povRight().getAsBoolean(),
-                () -> driver1.povUp().getAsBoolean(),
-                () -> driver1.povUpLeft().getAsBoolean(), () -> driver1.povUpRight().getAsBoolean(),
-                () -> driver1.leftTrigger(SwerveConstants.TRIGGER_DEADBAND).getAsBoolean(),
-                () -> driver1.back().getAsBoolean(),
-                () -> driver1.getRightTriggerAxis());
+            () -> -MathUtil.applyDeadband(driver1.getLeftY(), SwerveConstants.LEFT_Y_DEADBAND),
+            () -> -MathUtil.applyDeadband(driver1.getLeftX(), SwerveConstants.LEFT_X_DEADBAND),
+            () -> -MathUtil.applyDeadband(driver1.getRightX(), SwerveConstants.RIGHT_X_DEADBAND),
+            () -> driver1.povCenter().getAsBoolean(),
+            () -> driver1.povDown().getAsBoolean(), () -> driver1.povDownLeft().getAsBoolean(),
+            () -> driver1.povDownRight().getAsBoolean(),
+            () -> driver1.povLeft().getAsBoolean(), () -> driver1.povRight().getAsBoolean(),
+            () -> driver1.povUp().getAsBoolean(),
+            () -> driver1.povUpLeft().getAsBoolean(), () -> driver1.povUpRight().getAsBoolean(),
+            () -> driver1.leftTrigger(SwerveConstants.TRIGGER_DEADBAND).getAsBoolean(),
+            () -> driver1.back().getAsBoolean(),
+            () -> driver1.getRightTriggerAxis()
+        );
         swerve.setDefaultCommand(teleopDrive);
 
         ledManager = new LEDManager(leds, head, driver1, driver2);
@@ -284,6 +287,12 @@ public class RobotContainer {
 
     public void scheduleLimelight() {
         new LimelightManager(swerve, reeflimelight, funnellimelight).schedule();
+    }
+    public void scheduleLimelightAuton() {
+        new ParallelRaceGroup(
+            new LimelightManager(swerve, reeflimelight, funnellimelight),
+            new WaitCommand(SwerveConstants.autonVisionTime)
+        ).schedule();
     }
     public void scheduleControllerRumble() {
         new IntakeRumble(head, driver1, driver2).schedule();
