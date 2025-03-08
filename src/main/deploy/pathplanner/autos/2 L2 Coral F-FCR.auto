@@ -11,7 +11,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "StartB-BLL"
+                  "pathName": "StartF-BRR"
                 }
               },
               {
@@ -36,7 +36,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "BLL-LeftSource"
+                  "pathName": "BRR-RightSource"
                 }
               },
               {
@@ -61,7 +61,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "LeftSource-FLL"
+                  "pathName": "RightSource-FCR"
                 }
               },
               {

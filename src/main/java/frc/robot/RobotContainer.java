@@ -143,7 +143,7 @@ public class RobotContainer {
         // driver1.a().whileTrue(new DriveToAlgae(swerve, reeflimelight));
         
         driver2.a().onTrue(new Climb(climb));
-        // driver2.y().onTrue(new Declimb(climb));
+        driver2.y().onTrue(new Declimb(climb));
         driver2.povUp().onTrue(new MoveToLevel(elev, head, Level.LVL4));
         driver2.povRight().onTrue(new MoveToLevel(elev, head, Level.LVL3));
         driver2.povLeft().onTrue(new MoveToLevel(elev, head, Level.LVL2));

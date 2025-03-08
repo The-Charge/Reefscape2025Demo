@@ -11,7 +11,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "StartF-BRR"
+                  "pathName": "StartB-BLL"
                 }
               },
               {
@@ -36,7 +36,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "BRR-RightSource"
+                  "pathName": "BLL-LeftSource"
                 }
               },
               {
@@ -61,13 +61,13 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "RightSource-FRR"
+                  "pathName": "LeftSource-FCL"
                 }
               },
               {
                 "type": "named",
                 "data": {
-                  "name": "ElevLevel4"
+                  "name": "ElevLevel2"
                 }
               }
             ]
