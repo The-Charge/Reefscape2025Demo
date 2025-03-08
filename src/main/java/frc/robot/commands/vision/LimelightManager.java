@@ -20,11 +20,6 @@ public class LimelightManager extends Command {
     }
 
     @Override
-    public boolean runsWhenDisabled() {
-        return true;
-    }
-
-    @Override
     public void initialize() {
         System.out.println("LimelightManager Initialize");
     }

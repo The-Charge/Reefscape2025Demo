@@ -101,7 +101,11 @@ public class VisionSubsystem extends SubsystemBase {
   }
 
   public int getTagCount() {
-    return LimelightHelpers.getBotPoseEstimate_wpiBlue(ll_name).tagCount;
+    try {
+      return LimelightHelpers.getBotPoseEstimate_wpiBlue(ll_name).tagCount;
+    } catch (Exception e) {
+      return -1;
+    }
   }
 
   public String getName() {
