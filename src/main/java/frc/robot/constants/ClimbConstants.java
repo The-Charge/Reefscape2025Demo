@@ -9,7 +9,7 @@ public abstract class ClimbConstants {
     
     public static final int leverID = 2;
     public static final double leverMaxVBus = 1;
-    public static final double leverMaxCurrent = 60;
+    public static final double leverMaxCurrent = 80;
     public static final InvertedValue leverInverted = InvertedValue.Clockwise_Positive;
     public static final NeutralModeValue leverNeutralMode = NeutralModeValue.Brake;
     

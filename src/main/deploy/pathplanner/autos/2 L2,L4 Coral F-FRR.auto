@@ -11,13 +11,13 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "StartA-FLR"
+                  "pathName": "StartF-BRR"
                 }
               },
               {
                 "type": "named",
                 "data": {
-                  "name": "ElevLevel4"
+                  "name": "ElevLevel2"
                 }
               }
             ]
@@ -36,7 +36,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "FLR-LeftSource"
+                  "pathName": "BRR-RightSource"
                 }
               },
               {
@@ -61,7 +61,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "LeftSource-FCL"
+                  "pathName": "RightSource-FRR"
                 }
               },
               {
@@ -80,78 +80,15 @@
           }
         },
         {
-          "type": "parallel",
-          "data": {
-            "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "FCL-LeftSource"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "ElevHome"
-                }
-              }
-            ]
-          }
-        },
-        {
           "type": "named",
           "data": {
-            "name": "HeadWaitForCoral"
-          }
-        },
-        {
-          "type": "parallel",
-          "data": {
-            "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "LeftSource-FCR"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "ElevLevel4"
-                }
-              }
-            ]
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "HeadShoot"
-          }
-        },
-        {
-          "type": "parallel",
-          "data": {
-            "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "FCR-LeftSource"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "ElevHome"
-                }
-              }
-            ]
+            "name": "ElevHome"
           }
         }
       ]
     }
   },
-  "resetOdom": false,
+  "resetOdom": true,
   "folder": null,
   "choreoAuto": false
 }

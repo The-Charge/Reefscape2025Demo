@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 7.283250000000001,
-        "y": 6.12125
+        "x": 7.2735,
+        "y": 0.7392499999999995
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.30825,
-        "y": 6.12125
+        "x": 6.376500000000001,
+        "y": 0.7392499999999993
       },
       "isLocked": false,
-      "linkedName": "StartB"
+      "linkedName": "StartG"
     },
     {
       "anchor": {
-        "x": 5.343,
-        "y": 5.039
+        "x": 5.370491803278688,
+        "y": 0.51859631147541
       },
       "prevControl": {
-        "x": 5.625750000000001,
-        "y": 5.545999999999999
+        "x": 6.22849180327869,
+        "y": 0.5380963114754098
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "BackLeftCenter"
+      "linkedName": null
     }
   ],
   "rotationTargets": [],
@@ -33,7 +33,7 @@
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 1.0,
+    "maxVelocity": 1.5,
     "maxAcceleration": 1.5,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
@@ -42,10 +42,10 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -119.99999999999999
+    "rotation": 180.0
   },
   "reversed": false,
-  "folder": "1 L4 Coral B-FL",
+  "folder": null,
   "idealStartingState": {
     "velocity": 0,
     "rotation": 180.0

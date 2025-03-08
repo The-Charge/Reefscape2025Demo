@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.60875,
-        "y": 7.369249999999999
+        "x": 1.5405000000000002,
+        "y": 7.44725
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.6129999999999995,
-        "y": 6.7452499999999995
+        "x": 2.5447499999999996,
+        "y": 6.823250000000001
       },
       "isLocked": false,
       "linkedName": "LeftSource"
@@ -33,7 +33,7 @@
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 1.0,
+    "maxVelocity": 1.5,
     "maxAcceleration": 1.5,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
@@ -45,7 +45,7 @@
     "rotation": 0.0
   },
   "reversed": false,
-  "folder": "3 L4 Coral A-LeftSource",
+  "folder": null,
   "idealStartingState": {
     "velocity": 0,
     "rotation": -54.0

@@ -11,13 +11,13 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "StartB-BLC"
+                  "pathName": "StartB-BLL"
                 }
               },
               {
                 "type": "named",
                 "data": {
-                  "name": "ElevLevel1"
+                  "name": "ElevLevel2"
                 }
               }
             ]
@@ -26,7 +26,7 @@
         {
           "type": "named",
           "data": {
-            "name": "HeadShootSlow"
+            "name": "HeadShoot"
           }
         }
       ]

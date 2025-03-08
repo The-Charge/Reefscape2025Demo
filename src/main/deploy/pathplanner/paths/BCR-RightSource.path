@@ -16,12 +16,12 @@
     },
     {
       "anchor": {
-        "x": 1.5014999999999998,
-        "y": 0.7392499999999995
+        "x": 1.443,
+        "y": 0.66125
       },
       "prevControl": {
-        "x": 2.6715,
-        "y": 0.6514999999999995
+        "x": 2.6130000000000004,
+        "y": 0.5735
       },
       "nextControl": null,
       "isLocked": false,
@@ -38,7 +38,7 @@
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 1.0,
+    "maxVelocity": 1.5,
     "maxAcceleration": 1.5,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
@@ -50,7 +50,7 @@
     "rotation": 54.0
   },
   "reversed": false,
-  "folder": "2 L4 Coral C-RightSource",
+  "folder": null,
   "idealStartingState": {
     "velocity": 0,
     "rotation": 180.0
