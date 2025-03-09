@@ -1171,6 +1171,13 @@
           }
         ]
       }
+    },
+    {
+      "name": "Tab 7",
+      "grid_layout": {
+        "layouts": [],
+        "containers": []
+      }
     }
   ]
 }

@@ -31,6 +31,7 @@ import frc.robot.commands.algaerem.AlgaeRemSpin;
 import frc.robot.commands.climb.Climb;
 import frc.robot.commands.climb.ClimbClampDegreesManual;
 import frc.robot.commands.climb.ClimbLeverDegreesManual;
+import frc.robot.commands.climb.ClimbOverride;
 import frc.robot.commands.climb.Declimb;
 import frc.robot.commands.elev.MoveToInchesManual;
 import frc.robot.commands.elev.MoveToLevel;
@@ -144,6 +145,7 @@ public class RobotContainer {
         
         driver2.a().onTrue(new Climb(climb));
         driver2.y().onTrue(new Declimb(climb));
+        driver2.back().onTrue(new ClimbOverride(climb));
         driver2.povUp().onTrue(new MoveToLevel(elev, head, Level.LVL4));
         driver2.povRight().onTrue(new MoveToLevel(elev, head, Level.LVL3));
         driver2.povLeft().onTrue(new MoveToLevel(elev, head, Level.LVL2));
