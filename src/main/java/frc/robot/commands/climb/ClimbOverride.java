@@ -10,6 +10,9 @@ public class ClimbOverride extends Command {
     private ClimbSubsystem climb;
     private Timer timeout;
 
+    /**
+     * ALWAYS HAVE A HAND ON DISABLE WHEN USING. IT WILL BREAK THE CLIMBER
+     */
     public ClimbOverride(ClimbSubsystem climbSub) {
         climb = climbSub;
 

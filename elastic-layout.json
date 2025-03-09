@@ -550,7 +550,7 @@
           },
           {
             "title": "Lever Current",
-            "x": 1216.0,
+            "x": 1280.0,
             "y": 448.0,
             "width": 128.0,
             "height": 128.0,
@@ -564,7 +564,7 @@
           },
           {
             "title": "Lever VBus",
-            "x": 1088.0,
+            "x": 1152.0,
             "y": 448.0,
             "width": 128.0,
             "height": 128.0,
@@ -578,7 +578,7 @@
           },
           {
             "title": "Lever Temp (°C)",
-            "x": 1344.0,
+            "x": 1408.0,
             "y": 448.0,
             "width": 128.0,
             "height": 128.0,
@@ -586,12 +586,13 @@
             "properties": {
               "topic": "/SmartDashboard/Climb Lever Temp (deg C)",
               "period": 0.06,
+              "data_type": "double",
               "show_submit_button": false
             }
           },
           {
             "title": "Clamp VBus",
-            "x": 1088.0,
+            "x": 1152.0,
             "y": 576.0,
             "width": 128.0,
             "height": 128.0,
@@ -605,7 +606,7 @@
           },
           {
             "title": "Clamp Current",
-            "x": 1216.0,
+            "x": 1280.0,
             "y": 576.0,
             "width": 128.0,
             "height": 128.0,
@@ -619,7 +620,7 @@
           },
           {
             "title": "Clamp Temp (°C)",
-            "x": 1344.0,
+            "x": 1408.0,
             "y": 576.0,
             "width": 128.0,
             "height": 128.0,
@@ -627,6 +628,7 @@
             "properties": {
               "topic": "/SmartDashboard/Climb Clamp Temp (deg C)",
               "period": 0.06,
+              "data_type": "double",
               "show_submit_button": false
             }
           },
@@ -751,6 +753,36 @@
             "type": "Boolean Box",
             "properties": {
               "topic": "/SmartDashboard/Climb Clamp isAtTarget",
+              "period": 0.06,
+              "data_type": "boolean",
+              "true_color": 4283215696,
+              "false_color": 4294198070,
+              "true_icon": "None",
+              "false_icon": "None"
+            }
+          },
+          {
+            "title": "Climb Slow",
+            "x": 768.0,
+            "y": 448.0,
+            "width": 256.0,
+            "height": 128.0,
+            "type": "Command",
+            "properties": {
+              "topic": "/SmartDashboard/Climb Slow",
+              "period": 0.06,
+              "show_type": false
+            }
+          },
+          {
+            "title": "Climb Lever Swich",
+            "x": 1024.0,
+            "y": 448.0,
+            "width": 128.0,
+            "height": 256.0,
+            "type": "Boolean Box",
+            "properties": {
+              "topic": "/SmartDashboard/Climb Lever Swich",
               "period": 0.06,
               "data_type": "boolean",
               "true_color": 4283215696,

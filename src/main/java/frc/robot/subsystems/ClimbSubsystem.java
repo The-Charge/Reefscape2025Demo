@@ -5,6 +5,7 @@ import com.ctre.phoenix6.configs.SoftwareLimitSwitchConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.PositionDutyCycle;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.ForwardLimitValue;
 import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
@@ -74,6 +75,7 @@ public class ClimbSubsystem extends SubsystemBase {
                     SmartDashboard.putNumber("Climb Clamp Ang (Ticks)", getClampTicks());
                     SmartDashboard.putNumber("Climb Clamp Err (Ticks)", clampTargetTicks - getClampTicks());
                     SmartDashboard.putNumber("Climb Clamp Target (Ticks)", clampTargetTicks);
+                    SmartDashboard.putBoolean("Climb Lever Swich", getLeverLimitSwitch());
 
                     if(TelemetryConstants.climbLevel >= TelemetryConstants.EYE_OF_SAURON) {
                         SmartDashboard.putNumber("Climb Lever VBus", lever.get());
@@ -152,6 +154,9 @@ public class ClimbSubsystem extends SubsystemBase {
     }
     public boolean isLeverIsAtTarget() {
         return leverIsAtTarget;
+    }
+    public boolean getLeverLimitSwitch() {
+        return lever.getForwardLimit().getValue() == ForwardLimitValue.ClosedToGround;
     }
 
     public void setClampDegrees(double deg) {

@@ -11,21 +11,21 @@
         "x": 6.883500000000001,
         "y": 3.9957499999999997
       },
-      "isLocked": true,
+      "isLocked": false,
       "linkedName": "StartD"
     },
     {
       "anchor": {
-        "x": 5.7525,
+        "x": 5.598258196721312,
         "y": 3.966499999999999
       },
       "prevControl": {
-        "x": 6.4474426985210425,
+        "x": 6.293200895242354,
         "y": 3.966499999999999
       },
       "nextControl": null,
-      "isLocked": true,
-      "linkedName": null
+      "isLocked": false,
+      "linkedName": "BackCenterLeft"
     }
   ],
   "rotationTargets": [],

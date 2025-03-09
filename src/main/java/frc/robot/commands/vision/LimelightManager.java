@@ -53,7 +53,7 @@ public class LimelightManager extends Command {
         }
 
         boolean reefEstim = (reefPose != null && reefAmbig < 0.2 || reefCount > 1);
-        boolean funnelEstim = (reefPose != null && reefAmbig < 0.2 || funnelCount > 1);
+        boolean funnelEstim = (funnelPose != null && funnelAmbig < 0.2 || funnelCount > 1);
 
         if (reefEstim && funnelEstim) {
             if (reefCount > funnelCount) {

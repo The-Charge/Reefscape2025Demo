@@ -47,6 +47,7 @@ import frc.robot.commands.swervedrive.drivebase.SwerveZero;
 import frc.robot.commands.swervedrive.drivebase.TeleopDrive;
 import frc.robot.commands.vision.DriveToTag;
 import frc.robot.commands.vision.LimelightManager;
+import frc.robot.constants.ClimbConstants;
 import frc.robot.constants.SwerveConstants;
 import frc.robot.constants.TelemetryConstants;
 import frc.robot.constants.VisionConstants.LLFunnelConstants;
@@ -145,7 +146,7 @@ public class RobotContainer {
         
         driver2.a().onTrue(new Climb(climb));
         driver2.y().onTrue(new Declimb(climb));
-        driver2.back().onTrue(new ClimbOverride(climb));
+        // driver2.back().onTrue(new ClimbOverride(climb));
         driver2.povUp().onTrue(new MoveToLevel(elev, head, Level.LVL4));
         driver2.povRight().onTrue(new MoveToLevel(elev, head, Level.LVL3));
         driver2.povLeft().onTrue(new MoveToLevel(elev, head, Level.LVL2));
@@ -217,6 +218,7 @@ public class RobotContainer {
             SmartDashboard.putData("Climb Clamp Manual (DEG)", new ClimbClampDegreesManual(climb));
             SmartDashboard.putData("Climb Manual", new Climb(climb));
             SmartDashboard.putData("Declimb Manual", new Declimb(climb));
+            SmartDashboard.putData("Climb Slow", new Climb(climb, ClimbConstants.leverSlowVbus));
         }
 
         if(TelemetryConstants.headLevel >= TelemetryConstants.HIGH) {

@@ -91,18 +91,18 @@ public class TeleopDrive extends Command {
                 .times(isFieldCentric ? swerve.isRedAlliance() ? -1 : 1 : 1);
 
         switch (mode) {
-        case POV:
-            // Drive with POV
-            swerve.drive(translation, POVDrive(), isFieldCentric);
-            break;
-        case REEF:
-            // Drive with Reef Rotation
-            swerve.drive(translation, ReefLock(), isFieldCentric);
-            break;
-        default:
-            // Drive normally
-            swerve.drive(translation, rotationSpeed, isFieldCentric);
-            break;
+            case POV:
+                // Drive with POV
+                swerve.drive(translation, POVDrive(), isFieldCentric);
+                break;
+            case REEF:
+                // Drive with Reef Rotation
+                swerve.drive(translation, ReefLock(), isFieldCentric);
+                break;
+            default:
+                // Drive normally
+                swerve.drive(translation, rotationSpeed, isFieldCentric);
+                break;
         }
     }
 

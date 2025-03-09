@@ -11,7 +11,7 @@ public abstract class ClimbConstants {
     public static final double leverMaxVBus = 1;
     public static final double leverMaxCurrent = 80;
     public static final InvertedValue leverInverted = InvertedValue.Clockwise_Positive;
-    public static final NeutralModeValue leverNeutralMode = NeutralModeValue.Brake;
+    public static final NeutralModeValue leverNeutralMode = NeutralModeValue.Coast;
     
     public static final PIDFConfig leverPIDF = new PIDFConfig(0.1, 0, 0, 0);
     public static final double leverMinPosTicks = 0;
@@ -22,6 +22,7 @@ public abstract class ClimbConstants {
     public static final double leverRestingDegrees = 3;
     public static final double leverSafeDegrees = 35 * leverTickToDegConversion;
     public static final double leverActiveDegrees = 46 * leverTickToDegConversion;
+    public static final double leverSlowVbus = 0.05;
 
     public static final int clampID = 5;
     public static final double clampMaxVBus = 0.5;
