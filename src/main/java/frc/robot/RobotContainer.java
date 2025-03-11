@@ -82,7 +82,6 @@ public class RobotContainer {
     private final IntakeSubsystem intake = new IntakeSubsystem();
     private final AlgaeRemSubsystem algaeRem = new AlgaeRemSubsystem();
     private final LEDSubsystem leds = new LEDSubsystem();
-    // private final AlgaeManipSubsystem algaeManip = new AlgaeManipSubsystem();
     
     private SendableChooser<Command> autoChooser;
     private TeleopDrive teleopDrive;
@@ -167,10 +166,6 @@ public class RobotContainer {
             new MoveToLevel(elev, head, Level.ALGAE_LOW, true),
             new AlgaeRemSpin(algaeRem, false)
         ));
-        // new Trigger(() -> driver2.getLeftY() <= -SwerveConstants.TRIGGER_DEADBAND).whileTrue(new AlgaeManipSpin(algaeManip, true));
-        // new Trigger(() -> driver2.getLeftY() >= SwerveConstants.TRIGGER_DEADBAND).whileTrue(new AlgaeManipSpin(algaeManip, false));
-        // new Trigger(() -> driver2.getLeftX() >= SwerveConstants.TRIGGER_DEADBAND).whileTrue(new AlgaeManipRetract(algaeManip));
-        // new Trigger(() -> driver2.getLeftX() <= -SwerveConstants.TRIGGER_DEADBAND).whileTrue(new AlgaeManipDeploy(algaeManip));
 
         // new Trigger(() -> head.getFunnelSensor()).onTrue(new Index(head).withInterruptBehavior(InterruptionBehavior.kCancelIncoming)); //we don't want the head to do anything until indexing is finished
 
