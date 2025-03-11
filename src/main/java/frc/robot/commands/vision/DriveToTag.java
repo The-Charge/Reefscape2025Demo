@@ -84,7 +84,7 @@ public class DriveToTag extends Command {
     // Prevent the path from being flipped if the coordinates are already correct
     path.preventFlipping = true;
 
-    if (TelemetryConstants.visionLevel >= TelemetryConstants.EYE_OF_SAURON) {
+    if (TelemetryConstants.debugTelemetry) {
       SmartDashboard.putNumber("tag x", x);
       SmartDashboard.putNumber("tag y", y);
       SmartDashboard.putNumber("swerve x", swerve.getPose().getX());

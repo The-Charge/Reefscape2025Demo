@@ -207,34 +207,21 @@ public class RobotContainer {
     }
     private void addTelemetry() {
         //one time telemetry values, such as dashboard commands
-        if(TelemetryConstants.elevLevel >= TelemetryConstants.HIGH) {
+        if(TelemetryConstants.debugTelemetry) {
             SmartDashboard.putData("Elev Manual Move (IN)", new MoveToInchesManual(elev));
             SmartDashboard.putData("Elev Manual Move (TICKS)", new MoveToTicksManual(elev));
             SmartDashboard.putData("Elev Manual Move (LVL)", new MoveToLevelManual(elev));
-        }
 
-        if(TelemetryConstants.climbLevel >= TelemetryConstants.HIGH) {
             SmartDashboard.putData("Climb Lever Manual (DEG)", new ClimbLeverDegreesManual(climb));
             SmartDashboard.putData("Climb Clamp Manual (DEG)", new ClimbClampDegreesManual(climb));
             SmartDashboard.putData("Climb Manual", new Climb(climb));
             SmartDashboard.putData("Declimb Manual", new Declimb(climb));
             SmartDashboard.putData("Climb Slow", new Climb(climb, ClimbConstants.leverSlowVbus));
-        }
 
-        if(TelemetryConstants.headLevel >= TelemetryConstants.HIGH) {
             SmartDashboard.putData("Head Shoot", new Shoot(head, elev));
-        }
 
-        if(TelemetryConstants.algaeRemLevel >= TelemetryConstants.HIGH) {
-            SmartDashboard.putData("AlgaeRem In", new AlgaeRemSpin(algaeRem, true));
+            SmartDashboard.putData("AlgaeRem Spin", new AlgaeRemSpin(algaeRem, true));
         }
-
-        // if(TelemetryConstants.algaeManipLevel >= TelemetryConstants.HIGH) {
-        //     SmartDashboard.putData("AlgaeManip Out", new AlgaeManipDeploy(algaeManip));
-        //     SmartDashboard.putData("AlgaeManip In", new AlgaeManipRetract(algaeManip));
-        //     SmartDashboard.putData("AlgaeManip Intake", new AlgaeManipSpin(algaeManip, true));
-        //     SmartDashboard.putData("AlgaeManip Outtake", new AlgaeManipSpin(algaeManip, false));
-        // }
     }
     private void setupAutoDisplay() {
         //update the displayed auto path in smartdashboard when ever the selection is changed

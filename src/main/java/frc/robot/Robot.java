@@ -100,7 +100,7 @@ public class Robot extends TimedRobot {
         // block in order for anything in the Command-based framework to work.
         CommandScheduler.getInstance().run();
 
-        if(TelemetryConstants.robotLevel >= TelemetryConstants.EYE_OF_SAURON) {
+        if(TelemetryConstants.debugTelemetry) {
             SmartDashboard.putNumber("Total Amps", m_pdp.getTotalCurrent());
             SmartDashboard.putNumber("Battery Voltage", m_pdp.getVoltage());
         }
@@ -193,7 +193,7 @@ public class Robot extends TimedRobot {
     {
         SmartDashboard.putNumber("Time Remaining", DriverStation.getMatchTime());
 
-        if(TelemetryConstants.robotLevel >= TelemetryConstants.LOW) {
+        if(TelemetryConstants.debugTelemetry) {
             SmartDashboard.putNumber("velocity", Math.hypot(
                 m_robotContainer.getSwerveSubsystem().getFieldVelocity().vxMetersPerSecond,
                 m_robotContainer.getSwerveSubsystem().getFieldVelocity().vyMetersPerSecond
