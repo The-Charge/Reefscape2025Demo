@@ -8,9 +8,14 @@ public class Climb extends Command {
     
     private ClimbSubsystem climb;
     private boolean startedLever;
+    private double leverVbus;
 
     public Climb(ClimbSubsystem climbSub) {
+        this(climbSub, ClimbConstants.leverMaxVBus);
+    }
+    public Climb(ClimbSubsystem climbSub, double vbus) {
         climb = climbSub;
+        leverVbus = vbus;
 
         addRequirements(climb);
     }
@@ -24,7 +29,7 @@ public class Climb extends Command {
     @Override
     public void execute() {
         if(climb.isClampIsAtTarget() && !startedLever) {
-            climb.leverVBus(ClimbConstants.leverMaxVBus); //relies on soft limits to stop from going too far
+            climb.leverVBus(leverVbus); //relies on soft limits to stop from going too far
             startedLever = true;
         }
     }
@@ -35,6 +40,7 @@ public class Climb extends Command {
 
     @Override
     public boolean isFinished() {
-        return climb.getLeverDegrees() >= ClimbConstants.leverActiveDegrees;
+        return climb.getLeverLimitSwitch();
+        // return climb.getLeverDegrees() >= ClimbConstants.leverActiveDegrees;
     }
 }

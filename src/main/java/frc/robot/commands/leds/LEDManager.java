@@ -61,27 +61,27 @@ public class LEDManager extends Command {
     @Override
     public void execute() {
         if(DriverStation.isDisabled()) {
-            if(disabledTimer.advanceIfElapsed(disabledAnimationTime)) {
-                currentDisabledAnimation = (currentDisabledAnimation + 1) % 3;
-            }
+            // if(disabledTimer.advanceIfElapsed(disabledAnimationTime)) {
+            //     currentDisabledAnimation = (currentDisabledAnimation + 1) % 3;
+            // }
 
-            switch(currentDisabledAnimation) {
-                default:
-                case 0:
+            // switch(currentDisabledAnimation) {
+            //     default:
+            //     case 0:
                     breathe.update();
                     breathe.evaluate(leds.fullBuff());
-                    break;
+            //         break;
                 
-                case 1:
-                    steps.update();
-                    steps.evaluate(leds.fullBuff());
-                    break;
+            //     case 1:
+            //         steps.update();
+            //         steps.evaluate(leds.fullBuff());
+            //         break;
                 
-                case 2:
-                    scan.update();
-                    scan.evaluate(leds.fullBuff());
-                    break;
-            }
+            //     case 2:
+            //         scan.update();
+            //         scan.evaluate(leds.fullBuff());
+            //         break;
+            // }
             return;
         }
 

@@ -10,7 +10,7 @@ public abstract class ElevConstants {
     public static final int motorID = 19;
     public static final double maxVBus = 1;
     public static final double maxCurrent = 35;
-    public static final PIDFConfig pidf = new PIDFConfig(0.3, 0, 0.01, 0);
+    public static final PIDFConfig pidf = new PIDFConfig(0.3, 0, 0.02, 0);
     public static final double minPosTicks = 0;
     public static final double maxPosTicks = 101.224;
     public static final InvertedValue inverted = InvertedValue.Clockwise_Positive;
@@ -20,12 +20,12 @@ public abstract class ElevConstants {
     public static final double targetThresholdSeconds = 0.1;
 
     public static final double homeInches = 0;
-    public static final double lvl1Inches = 9;
+    public static final double lvl1Inches = 12;
     public static final double lvl2Inches = 18;
     public static final double lvl3Inches = 34;
-    public static final double lvl4Inches = 56.7;
+    public static final double lvl4Inches = 59;
     public static final double algaeLowInches = 9;
-    public static final double algaeHighInches = 20;
+    public static final double algaeHighInches = 21;
 
     public static final String overrideInName = "Elev Target Override (In)";
     public static final String overrideTicksName = "Elev Target Override (Ticks)";

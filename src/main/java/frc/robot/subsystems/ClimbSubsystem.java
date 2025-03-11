@@ -5,6 +5,7 @@ import com.ctre.phoenix6.configs.SoftwareLimitSwitchConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.PositionDutyCycle;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.ForwardLimitValue;
 import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
@@ -40,7 +41,7 @@ public class ClimbSubsystem extends SubsystemBase {
         configureMotor(lever, ClimbConstants.leverMaxVBus, ClimbConstants.leverNeutralMode, ClimbConstants.leverInverted, ClimbConstants.leverMaxCurrent, ClimbConstants.leverPIDF, ClimbConstants.leverMinPosTicks, ClimbConstants.leverMaxPosTicks, ClimbConstants.leverUseSoftLimits);
         configureMotor(clamp, ClimbConstants.clampMaxVBus, ClimbConstants.clampNeutralMode, ClimbConstants.clampInverted, ClimbConstants.clampMaxCurrent, ClimbConstants.clampPIDF, ClimbConstants.clampMinPosTicks, ClimbConstants.clampMaxPosTicks, ClimbConstants.clampUseSoftLimits);
 
-        if(TelemetryConstants.climbLevel >= TelemetryConstants.HIGH) {
+        if(TelemetryConstants.debugTelemetry) {
             //used for smartdashboard override commands, read only
             SmartDashboard.putNumber(ClimbConstants.leverOverrideDegName, 0);
         }
@@ -51,7 +52,7 @@ public class ClimbSubsystem extends SubsystemBase {
         leverTargetCheck();
         clampTargetCheck();
 
-        if(TelemetryConstants.climbLevel >= TelemetryConstants.LOW) {
+        if(TelemetryConstants.debugTelemetry) {
             SmartDashboard.putString("Climb Lever Ang (STA)", getLeverState().name());
             SmartDashboard.putString("Climb Lever Target (STA)", getLeverTargetState().name());
             SmartDashboard.putBoolean("Climb Lever isAtTarget", isLeverIsAtTarget());
@@ -59,37 +60,32 @@ public class ClimbSubsystem extends SubsystemBase {
             SmartDashboard.putString("Climb Clamp Target (STA)", getClampTargetState().name());
             SmartDashboard.putBoolean("Climb Clamp isAtTarget", isClampIsAtTarget());
 
-            if(TelemetryConstants.climbLevel >= TelemetryConstants.MEDIUM) {
-                SmartDashboard.putNumber("Climb Lever Ang (Deg)", getLeverDegrees());
-                SmartDashboard.putNumber("Climb Lever Err (Deg)", (leverTargetTicks - getLeverTicks()) * ClimbConstants.leverTickToDegConversion);
-                SmartDashboard.putNumber("Climb Lever Target (Deg)", leverTargetTicks * ClimbConstants.leverTickToDegConversion);
-                SmartDashboard.putNumber("Climb Clamp Ang (Deg)", getClampDegrees());
-                SmartDashboard.putNumber("Climb Clamp Err (Deg)", (clampTargetTicks - getClampTicks()) * ClimbConstants.clampTickToDegConversion);
-                SmartDashboard.putNumber("Climb Clamp Target (Deg)", clampTargetTicks * ClimbConstants.clampTickToDegConversion);
+            SmartDashboard.putNumber("Climb Lever Ang (Deg)", getLeverDegrees());
+            SmartDashboard.putNumber("Climb Lever Err (Deg)", (leverTargetTicks - getLeverTicks()) * ClimbConstants.leverTickToDegConversion);
+            SmartDashboard.putNumber("Climb Lever Target (Deg)", leverTargetTicks * ClimbConstants.leverTickToDegConversion);
+            SmartDashboard.putNumber("Climb Clamp Ang (Deg)", getClampDegrees());
+            SmartDashboard.putNumber("Climb Clamp Err (Deg)", (clampTargetTicks - getClampTicks()) * ClimbConstants.clampTickToDegConversion);
+            SmartDashboard.putNumber("Climb Clamp Target (Deg)", clampTargetTicks * ClimbConstants.clampTickToDegConversion);
 
-                if(TelemetryConstants.climbLevel >= TelemetryConstants.HIGH) {
-                    SmartDashboard.putNumber("Climb Lever Ang (Ticks)", getLeverTicks());
-                    SmartDashboard.putNumber("Climb Lever Err (Ticks)", leverTargetTicks - getLeverTicks());
-                    SmartDashboard.putNumber("Climb Lever Target (Ticks)", leverTargetTicks);
-                    SmartDashboard.putNumber("Climb Clamp Ang (Ticks)", getClampTicks());
-                    SmartDashboard.putNumber("Climb Clamp Err (Ticks)", clampTargetTicks - getClampTicks());
-                    SmartDashboard.putNumber("Climb Clamp Target (Ticks)", clampTargetTicks);
+            SmartDashboard.putNumber("Climb Lever Ang (Ticks)", getLeverTicks());
+            SmartDashboard.putNumber("Climb Lever Err (Ticks)", leverTargetTicks - getLeverTicks());
+            SmartDashboard.putNumber("Climb Lever Target (Ticks)", leverTargetTicks);
+            SmartDashboard.putNumber("Climb Clamp Ang (Ticks)", getClampTicks());
+            SmartDashboard.putNumber("Climb Clamp Err (Ticks)", clampTargetTicks - getClampTicks());
+            SmartDashboard.putNumber("Climb Clamp Target (Ticks)", clampTargetTicks);
+            SmartDashboard.putBoolean("Climb Lever Swich", getLeverLimitSwitch());
 
-                    if(TelemetryConstants.climbLevel >= TelemetryConstants.EYE_OF_SAURON) {
-                        SmartDashboard.putNumber("Climb Lever VBus", lever.get());
-                        SmartDashboard.putNumber("Climb Lever Current", lever.getStatorCurrent().getValueAsDouble());
-                        SmartDashboard.putNumber("Climb Lever Temp (deg C)", lever.getDeviceTemp().getValueAsDouble());
-                        SmartDashboard.putNumber("Climb Clamp VBus", clamp.get());
-                        SmartDashboard.putNumber("Climb Clamp Current", clamp.getStatorCurrent().getValueAsDouble());
-                        SmartDashboard.putNumber("Climb Clamp Temp (deg C)", clamp.getDeviceTemp().getValueAsDouble());
+            SmartDashboard.putNumber("Climb Lever VBus", lever.get());
+            SmartDashboard.putNumber("Climb Lever Current", lever.getStatorCurrent().getValueAsDouble());
+            SmartDashboard.putNumber("Climb Lever Temp (deg C)", lever.getDeviceTemp().getValueAsDouble());
+            SmartDashboard.putNumber("Climb Clamp VBus", clamp.get());
+            SmartDashboard.putNumber("Climb Clamp Current", clamp.getStatorCurrent().getValueAsDouble());
+            SmartDashboard.putNumber("Climb Clamp Temp (deg C)", clamp.getDeviceTemp().getValueAsDouble());
 
-                        if(getCurrentCommand() == null)
-                            SmartDashboard.putString("Climb RunningCommand", "None");
-                        else
-                            SmartDashboard.putString("Climb RunningCommand", getCurrentCommand().getName());
-                    }
-                }
-            }
+            if(getCurrentCommand() == null)
+                SmartDashboard.putString("Climb RunningCommand", "None");
+            else
+                SmartDashboard.putString("Climb RunningCommand", getCurrentCommand().getName());
         }
     }
 
@@ -152,6 +148,9 @@ public class ClimbSubsystem extends SubsystemBase {
     }
     public boolean isLeverIsAtTarget() {
         return leverIsAtTarget;
+    }
+    public boolean getLeverLimitSwitch() {
+        return lever.getForwardLimit().getValue() == ForwardLimitValue.ClosedToGround;
     }
 
     public void setClampDegrees(double deg) {

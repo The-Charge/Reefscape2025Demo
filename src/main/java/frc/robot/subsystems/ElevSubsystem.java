@@ -39,7 +39,7 @@ public class ElevSubsystem extends SubsystemBase {
 
         configureMotor(motor);
 
-        if(TelemetryConstants.elevLevel >= TelemetryConstants.HIGH) {
+        if(TelemetryConstants.debugTelemetry) {
             //used for smartdashboard override commands, read only
             SmartDashboard.putNumber(ElevConstants.overrideInName, 0);
             SmartDashboard.putNumber(ElevConstants.overrideTicksName, 0);
@@ -61,31 +61,25 @@ public class ElevSubsystem extends SubsystemBase {
     public void periodic() {
         targetCheck();
 
-        if(TelemetryConstants.elevLevel >= TelemetryConstants.LOW) {
+        if(TelemetryConstants.debugTelemetry) {
             SmartDashboard.putString("Elev Pos (LVL)", getPositionLevel().name());
             SmartDashboard.putString("Elev Target (LVL)", getTargetLevel().name());
             SmartDashboard.putBoolean("Elev isAtTarget", isAtTarget());
 
-            if(TelemetryConstants.elevLevel >= TelemetryConstants.MEDIUM) {
-                SmartDashboard.putNumber("Elev Pos (In)", getPositionInches());
-                SmartDashboard.putNumber("Elev Err (In)", (targetTicks - getPositionTicks()) * ElevConstants.tickToInConversion);
-                SmartDashboard.putNumber("Elev Target (In)", targetTicks * ElevConstants.tickToInConversion);
+            SmartDashboard.putNumber("Elev Pos (In)", getPositionInches());
+            SmartDashboard.putNumber("Elev Err (In)", (targetTicks - getPositionTicks()) * ElevConstants.tickToInConversion);
+            SmartDashboard.putNumber("Elev Target (In)", targetTicks * ElevConstants.tickToInConversion);
 
-                if(TelemetryConstants.elevLevel >= TelemetryConstants.HIGH) {
-                    SmartDashboard.putNumber("Elev Pos (Ticks)", getPositionTicks());
-                    SmartDashboard.putNumber("Elev Err (Ticks)", targetTicks - getPositionTicks());
-                    SmartDashboard.putNumber("Elev Target (Ticks)", targetTicks);
+            SmartDashboard.putNumber("Elev Pos (Ticks)", getPositionTicks());
+            SmartDashboard.putNumber("Elev Err (Ticks)", targetTicks - getPositionTicks());
+            SmartDashboard.putNumber("Elev Target (Ticks)", targetTicks);
 
-                    if(TelemetryConstants.elevLevel >= TelemetryConstants.EYE_OF_SAURON) {
-                        SmartDashboard.putNumber("Elev VBus", motor.get());
-                        SmartDashboard.putNumber("Elev Current", motor.getStatorCurrent().getValueAsDouble());
-                        if(getCurrentCommand() == null)
-                            SmartDashboard.putString("Elev RunningCommand", "None");
-                        else
-                            SmartDashboard.putString("Elev RunningCommand", getCurrentCommand().getName());
-                    }
-                }
-            }
+            SmartDashboard.putNumber("Elev VBus", motor.get());
+            SmartDashboard.putNumber("Elev Current", motor.getStatorCurrent().getValueAsDouble());
+            if(getCurrentCommand() == null)
+                SmartDashboard.putString("Elev RunningCommand", "None");
+            else
+                SmartDashboard.putString("Elev RunningCommand", getCurrentCommand().getName());
         }
     }
 
@@ -197,7 +191,7 @@ public class ElevSubsystem extends SubsystemBase {
         isAtTarget = false; //to prevent a single frame where the target has been changed but the boolean hasnt been updated
     }
     private Level getCurrentLevel(double inches) {
-        if(Math.abs(inches - ElevConstants.homeInches) <= ElevConstants.targetThresholdInches)
+        if(inches <= ElevConstants.homeInches + ElevConstants.targetThresholdInches) //allow negatives to count as HOME
             return Level.HOME;
         else if(Math.abs(inches - ElevConstants.lvl1Inches) <= ElevConstants.targetThresholdInches)
             return Level.LVL1;
