@@ -27,16 +27,14 @@ public class IntakeSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        if(TelemetryConstants.intakeLevel >= TelemetryConstants.LOW) {
+        if(TelemetryConstants.debugTelemetry) {
             SmartDashboard.putNumber("Intake VBus", belt.get());
 
-            if(TelemetryConstants.intakeLevel >= TelemetryConstants.EYE_OF_SAURON) {
-                SmartDashboard.putNumber("Intake Current", belt.getOutputCurrent());
-                if(getCurrentCommand() == null)
-                    SmartDashboard.putString("Intake RunningCommand", "None");
-                else
-                    SmartDashboard.putString("Intake RunningCommand", getCurrentCommand().getName());
-            }
+            SmartDashboard.putNumber("Intake Current", belt.getOutputCurrent());
+            if(getCurrentCommand() == null)
+                SmartDashboard.putString("Intake RunningCommand", "None");
+            else
+                SmartDashboard.putString("Intake RunningCommand", getCurrentCommand().getName());
         }
     }
 

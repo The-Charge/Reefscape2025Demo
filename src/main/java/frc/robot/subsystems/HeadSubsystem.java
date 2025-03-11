@@ -46,29 +46,23 @@ public class HeadSubsystem extends SubsystemBase {
     public void periodic() {
         hasCoral = getShooterSensor();
 
-        if(TelemetryConstants.headLevel >= TelemetryConstants.LOW) {
+        if(TelemetryConstants.debugTelemetry) {
             SmartDashboard.putNumber("Head VBus L", headLeft.get());
             SmartDashboard.putNumber("Head VBus R", headRight.get());
             SmartDashboard.putBoolean("Head HasCoral", getHasCoral());
             
-            if(TelemetryConstants.headLevel >= TelemetryConstants.MEDIUM) {
-                SmartDashboard.putBoolean("Head Funnel Sensor (Bool)", getFunnelSensor());
-                SmartDashboard.putBoolean("Head Shooter Sensor (Bool)", getShooterSensor());
+            SmartDashboard.putBoolean("Head Funnel Sensor (Bool)", getFunnelSensor());
+            SmartDashboard.putBoolean("Head Shooter Sensor (Bool)", getShooterSensor());
 
-                if(TelemetryConstants.headLevel >= TelemetryConstants.HIGH) {
-                    SmartDashboard.putNumber("Head Funnel Sensor (mm)", funnelSensor.getRange());
-                    SmartDashboard.putNumber("Head Shooter Sensor (mm)", shooterSensor.getRange());
+            SmartDashboard.putNumber("Head Funnel Sensor (mm)", funnelSensor.getRange());
+            SmartDashboard.putNumber("Head Shooter Sensor (mm)", shooterSensor.getRange());
     
-                    if(TelemetryConstants.headLevel >= TelemetryConstants.EYE_OF_SAURON) {
-                        SmartDashboard.putNumber("Head Current L", headLeft.getOutputCurrent());
-                        SmartDashboard.putNumber("Head Current R", headRight.getOutputCurrent());
-                        if(getCurrentCommand() == null)
-                            SmartDashboard.putString("Head RunningCommand", "None");
-                        else
-                            SmartDashboard.putString("Head RunningCommand", getCurrentCommand().getName());
-                    }
-                }
-            }
+            SmartDashboard.putNumber("Head Current L", headLeft.getOutputCurrent());
+            SmartDashboard.putNumber("Head Current R", headRight.getOutputCurrent());
+            if(getCurrentCommand() == null)
+                SmartDashboard.putString("Head RunningCommand", "None");
+            else
+                SmartDashboard.putString("Head RunningCommand", getCurrentCommand().getName());
         }
     }
 

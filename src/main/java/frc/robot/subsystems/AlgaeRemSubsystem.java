@@ -24,16 +24,14 @@ public class AlgaeRemSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        if(TelemetryConstants.algaeRemLevel >= TelemetryConstants.LOW) {
+        if(TelemetryConstants.debugTelemetry) {
             SmartDashboard.putNumber("AlgaeRem VBus", flywheel.get());
+            SmartDashboard.putNumber("AlgaeRem Current", flywheel.getOutputCurrent());
 
-            if(TelemetryConstants.algaeRemLevel >= TelemetryConstants.EYE_OF_SAURON) {
-                SmartDashboard.putNumber("AlgaeRem Current", flywheel.getOutputCurrent());
-                if(getCurrentCommand() == null)
-                    SmartDashboard.putString("AlgaeRem RunningCommand", "None");
-                else
-                    SmartDashboard.putString("AlgaeRem RunningCommand", getCurrentCommand().getName());
-            }
+            if(getCurrentCommand() == null)
+                SmartDashboard.putString("AlgaeRem RunningCommand", "None");
+            else
+                SmartDashboard.putString("AlgaeRem RunningCommand", getCurrentCommand().getName());
         }
     }
 

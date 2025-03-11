@@ -43,26 +43,22 @@ public class AlgaeManipSubsystem extends SubsystemBase {
     public void periodic() {
         targetCheck();
 
-        if(TelemetryConstants.algaeManipLevel >= TelemetryConstants.LOW) {
+        if(TelemetryConstants.debugTelemetry) {
             SmartDashboard.putNumber("AlgaeManip Pivot Pos (Deg)", getPivotDegrees());
             SmartDashboard.putNumber("AlgaeManip Pivot Target (Deg)", targetTicks * AlgaeManipConstants.pivotTicksToDegConversion);
             SmartDashboard.putBoolean("AlgaeManip pivotAtTarget", pivotAtTarget());
             SmartDashboard.putNumber("AlgaeManip Roller VBus", roller.get());
 
-            if(TelemetryConstants.algaeManipLevel >= TelemetryConstants.HIGH) {
-                SmartDashboard.putNumber("AlgaeManip Pivot Pos (Ticks)", getPivotTicks());
-                SmartDashboard.putNumber("AlgaeManip Pivot Target (Deg)", targetTicks);
+            SmartDashboard.putNumber("AlgaeManip Pivot Pos (Ticks)", getPivotTicks());
+            SmartDashboard.putNumber("AlgaeManip Pivot Target (Deg)", targetTicks);
 
-                if(TelemetryConstants.algaeManipLevel >= TelemetryConstants.EYE_OF_SAURON) {
-                    SmartDashboard.putNumber("AlgaeManip Pivot VBus", pivot.get());
-                    SmartDashboard.putNumber("AlgaeManip Pivot Current", pivot.getOutputCurrent());
-                    SmartDashboard.putNumber("AlgaeManip Roller Current", roller.getOutputCurrent());
-                    if(getCurrentCommand() == null)
-                        SmartDashboard.putString("AlgaeManip RunningCommand", "None");
-                    else
-                        SmartDashboard.putString("AlgaeManip RunningCommand", getCurrentCommand().getName());
-                }
-            }
+            SmartDashboard.putNumber("AlgaeManip Pivot VBus", pivot.get());
+            SmartDashboard.putNumber("AlgaeManip Pivot Current", pivot.getOutputCurrent());
+            SmartDashboard.putNumber("AlgaeManip Roller Current", roller.getOutputCurrent());
+            if(getCurrentCommand() == null)
+                SmartDashboard.putString("AlgaeManip RunningCommand", "None");
+            else
+                SmartDashboard.putString("AlgaeManip RunningCommand", getCurrentCommand().getName());
         }
     }
 
