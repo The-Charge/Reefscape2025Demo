@@ -1,6 +1,7 @@
 package frc.robot.commands.vision;
 
 import java.util.List;
+import java.util.function.BooleanSupplier;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.path.GoalEndState;
@@ -24,13 +25,15 @@ public class DriveToTag extends Command {
   private final SwerveSubsystem swerve;
   private Command drivetoPose;
   private int tagid;
+  private BooleanSupplier cancel;
   private boolean reef;
   private ReefPosition reefPos;
   
-  public DriveToTag(SwerveSubsystem swerve, boolean reef, VisionSubsystem.ReefPosition reefPos){
+  public DriveToTag(SwerveSubsystem swerve, boolean reef, BooleanSupplier cancel, VisionSubsystem.ReefPosition reefPos){
       this.swerve = swerve;
       this.reef = reef;
       this.reefPos = reefPos;
+      this.cancel = cancel;
 
       addRequirements(swerve);
   }
@@ -91,8 +94,8 @@ public class DriveToTag extends Command {
       SmartDashboard.putNumber("swerve y", swerve.getPose().getY());
     }
     // run the path
-    drivetoPose = AutoBuilder.followPath(path).withInterruptBehavior(InterruptionBehavior.kCancelSelf);
-    drivetoPose.schedule();
+    drivetoPose = AutoBuilder.followPath(path);
+    drivetoPose.onlyWhile(cancel).schedule();
   }
 
   @Override

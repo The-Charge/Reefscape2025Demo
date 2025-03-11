@@ -118,11 +118,6 @@ public class RobotContainer {
         Field2d field = new Field2d();
         SmartDashboard.putData("Field", field);
     }
-    private DriveToTag dtt;
-    private DriveToTag setupDtt(ReefPosition side, boolean reef) {
-        this.dtt = new DriveToTag(swerve, reef, side);
-        return this.dtt;
-    }
 
     private void configureBindings() {
         driver1.b().onTrue(Commands.runOnce(swerve::zeroGyroWithAlliance));
@@ -131,11 +126,9 @@ public class RobotContainer {
         // limelight testing
         // driver1.a().onTrue(Commands.runOnce(swerve::addFakeVision(Reading));
         
-        driver1.rightBumper().whileTrue(setupDtt(ReefPosition.RIGHT, true)); //Drive to closest tag
-        driver1.leftBumper().whileTrue(setupDtt(ReefPosition.LEFT, true));
-        driver1.y().whileTrue(setupDtt(ReefPosition.MIDDLE, false));
-        
-        new Trigger(() -> ((MathUtil.applyDeadband(Math.abs(driver1.getLeftX()), SwerveConstants.LEFT_X_DEADBAND) > 0 || MathUtil.applyDeadband(Math.abs(driver1.getLeftY()), SwerveConstants.LEFT_Y_DEADBAND) > 0.1) && dtt != null)).onTrue(new InstantCommand() {@Override public void execute(){if (dtt.getDriveToPose() != null)dtt.getDriveToPose().end(true);}});
+        // driver1.rightBumper().whileTrue(new DriveToTag(swerve, true, () -> !(Math.abs(driver1.getLeftX()) < swerveconstants.TRIGGER_DEADBAND), ReefPosition.RIGHT)); //Drive to closest tag
+        driver1.leftBumper().whileTrue(new DriveToTag(swerve, true, () -> !driver1.a().getAsBoolean(), ReefPosition.LEFT));
+        driver1.y().whileTrue(new DriveToTag(swerve, false, () -> !driver1.a().getAsBoolean(), ReefPosition.MIDDLE));        
         
         driver1.a().whileTrue(new DriveToAlgae(swerve, reeflimelight));
         
