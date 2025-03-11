@@ -1,81 +1,79 @@
 package frc.robot.commands.vision;
 
+import com.thethriftybot.ThriftyNova.PIDConfig;
+
+import edu.wpi.first.apriltag.AprilTag;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import frc.robot.LimelightHelpers;
-import frc.robot.constants.VisionConstants;
 import frc.robot.constants.VisionConstants.ApriltagConstants;
-import frc.robot.constants.VisionConstants.LLReefConstants;
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
-import limelight.Limelight;
+import frc.robot.subsystems.VisionSubsystem.ReefPosition;
 
 public class AlignToTag extends Command {
-    private final SwerveSubsystem swerve;
-    private VisionSubsystem limelight;
-    private int tagid; 
-    private double sideVal;
-    private double frontVal;
-    private ChassisSpeeds alignmentSpeeds;
-    private Pose2d tagpose;
-    private Rotation2d tagpose_rotation;
-    private final PIDController translation_controller;
-    private double tx;
-    public AlignToTag(SwerveSubsystem swerve, VisionSubsystem limelight, int tagid){
-        this.swerve = swerve;
-        this.limelight = limelight;
-        this.tagid = tagid;
-        translation_controller = new PIDController(1, 0.0, 0.0);
-        translation_controller.setTolerance(ApriltagConstants.TRANSLATION_POSE_TOLERANCE);
-        translation_controller.setSetpoint(0.0);
+  private final SwerveSubsystem swerve;
+  private VisionSubsystem limelight;
+  private double sideAdjust;
+  private double frontAdjust;
+  private ChassisSpeeds alignmentSpeeds;
+  private Pose2d tagpose;
+  private Rotation2d tagpose_rotation;
+  private ReefPosition reefPos;
+  private PIDController sideController, frontController;
 
-        
-        addRequirements(swerve);
-        addRequirements(limelight);
-    }
- 
-  @Override
-  public void initialize() {
-   
+  private double leftSideAdjust, rightSideAdjust, midSideAdjust; 
+  private double tx;
+
+  private double alignmentSide;
+  public AlignToTag(SwerveSubsystem swerve, VisionSubsystem limelight, int tagid, double alignmentSide, VisionSubsystem.ReefPosition pos){
+      this.swerve = swerve;
+      this.limelight = limelight;
+      this.alignmentSide = alignmentSide;
+      addRequirements(swerve);
+      addRequirements(limelight);
   }
 
+  @Override
+  public void initialize(){
+    limelight.setPipeline(1);
+  
+    
+  }
   @Override 
   public void execute() {
-    
-    tagpose = ApriltagConstants.TAG_POSES[tagid].toPose2d();
+    // sideController.reset(); UNCOMMENT THIS IF YOU WANT TO USE THIS COMMAND (rn gives npe)
+    frontController.reset();
+    tx = limelight.getTX();
+    leftSideAdjust = MathUtil.clamp(sideController.calculate(tx + ApriltagConstants.LEFT_ALIGN_OFFSET,0), -0.2, 0.2);
+    midSideAdjust = MathUtil.clamp(sideController.calculate(tx,0), -0.2, 0.2);
+    rightSideAdjust = MathUtil.clamp(sideController.calculate(tx + ApriltagConstants.RIGHT_ALIGN_OFFSET,0), -0.2, 0.2); // may want to use Trans2d(frontval, -sideval) and scale vector based on magnitude instead of clamping
+    tagpose = swerve.getClosestReefTagPose();
     tagpose_rotation = tagpose.getRotation().minus(new Rotation2d(Math.PI));
 
-    translation_controller.reset();
-    tx = LimelightHelpers.getTX(limelight.getName());
-    sideVal = 14.5 / translation_controller.calculate(tx,0);
-    frontVal = 14.5 / translation_controller.calculate(limelight.getDistToCamera(), ApriltagConstants.APRILTAG_POSE_OFFSET);
-    swerve.drive(new Translation2d(sideVal, frontVal), 0, true);
-    //alignmentSpeeds = swerve.getTargetSpeeds(sideVal, frontVal, tagpose_rotation.getSin(), tagpose_rotation.getCos());
-    SmartDashboard.putNumber(
-      "sideval", sideVal);
-    SmartDashboard.putNumber("frontval", frontVal);
-    SmartDashboard.putNumber("tx thing", tx);
-    //swerve.drive(alignmentSpeeds);
+    frontAdjust = MathUtil.clamp(frontController.calculate(limelight.getDistToCamera(), ApriltagConstants.APRILTAG_POSE_OFFSET), -1, 1);
+    sideAdjust = MathUtil.clamp(sideController.calculate(tx, 0), -1, 1); // current error = atan((dsin(theta) + k)/(dcos(theta))) - theta; theta = tx, d = getDistToCamera, k = LEFT/RIGHT ALIGN OFFSET. Or use getY instead of TX
+    
+    SmartDashboard.putNumber("sideval", sideAdjust);
+    SmartDashboard.putNumber("frontval", frontAdjust);
+
+    
+    alignmentSpeeds = swerve.getTargetSpeeds(sideAdjust, frontAdjust, tagpose_rotation.getSin(), tagpose_rotation.getCos());
+    swerve.drive(alignmentSpeeds);
   }
 
-  // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    
+    limelight.setPipeline(1);
   }
-
-  // Returns true when the command should end.
+  
   @Override
   public boolean isFinished() {
     return false;
   }
+  
 }

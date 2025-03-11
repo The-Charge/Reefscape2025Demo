@@ -9,10 +9,10 @@
         "containers": [
           {
             "title": "Field",
-            "x": 512.0,
+            "x": 0.0,
             "y": 0.0,
             "width": 640.0,
-            "height": 384.0,
+            "height": 320.0,
             "type": "Field",
             "properties": {
               "topic": "/SmartDashboard/Field",
@@ -28,54 +28,10 @@
             }
           },
           {
-            "title": "swerve",
-            "x": 1152.0,
-            "y": 256.0,
-            "width": 256.0,
-            "height": 256.0,
-            "type": "YAGSL Swerve Drive",
-            "properties": {
-              "topic": "/SmartDashboard/swerve",
-              "period": 0.06,
-              "show_robot_rotation": true,
-              "show_desired_states": true,
-              "angle_offset": 0.0
-            }
-          },
-          {
-            "title": "FMSInfo",
-            "x": 768.0,
-            "y": 512.0,
-            "width": 384.0,
-            "height": 128.0,
-            "type": "FMSInfo",
-            "properties": {
-              "topic": "/FMSInfo",
-              "period": 0.06
-            }
-          },
-          {
-            "title": "Alliance",
-            "x": 1408.0,
-            "y": 0.0,
-            "width": 128.0,
-            "height": 512.0,
-            "type": "Boolean Box",
-            "properties": {
-              "topic": "/FMSInfo/IsRedAlliance",
-              "period": 0.06,
-              "data_type": "boolean",
-              "true_color": 4294901760,
-              "false_color": 4278190335,
-              "true_icon": "None",
-              "false_icon": "None"
-            }
-          },
-          {
             "title": "Auto Chooser",
-            "x": 1152.0,
-            "y": 512.0,
-            "width": 384.0,
+            "x": 0.0,
+            "y": 320.0,
+            "width": 640.0,
             "height": 128.0,
             "type": "ComboBox Chooser",
             "properties": {
@@ -85,59 +41,11 @@
             }
           },
           {
-            "title": "limelight-reef",
-            "x": 0.0,
-            "y": 0.0,
-            "width": 512.0,
-            "height": 512.0,
-            "type": "Camera Stream",
-            "properties": {
-              "topic": "/CameraPublisher/limelight-reef",
-              "period": 0.06,
-              "rotation_turns": 0
-            }
-          },
-          {
-            "title": "Total Amps",
-            "x": 0.0,
-            "y": 512.0,
-            "width": 512.0,
-            "height": 128.0,
-            "type": "Number Slider",
-            "properties": {
-              "topic": "/SmartDashboard/Total Amps",
-              "period": 0.06,
-              "data_type": "double",
-              "min_value": -20.0,
-              "max_value": 150.0,
-              "divisions": 5,
-              "update_continuously": false
-            }
-          },
-          {
-            "title": "Battery Voltage",
-            "x": 768.0,
-            "y": 384.0,
-            "width": 384.0,
-            "height": 128.0,
-            "type": "Voltage View",
-            "properties": {
-              "topic": "/SmartDashboard/Battery Voltage",
-              "period": 0.06,
-              "data_type": "double",
-              "min_value": 5.0,
-              "max_value": 15.0,
-              "divisions": 6,
-              "inverted": false,
-              "orientation": "horizontal"
-            }
-          },
-          {
             "title": "Time Remaining",
-            "x": 512.0,
-            "y": 384.0,
-            "width": 256.0,
-            "height": 256.0,
+            "x": 640.0,
+            "y": 0.0,
+            "width": 384.0,
+            "height": 320.0,
             "type": "Match Time",
             "properties": {
               "topic": "/SmartDashboard/Time Remaining",
@@ -149,24 +57,33 @@
             }
           },
           {
-            "title": "velocity",
-            "x": 1152.0,
-            "y": 0.0,
-            "width": 256.0,
-            "height": 256.0,
-            "type": "Radial Gauge",
+            "title": "Field Centric",
+            "x": 640.0,
+            "y": 320.0,
+            "width": 384.0,
+            "height": 192.0,
+            "type": "Boolean Box",
             "properties": {
-              "topic": "/SmartDashboard/velocity",
+              "topic": "/SmartDashboard/Swerve IsFieldCentric",
               "period": 0.06,
-              "data_type": "double",
-              "start_angle": -140.0,
-              "end_angle": 140.0,
-              "min_value": 0.0,
-              "max_value": 5.0,
-              "number_of_labels": 8,
-              "wrap_value": false,
-              "show_pointer": true,
-              "show_ticks": true
+              "data_type": "boolean",
+              "true_color": 4283215696,
+              "false_color": 4294198070,
+              "true_icon": "None",
+              "false_icon": "None"
+            }
+          },
+          {
+            "title": "USB Camera 0",
+            "x": 1024.0,
+            "y": 0.0,
+            "width": 512.0,
+            "height": 512.0,
+            "type": "Camera Stream",
+            "properties": {
+              "topic": "/CameraPublisher/USB Camera 0",
+              "period": 0.06,
+              "rotation_turns": 0
             }
           }
         ]
@@ -385,6 +302,34 @@
               "period": 0.06,
               "show_type": false
             }
+          },
+          {
+            "title": "Elev Current",
+            "x": 832.0,
+            "y": 448.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/SmartDashboard/Elev Current",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "Elev VBus",
+            "x": 960.0,
+            "y": 448.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/SmartDashboard/Elev VBus",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": false
+            }
           }
         ]
       }
@@ -395,98 +340,98 @@
         "layouts": [],
         "containers": [
           {
-            "title": "Ang (DEG)",
+            "title": "Lever Ang (DEG)",
             "x": 0.0,
             "y": 0.0,
             "width": 128.0,
             "height": 128.0,
             "type": "Text Display",
             "properties": {
-              "topic": "/SmartDashboard/Climb Ang (Deg)",
+              "topic": "/SmartDashboard/Climb Lever Ang (Deg)",
               "period": 0.06,
               "data_type": "double",
               "show_submit_button": false
             }
           },
           {
-            "title": "Ang (TICKS)",
+            "title": "Lever Ang (TICKS)",
             "x": 0.0,
             "y": 128.0,
             "width": 128.0,
             "height": 128.0,
             "type": "Text Display",
             "properties": {
-              "topic": "/SmartDashboard/Climb Ang (Ticks)",
+              "topic": "/SmartDashboard/Climb Lever Ang (Ticks)",
               "period": 0.06,
               "data_type": "double",
               "show_submit_button": false
             }
           },
           {
-            "title": "Target (DEG)",
+            "title": "Lever Target (DEG)",
             "x": 192.0,
             "y": 0.0,
             "width": 128.0,
             "height": 128.0,
             "type": "Text Display",
             "properties": {
-              "topic": "/SmartDashboard/Climb Target (Deg)",
+              "topic": "/SmartDashboard/Climb Lever Target (Deg)",
               "period": 0.06,
               "data_type": "double",
               "show_submit_button": false
             }
           },
           {
-            "title": "Target (TICKS)",
+            "title": "Lever Target (TICKS)",
             "x": 192.0,
             "y": 128.0,
             "width": 128.0,
             "height": 128.0,
             "type": "Text Display",
             "properties": {
-              "topic": "/SmartDashboard/Climb Target (Ticks)",
+              "topic": "/SmartDashboard/Climb Lever Target (Ticks)",
               "period": 0.06,
               "data_type": "double",
               "show_submit_button": false
             }
           },
           {
-            "title": "Error (DEG)",
+            "title": "Lever Error (DEG)",
             "x": 384.0,
             "y": 0.0,
             "width": 128.0,
             "height": 128.0,
             "type": "Text Display",
             "properties": {
-              "topic": "/SmartDashboard/Climb Err (Deg)",
+              "topic": "/SmartDashboard/Climb Lever Err (Deg)",
               "period": 0.06,
               "data_type": "double",
               "show_submit_button": false
             }
           },
           {
-            "title": "Error (TICKS)",
+            "title": "Lever Error (TICKS)",
             "x": 384.0,
             "y": 128.0,
             "width": 128.0,
             "height": 128.0,
             "type": "Text Display",
             "properties": {
-              "topic": "/SmartDashboard/Climb Err (Ticks)",
+              "topic": "/SmartDashboard/Climb Lever Err (Ticks)",
               "period": 0.06,
               "data_type": "double",
               "show_submit_button": false
             }
           },
           {
-            "title": "isAtTarget",
+            "title": "Lever isAtTarget",
             "x": 576.0,
             "y": 0.0,
             "width": 128.0,
             "height": 384.0,
             "type": "Boolean Box",
             "properties": {
-              "topic": "/SmartDashboard/Climb isAtTarget",
+              "topic": "/SmartDashboard/Climb Lever isAtTarget",
               "period": 0.06,
               "data_type": "boolean",
               "true_color": 4283215696,
@@ -509,27 +454,27 @@
             }
           },
           {
-            "title": "Manual (DEG)",
+            "title": "Lever Manual (DEG)",
             "x": 0.0,
             "y": 576.0,
             "width": 256.0,
             "height": 128.0,
             "type": "Command",
             "properties": {
-              "topic": "/SmartDashboard/Climb Manual Climb (DEG)",
+              "topic": "/SmartDashboard/Climb Lever Manual (DEG)",
               "period": 0.06,
               "show_type": false
             }
           },
           {
-            "title": "Manual (TICKS)",
+            "title": "Clamp Manual (DEG)",
             "x": 256.0,
             "y": 576.0,
             "width": 256.0,
             "height": 128.0,
             "type": "Command",
             "properties": {
-              "topic": "/SmartDashboard/Climb Manual Climb (TICKS)",
+              "topic": "/SmartDashboard/Climb Clamp Manual (DEG)",
               "period": 0.06,
               "show_type": false
             }
@@ -548,59 +493,302 @@
             }
           },
           {
-            "title": "Override (DEG)",
+            "title": "Lever Override (DEG)",
             "x": 0.0,
             "y": 448.0,
             "width": 256.0,
             "height": 128.0,
             "type": "Text Display",
             "properties": {
-              "topic": "/SmartDashboard/Climb Target Override (Deg)",
+              "topic": "/SmartDashboard/Climb Lever Target Override (Deg)",
               "period": 0.06,
               "data_type": "double",
               "show_submit_button": true
             }
           },
           {
-            "title": "Override (TICKS)",
+            "title": "Clamp Override (DEG)",
             "x": 256.0,
             "y": 448.0,
             "width": 256.0,
             "height": 128.0,
             "type": "Text Display",
             "properties": {
-              "topic": "/SmartDashboard/Climb Target Override (Ticks)",
+              "topic": "/SmartDashboard/Climb Clamp Target Override (Deg)",
               "period": 0.06,
               "data_type": "double",
               "show_submit_button": true
             }
           },
           {
-            "title": "Ang (STA)",
+            "title": "Lever Ang (STA)",
             "x": 0.0,
             "y": 256.0,
             "width": 128.0,
             "height": 128.0,
             "type": "Text Display",
             "properties": {
-              "topic": "/SmartDashboard/Climb Ang (STA)",
+              "topic": "/SmartDashboard/Climb Lever Ang (STA)",
               "period": 0.06,
               "data_type": "string",
               "show_submit_button": false
             }
           },
           {
-            "title": "Target (STA)",
+            "title": "Lever Target (STA)",
             "x": 192.0,
             "y": 256.0,
             "width": 128.0,
             "height": 128.0,
             "type": "Text Display",
             "properties": {
-              "topic": "/SmartDashboard/Climb Target (STA)",
+              "topic": "/SmartDashboard/Climb Lever Target (STA)",
               "period": 0.06,
               "data_type": "string",
               "show_submit_button": false
+            }
+          },
+          {
+            "title": "Lever Current",
+            "x": 1280.0,
+            "y": 448.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/SmartDashboard/Climb Lever Current",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "Lever VBus",
+            "x": 1152.0,
+            "y": 448.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/SmartDashboard/Climb Lever VBus",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "Lever Temp (°C)",
+            "x": 1408.0,
+            "y": 448.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/SmartDashboard/Climb Lever Temp (deg C)",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "Clamp VBus",
+            "x": 1152.0,
+            "y": 576.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/SmartDashboard/Climb Clamp VBus",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "Clamp Current",
+            "x": 1280.0,
+            "y": 576.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/SmartDashboard/Climb Clamp Current",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "Clamp Temp (°C)",
+            "x": 1408.0,
+            "y": 576.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/SmartDashboard/Climb Clamp Temp (deg C)",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "Clamp Ang (DEG)",
+            "x": 768.0,
+            "y": 0.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/SmartDashboard/Climb Clamp Ang (Deg)",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "Clamp Ang (TICKS)",
+            "x": 768.0,
+            "y": 128.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/SmartDashboard/Climb Clamp Ang (Ticks)",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "Clamp Ang (STA)",
+            "x": 768.0,
+            "y": 256.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/SmartDashboard/Climb Clamp Ang (STA)",
+              "period": 0.06,
+              "data_type": "string",
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "Clamp Target (DEG)",
+            "x": 960.0,
+            "y": 0.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/SmartDashboard/Climb Clamp Target (Deg)",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "Clamp Target (TICKS)",
+            "x": 960.0,
+            "y": 128.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/SmartDashboard/Climb Clamp Target (Ticks)",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "Clamp Target (STA)",
+            "x": 960.0,
+            "y": 256.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/SmartDashboard/Climb Clamp Target (STA)",
+              "period": 0.06,
+              "data_type": "string",
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "Clamp Error (DEG)",
+            "x": 1152.0,
+            "y": 0.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/SmartDashboard/Climb Clamp Err (Deg)",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "Clamp Error (TICKS)",
+            "x": 1152.0,
+            "y": 128.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/SmartDashboard/Climb Clamp Err (Ticks)",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "Clamp isAtTarget",
+            "x": 1344.0,
+            "y": 0.0,
+            "width": 128.0,
+            "height": 384.0,
+            "type": "Boolean Box",
+            "properties": {
+              "topic": "/SmartDashboard/Climb Clamp isAtTarget",
+              "period": 0.06,
+              "data_type": "boolean",
+              "true_color": 4283215696,
+              "false_color": 4294198070,
+              "true_icon": "None",
+              "false_icon": "None"
+            }
+          },
+          {
+            "title": "Climb Slow",
+            "x": 768.0,
+            "y": 448.0,
+            "width": 256.0,
+            "height": 128.0,
+            "type": "Command",
+            "properties": {
+              "topic": "/SmartDashboard/Climb Slow",
+              "period": 0.06,
+              "show_type": false
+            }
+          },
+          {
+            "title": "Climb Lever Swich",
+            "x": 1024.0,
+            "y": 448.0,
+            "width": 128.0,
+            "height": 256.0,
+            "type": "Boolean Box",
+            "properties": {
+              "topic": "/SmartDashboard/Climb Lever Swich",
+              "period": 0.06,
+              "data_type": "boolean",
+              "true_color": 4283215696,
+              "false_color": 4294198070,
+              "true_icon": "None",
+              "false_icon": "None"
             }
           }
         ]
@@ -626,40 +814,6 @@
             }
           },
           {
-            "title": "Sensor 1",
-            "x": 192.0,
-            "y": 0.0,
-            "width": 128.0,
-            "height": 128.0,
-            "type": "Boolean Box",
-            "properties": {
-              "topic": "/SmartDashboard/Head Sensor 1",
-              "period": 0.06,
-              "data_type": "boolean",
-              "true_color": 4283215696,
-              "false_color": 4294198070,
-              "true_icon": "None",
-              "false_icon": "None"
-            }
-          },
-          {
-            "title": "Sensor 2",
-            "x": 192.0,
-            "y": 128.0,
-            "width": 128.0,
-            "height": 128.0,
-            "type": "Boolean Box",
-            "properties": {
-              "topic": "/SmartDashboard/Head Sensor 2",
-              "period": 0.06,
-              "data_type": "boolean",
-              "true_color": 4283215696,
-              "false_color": 4294198070,
-              "true_icon": "None",
-              "false_icon": "None"
-            }
-          },
-          {
             "title": "VBus R",
             "x": 0.0,
             "y": 128.0,
@@ -669,6 +823,7 @@
             "properties": {
               "topic": "/SmartDashboard/Head VBus R",
               "period": 0.06,
+              "data_type": "double",
               "show_submit_button": false
             }
           },
@@ -696,6 +851,113 @@
               "topic": "/SmartDashboard/Head Shoot",
               "period": 0.06,
               "show_type": false
+            }
+          },
+          {
+            "title": "Funnel Sensor",
+            "x": 384.0,
+            "y": 0.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/SmartDashboard/Head Funnel Sensor (mm)",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "Shooter Sensor",
+            "x": 384.0,
+            "y": 128.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/SmartDashboard/Head Shooter Sensor (mm)",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "Funnel Sensor",
+            "x": 192.0,
+            "y": 0.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Boolean Box",
+            "properties": {
+              "topic": "/SmartDashboard/Head Funnel Sensor (Bool)",
+              "period": 0.06,
+              "data_type": "boolean",
+              "true_color": 4283215696,
+              "false_color": 4294198070,
+              "true_icon": "None",
+              "false_icon": "None"
+            }
+          },
+          {
+            "title": "Shooter Sensor",
+            "x": 192.0,
+            "y": 128.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Boolean Box",
+            "properties": {
+              "topic": "/SmartDashboard/Head Shooter Sensor (Bool)",
+              "period": 0.06,
+              "data_type": "boolean",
+              "true_color": 4283215696,
+              "false_color": 4294198070,
+              "true_icon": "None",
+              "false_icon": "None"
+            }
+          },
+          {
+            "title": "Head Current L",
+            "x": 0.0,
+            "y": 320.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/SmartDashboard/Head Current L",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "Head Current R",
+            "x": 192.0,
+            "y": 320.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/SmartDashboard/Head Current R",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "Head HasCoral",
+            "x": 384.0,
+            "y": 320.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Boolean Box",
+            "properties": {
+              "topic": "/SmartDashboard/Head HasCoral",
+              "period": 0.06,
+              "data_type": "boolean",
+              "true_color": 4283215696,
+              "false_color": 4294198070,
+              "true_icon": "None",
+              "false_icon": "None"
             }
           }
         ]
@@ -923,8 +1185,30 @@
               "data_type": "double",
               "show_submit_button": false
             }
+          },
+          {
+            "title": "swerve",
+            "x": 960.0,
+            "y": 0.0,
+            "width": 256.0,
+            "height": 256.0,
+            "type": "YAGSL Swerve Drive",
+            "properties": {
+              "topic": "/SmartDashboard/swerve",
+              "period": 0.06,
+              "show_robot_rotation": true,
+              "show_desired_states": true,
+              "angle_offset": 0.0
+            }
           }
         ]
+      }
+    },
+    {
+      "name": "Tab 7",
+      "grid_layout": {
+        "layouts": [],
+        "containers": []
       }
     }
   ]

@@ -79,7 +79,10 @@ public class ElevSubsystem extends SubsystemBase {
                     if(TelemetryConstants.elevLevel >= TelemetryConstants.EYE_OF_SAURON) {
                         SmartDashboard.putNumber("Elev VBus", motor.get());
                         SmartDashboard.putNumber("Elev Current", motor.getStatorCurrent().getValueAsDouble());
-                        SmartDashboard.putString("Elev RunningCommand", getCurrentCommand().getName());
+                        if(getCurrentCommand() == null)
+                            SmartDashboard.putString("Elev RunningCommand", "None");
+                        else
+                            SmartDashboard.putString("Elev RunningCommand", getCurrentCommand().getName());
                     }
                 }
             }
@@ -194,7 +197,7 @@ public class ElevSubsystem extends SubsystemBase {
         isAtTarget = false; //to prevent a single frame where the target has been changed but the boolean hasnt been updated
     }
     private Level getCurrentLevel(double inches) {
-        if(Math.abs(inches - ElevConstants.homeInches) <= ElevConstants.targetThresholdInches)
+        if(inches <= ElevConstants.homeInches + ElevConstants.targetThresholdInches) //allow negatives to count as HOME
             return Level.HOME;
         else if(Math.abs(inches - ElevConstants.lvl1Inches) <= ElevConstants.targetThresholdInches)
             return Level.LVL1;

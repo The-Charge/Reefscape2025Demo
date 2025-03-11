@@ -4,6 +4,9 @@
 
 package frc.robot;
 
+import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.cscore.UsbCamera;
+import edu.wpi.first.net.PortForwarder;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.TimedRobot;
@@ -31,7 +34,16 @@ public class Robot extends TimedRobot {
     private PowerDistribution m_pdp = new PowerDistribution();
 
     public Robot() {
-        instance = this; 
+        instance = this;
+        
+        try {
+            UsbCamera webCam = CameraServer.startAutomaticCapture();
+            webCam.setResolution(640, 480);
+            webCam.setFPS(20);
+        }
+        catch(Exception e) {
+            DriverStation.reportWarning("Failed to connect to USB Camera", false);
+        }
     }
     
     public static Robot getInstance()
@@ -60,6 +72,17 @@ public class Robot extends TimedRobot {
         {
             DriverStation.silenceJoystickConnectionWarning(true);
         }
+
+        // Connect to 172.22.11.2:2011 to see reef limelight
+         PortForwarder.add(2011, "limelight-reef.local", 5800);
+         PortForwarder.add(2011, "limelight-reef.local", 5801);
+         PortForwarder.add(2011, "limelight-reef.local", 5805);
+
+        // Connect to 172.22.11.2:2012 to see  funnel limelight
+         PortForwarder.add(2012, "limelight-funnel.local", 5800);
+         PortForwarder.add(2012, "limelight-funnel.local", 5801);
+         PortForwarder.add(2012, "limelight-funnel.local", 5805);
+
     }
     /**
     * This function is called every 20 ms, no matter the mode. Use this for items like diagnostics that you want ran
@@ -77,9 +100,9 @@ public class Robot extends TimedRobot {
         // block in order for anything in the Command-based framework to work.
         CommandScheduler.getInstance().run();
 
-        SmartDashboard.putNumber("Battery Voltage", m_pdp.getVoltage());
         if(TelemetryConstants.robotLevel >= TelemetryConstants.EYE_OF_SAURON) {
             SmartDashboard.putNumber("Total Amps", m_pdp.getTotalCurrent());
+            SmartDashboard.putNumber("Battery Voltage", m_pdp.getVoltage());
         }
     }
     
@@ -92,6 +115,9 @@ public class Robot extends TimedRobot {
         m_robotContainer.setMotorBrake(true);
         disabledTimer.reset();
         disabledTimer.start();
+        m_robotContainer.stopRumble();
+        // m_robotContainer.scheduleLimelight();
+        m_robotContainer.getLEDManager().resetEndgameStarted();
     }
     
     @Override
@@ -101,6 +127,7 @@ public class Robot extends TimedRobot {
         {
             m_robotContainer.setMotorBrake(false);
             disabledTimer.stop();
+            disabledTimer.reset();
         }
     }
     
@@ -120,7 +147,10 @@ public class Robot extends TimedRobot {
             m_autonomousCommand.schedule();
         }
 
+        // m_robotContainer.scheduleLimelightAuton(); //use auton mode that cuts off after a certain amount of time
+
         m_robotContainer.displayAuto();
+        m_robotContainer.getHeadSubsystem().recheckHasCoral();
     }
     
     /**
@@ -145,10 +175,14 @@ public class Robot extends TimedRobot {
         else {
             CommandScheduler.getInstance().cancelAll();
         }
+
+        m_robotContainer.scheduleLimelight();
         
         m_robotContainer.setTeleopDefaultCommand();
         m_robotContainer.setMotorBrake(true);
         AutoDisplayHelper.clearAutoPath();
+        m_robotContainer.getHeadSubsystem().recheckHasCoral();
+        m_robotContainer.scheduleControllerRumble();
     }
     
     /**

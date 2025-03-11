@@ -32,7 +32,10 @@ public class IntakeSubsystem extends SubsystemBase {
 
             if(TelemetryConstants.intakeLevel >= TelemetryConstants.EYE_OF_SAURON) {
                 SmartDashboard.putNumber("Intake Current", belt.getOutputCurrent());
-                SmartDashboard.putString("Intake RunningCommand", getCurrentCommand().getName());
+                if(getCurrentCommand() == null)
+                    SmartDashboard.putString("Intake RunningCommand", "None");
+                else
+                    SmartDashboard.putString("Intake RunningCommand", getCurrentCommand().getName());
             }
         }
     }

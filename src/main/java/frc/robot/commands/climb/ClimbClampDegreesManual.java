@@ -5,17 +5,17 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.constants.ClimbConstants;
 import frc.robot.subsystems.ClimbSubsystem;
 
-public class ClimbToTicksManual extends Command {
+public class ClimbClampDegreesManual extends Command {
     
     private ClimbSubsystem climb;
 
-    public ClimbToTicksManual(ClimbSubsystem climbSub) {
+    public ClimbClampDegreesManual(ClimbSubsystem climbSub) {
         climb = climbSub;
     }
 
     @Override
     public void initialize() {
-        new ClimbToTicks(climb, SmartDashboard.getNumber(ClimbConstants.overrideTicksName, ClimbConstants.restingDegrees / ClimbConstants.tickToDegConversion), false).schedule();
+        new ClimbClampDegrees(climb, SmartDashboard.getNumber(ClimbConstants.clampOverrideDegName, ClimbConstants.clampRestingDegrees), false).schedule();
     }
 
     @Override

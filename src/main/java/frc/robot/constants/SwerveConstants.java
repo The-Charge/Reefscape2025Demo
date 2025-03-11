@@ -16,22 +16,23 @@ public abstract class SwerveConstants {
     // Hold time on motor brakes when disabled
     public static final double WHEEL_LOCK_TIME = 10; // seconds
 
-    public static final boolean useChassisVelocityCorrection = true;
+    public static final boolean useChassisVelocityCorrection = false;
     public static final double chassisVelocityCorrection = 0.2;
 
     public static final boolean useCosineCompensator = true;
 
     public static final boolean useAngularCompensationTeleop = true;
     public static final boolean useAngularCompensationAuton = true;
-    public static final double angularCompensation = -10;
+    public static final double angularCompensation = -0.1;
 
     public static final PIDConstants pathPlannerTranslationPID = new PIDConstants(5, 0, 0);
     public static final PIDConstants pathPlannerRotationPID = new PIDConstants(5, 0, 0);
+    public static final double autonVisionTime = 15; //number of seconds vision is enabled for in auton
 
     // Joystick Deadband
     public static final double LEFT_Y_DEADBAND = 0.1;
     public static final double LEFT_X_DEADBAND = 0.2; //left x is pretty sensitive, so increased deadband
-    public static final double RIGHT_X_DEADBAND = 0.2;
+    public static final double RIGHT_X_DEADBAND = 0.3; //damaged joystick on white controller, need high deadband
     public static final double TURN_CONSTANT = 6;
     public static final double DRIVE_SPEED = 1; //multiplies translation and rotation, 1 is 100%
     public static final double TRIGGER_DEADBAND = 0.1;

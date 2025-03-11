@@ -35,17 +35,17 @@ public class HeadSubsystem extends SubsystemBase {
         headLeft = new SparkMax(HeadConstants.leftId, MotorType.kBrushless);
         headRight = new SparkMax(HeadConstants.rightId, MotorType.kBrushless);
 
-        configureMotor(headLeft);
-        configureMotor(headRight);
+        configureMotor(headLeft, HeadConstants.leftReversed);
+        configureMotor(headRight, HeadConstants.rightReversed);
 
         headLeft.set(0);
         headRight.set(0);
-
-        createSensorTriggers();
     }
 
     @Override
     public void periodic() {
+        hasCoral = getShooterSensor();
+
         if(TelemetryConstants.headLevel >= TelemetryConstants.LOW) {
             SmartDashboard.putNumber("Head VBus L", headLeft.get());
             SmartDashboard.putNumber("Head VBus R", headRight.get());
@@ -62,15 +62,20 @@ public class HeadSubsystem extends SubsystemBase {
                     if(TelemetryConstants.headLevel >= TelemetryConstants.EYE_OF_SAURON) {
                         SmartDashboard.putNumber("Head Current L", headLeft.getOutputCurrent());
                         SmartDashboard.putNumber("Head Current R", headRight.getOutputCurrent());
-                        SmartDashboard.putString("Head RunningCommand", getCurrentCommand().getName());
+                        if(getCurrentCommand() == null)
+                            SmartDashboard.putString("Head RunningCommand", "None");
+                        else
+                            SmartDashboard.putString("Head RunningCommand", getCurrentCommand().getName());
                     }
                 }
             }
         }
     }
 
-    public void flywheelVBus(double percent) {
+    public void flywheelLeft(double percent) {
         headLeft.set(percent);
+    }
+    public void flywheelRight(double percent) {
         headRight.set(percent);
     }
     public void stop() {
@@ -88,22 +93,16 @@ public class HeadSubsystem extends SubsystemBase {
         return hasCoral;
     }
 
-    private void configureMotor(SparkMax m) {
+    public void recheckHasCoral() {
+        hasCoral = getShooterSensor();
+    }
+
+    private void configureMotor(SparkMax m, boolean inverted) {
         SparkMaxConfig config = new SparkMaxConfig();
         config.idleMode(HeadConstants.idleMode);
         config.smartCurrentLimit(HeadConstants.currentLimit);
+        config.inverted(inverted);
 
         m.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-    }
-    private void createSensorTriggers() {
-        new Trigger(() -> getShooterSensor()).onTrue(new InstantCommand(() -> {
-            hasCoral = true;
-        }));
-        new Trigger(() -> getShooterSensor()).onFalse(new SequentialCommandGroup(
-            new WaitCommand(HeadConstants.hasCoralDeactivationDelay),
-            new InstantCommand(() -> {
-                hasCoral = false;
-            })
-        ));
     }
 }
