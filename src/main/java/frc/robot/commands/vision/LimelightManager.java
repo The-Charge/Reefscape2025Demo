@@ -2,9 +2,9 @@ package frc.robot.commands.vision;
 
 import static edu.wpi.first.units.Units.DegreesPerSecond;
 
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.LimelightHelpers;
 import frc.robot.constants.TelemetryConstants;
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
@@ -25,11 +25,14 @@ public class LimelightManager extends Command {
         double yaw = swerve.getHeading().getDegrees();
         double yawRate = swerve.getSwerveDrive().getGyro().getYawAngularVelocity().in(DegreesPerSecond);
 
-        Pose2d reefPose = reefLimelight.getEstimatedPose(yaw, yawRate);
-        Pose2d funnelPose = funnelLimelight.getEstimatedPose(yaw, yawRate);
+        LimelightHelpers.PoseEstimate reefEstimate = reefLimelight.getLLHPoseEstimate(yaw, yawRate);
+        LimelightHelpers.PoseEstimate funnelEstimate = reefLimelight.getLLHPoseEstimate(yaw, yawRate);
 
-        double reefTime = reefLimelight.getPoseTimestamp();
-        double funnelTime = funnelLimelight.getPoseTimestamp();
+        // Pose2d reefPose = reefLimelight.getEstimatedPose(yaw, yawRate);
+        // Pose2d funnelPose = funnelLimelight.getEstimatedPose(yaw, yawRate);
+
+        // double reefTime = reefLimelight.getPoseTimestamp();
+        // double funnelTime = funnelLimelight.getPoseTimestamp();
 
         double reefAmbig = reefLimelight.getAmbiguity();
         double funnelAmbig = funnelLimelight.getAmbiguity();
@@ -45,41 +48,41 @@ public class LimelightManager extends Command {
             SmartDashboard.putNumber("funnel ambig", funnelAmbig);
         }
 
-        boolean reefEstim = (reefPose != null && reefAmbig < 0.2 || reefCount > 1);
-        boolean funnelEstim = (funnelPose != null && funnelAmbig < 0.2 || funnelCount > 1);
+        boolean reefEstim = (reefEstimate != null && reefCount > 1); // reefAmbig < 0.2 ||
+        boolean funnelEstim = (funnelEstimate != null && funnelCount > 1); // funnelAmbig < 0.2 ||
 
         if (reefEstim && funnelEstim) {
             if (reefCount > funnelCount) {
                 if(TelemetryConstants.debugTelemetry)
                     SmartDashboard.putBoolean("reef estimated", true);
                 
-                swerve.addVisionReading(reefPose, reefTime);
+                swerve.addVisionReading(reefEstimate.pose, reefEstimate.timestampSeconds);
             } else if (reefCount < funnelCount) {
                 if(TelemetryConstants.debugTelemetry)
                     SmartDashboard.putBoolean("funnel estimated", true);
 
-                swerve.addVisionReading(funnelPose, funnelTime);
+                swerve.addVisionReading(funnelEstimate.pose, funnelEstimate.timestampSeconds);
             } else if (reefAmbig < funnelAmbig) {
                 if(TelemetryConstants.debugTelemetry)
                     SmartDashboard.putBoolean("reef estimated", true);
 
-                swerve.addVisionReading(reefPose, reefTime);
+                swerve.addVisionReading(reefEstimate.pose, reefEstimate.timestampSeconds);
             } else {
                 if(TelemetryConstants.debugTelemetry)
                     SmartDashboard.putBoolean("funnel estimated", true);
 
-                swerve.addVisionReading(funnelPose, funnelTime);
+                swerve.addVisionReading(funnelEstimate.pose, funnelEstimate.timestampSeconds);
             }
         } else if (reefEstim) {
             if(TelemetryConstants.debugTelemetry)
                 SmartDashboard.putBoolean("reef estimated", true);
 
-            swerve.addVisionReading(reefPose, reefTime);
+            swerve.addVisionReading(reefEstimate.pose, reefEstimate.timestampSeconds);
         } else if (funnelEstim) {
             if(TelemetryConstants.debugTelemetry)
                 SmartDashboard.putBoolean("funnel estimated", true);
                 
-            swerve.addVisionReading(funnelPose, funnelTime);
+            swerve.addVisionReading(funnelEstimate.pose, funnelEstimate.timestampSeconds);
         }
 
         // Rotation2d swerveRot = swerve.getHeading();

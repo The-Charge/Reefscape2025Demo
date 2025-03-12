@@ -23,6 +23,11 @@ public class VisionSubsystem extends SubsystemBase {
         setPipeline(1);
   }
 
+  public LimelightHelpers.PoseEstimate getLLHPoseEstimate(double yaw, double yawRate) {
+    LimelightHelpers.SetRobotOrientation(ll_name, yaw, yawRate, 0, 0, 0, 0);
+    return LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(ll_name);
+  }
+  
   public Pose2d getEstimatedPose(double yaw, double yawRate) {
     NetworkTable table = NetworkTableInstance.getDefault().getTable(ll_name);
 
