@@ -20,18 +20,15 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.IntakeRumble;
 import frc.robot.commands.algaerem.AlgaeRemSpin;
 import frc.robot.commands.climb.Climb;
 import frc.robot.commands.climb.ClimbClampDegreesManual;
 import frc.robot.commands.climb.ClimbLeverDegreesManual;
-import frc.robot.commands.climb.ClimbOverride;
 import frc.robot.commands.climb.Declimb;
 import frc.robot.commands.elev.MoveToInchesManual;
 import frc.robot.commands.elev.MoveToLevel;
@@ -130,9 +127,21 @@ public class RobotContainer {
         // limelight testing
         // driver1.a().onTrue(Commands.runOnce(swerve::addFakeVision(Reading));
         
-        // driver1.rightBumper().whileTrue(new DriveToTag(swerve, true, () -> !(Math.abs(driver1.getLeftX()) < swerveconstants.TRIGGER_DEADBAND), ReefPosition.RIGHT)); //Drive to closest tag
-        driver1.leftBumper().whileTrue(new DriveToTag(swerve, true, () -> !driver1.a().getAsBoolean(), ReefPosition.LEFT));
-        driver1.y().whileTrue(new DriveToTag(swerve, false, () -> !driver1.a().getAsBoolean(), ReefPosition.MIDDLE));        
+        driver1.rightBumper().onTrue(new DriveToTag(swerve, true,
+                () -> (Math.abs(driver1.getLeftX()) < SwerveConstants.LEFT_X_DEADBAND
+                        && Math.abs(driver1.getLeftY()) < SwerveConstants.LEFT_Y_DEADBAND
+                        && Math.abs(driver1.getRightX()) < SwerveConstants.RIGHT_X_DEADBAND),
+                ReefPosition.RIGHT)); // Drive to closest tag
+        driver1.leftBumper().onTrue(new DriveToTag(swerve, true,
+                () -> (Math.abs(driver1.getLeftX()) < SwerveConstants.LEFT_X_DEADBAND
+                        && Math.abs(driver1.getLeftY()) < SwerveConstants.LEFT_Y_DEADBAND
+                        && Math.abs(driver1.getRightX()) < SwerveConstants.RIGHT_X_DEADBAND),
+                ReefPosition.LEFT));
+        driver1.y().onTrue(new DriveToTag(swerve, false,
+                () -> (Math.abs(driver1.getLeftX()) < SwerveConstants.LEFT_X_DEADBAND
+                        && Math.abs(driver1.getLeftY()) < SwerveConstants.LEFT_Y_DEADBAND
+                        && Math.abs(driver1.getRightX()) < SwerveConstants.RIGHT_X_DEADBAND),
+                ReefPosition.MIDDLE));
         
         // driver1.a().whileTrue(new DriveToAlgae(swerve, reeflimelight));
         

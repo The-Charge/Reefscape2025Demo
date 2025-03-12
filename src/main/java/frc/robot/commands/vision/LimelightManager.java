@@ -21,11 +21,6 @@ public class LimelightManager extends Command {
     }
 
     @Override
-    public void initialize() {
-        // System.out.println("LimelightManager Initialize"); disable because println lags the rio
-    }
-    
-    @Override
     public void execute() {
         double yaw = swerve.getHeading().getDegrees();
         double yawRate = swerve.getSwerveDrive().getGyro().getYawAngularVelocity().in(DegreesPerSecond);
