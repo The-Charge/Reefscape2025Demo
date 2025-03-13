@@ -21,6 +21,7 @@ public class DriveToTag extends Command {
   private int tagid;
   private BooleanSupplier cancel;
   private boolean reef;
+  private boolean tagged;
   private ReefPosition reefPos;
 
   public DriveToTag(SwerveSubsystem swerve, boolean reef, BooleanSupplier cancel, ReefPosition reefPos) {
@@ -28,6 +29,17 @@ public class DriveToTag extends Command {
     this.reefPos = reefPos;
     this.cancel = cancel;
     this.reef = reef;
+    this.tagged = false;
+
+    addRequirements(swerve);
+  }
+
+  public DriveToTag(SwerveSubsystem swerve, int tagid, BooleanSupplier cancel, ReefPosition reefPos) {
+    this.swerve = swerve;
+    this.reefPos = reefPos;
+    this.cancel = cancel;
+    this.tagid = tagid;
+    this.tagged = true;
 
     addRequirements(swerve);
   }
@@ -36,10 +48,12 @@ public class DriveToTag extends Command {
   public void initialize() {
     double offset = 0;
 
-    if (reef) {
-      tagid = swerve.getClosestTagIDReef();
-    } else {
-      tagid = swerve.getClosestTagIDStation();
+    if (!tagged) {
+      if (reef) {
+        tagid = swerve.getClosestTagIDReef();
+      } else {
+        tagid = swerve.getClosestTagIDStation();
+      }
     }
 
     switch (reefPos) {
@@ -72,7 +86,7 @@ public class DriveToTag extends Command {
 
     Pose2d targetPose = new Pose2d(x, y, rot2d);
 
-    PathConstraints constraints = new PathConstraints(SwerveConstants.MAX_SPEED, 3.0, 2 * Math.PI, 4 * Math.PI);
+    PathConstraints constraints = new PathConstraints(SwerveConstants.MAX_SPEED / 2, 1.0, 2 * Math.PI, 4 * Math.PI);
 
     if (TelemetryConstants.debugTelemetry) {
       SmartDashboard.putNumber("tag x", x);

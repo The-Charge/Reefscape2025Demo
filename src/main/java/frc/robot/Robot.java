@@ -7,6 +7,7 @@ package frc.robot;
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.cscore.UsbCamera;
 import edu.wpi.first.net.PortForwarder;
+import edu.wpi.first.util.PixelFormat;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.TimedRobot;
@@ -38,8 +39,9 @@ public class Robot extends TimedRobot {
         
         try {
             UsbCamera webCam = CameraServer.startAutomaticCapture();
-            webCam.setResolution(640, 480);
-            webCam.setFPS(20);
+            webCam.setResolution(320, 240);
+            webCam.setFPS(30);
+            webCam.setPixelFormat(PixelFormat.kY16);
         }
         catch(Exception e) {
             DriverStation.reportWarning("Failed to connect to USB Camera", false);

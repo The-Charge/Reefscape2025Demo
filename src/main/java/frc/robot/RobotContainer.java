@@ -14,6 +14,7 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Filesystem;
+import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -24,6 +25,7 @@ import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.IntakeRumble;
 import frc.robot.commands.algaerem.AlgaeRemSpin;
 import frc.robot.commands.climb.Climb;
@@ -69,6 +71,7 @@ public class RobotContainer {
 
     private final CommandXboxController driver1 = new CommandXboxController(0);
     private final CommandXboxController driver2 = new CommandXboxController(1);
+    private final GenericHID  driver3 = new GenericHID(2);
     
     private final SwerveSubsystem swerve = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "swerve"));
     private final VisionSubsystem reeflimelight = new VisionSubsystem(LLReefConstants.LL_NAME, LLReefConstants.CAMERA_OFFSET);
@@ -142,6 +145,16 @@ public class RobotContainer {
                         && Math.abs(driver1.getLeftY()) < SwerveConstants.LEFT_Y_DEADBAND
                         && Math.abs(driver1.getRightX()) < SwerveConstants.RIGHT_X_DEADBAND),
                 ReefPosition.MIDDLE));
+        
+        new Trigger(() -> driver3.getRawButton(7)).onTrue(new DriveToTag(swerve, 21, 
+                () -> (Math.abs(driver1.getLeftX()) < SwerveConstants.LEFT_X_DEADBAND
+                        && Math.abs(driver1.getLeftY()) < SwerveConstants.LEFT_Y_DEADBAND
+                        && Math.abs(driver1.getRightX()) < SwerveConstants.RIGHT_X_DEADBAND), ReefPosition.RIGHT));
+        
+        new Trigger(() -> driver3.getRawButton(8)).onTrue(new DriveToTag(swerve, 10, 
+                () -> (Math.abs(driver1.getLeftX()) < SwerveConstants.LEFT_X_DEADBAND
+                        && Math.abs(driver1.getLeftY()) < SwerveConstants.LEFT_Y_DEADBAND
+                        && Math.abs(driver1.getRightX()) < SwerveConstants.RIGHT_X_DEADBAND), ReefPosition.RIGHT));
         
         // driver1.a().whileTrue(new DriveToAlgae(swerve, reeflimelight));
         

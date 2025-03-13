@@ -1,7 +1,9 @@
 package frc.robot.commands.vision;
 
+import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.DegreesPerSecond;
 
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.LimelightHelpers;
@@ -23,10 +25,11 @@ public class LimelightManager extends Command {
     @Override
     public void execute() {
         double yaw = swerve.getHeading().getDegrees();
-        double yawRate = swerve.getSwerveDrive().getGyro().getYawAngularVelocity().in(DegreesPerSecond);
+        double yawRate = Math.abs(swerve.getSwerveDrive().getGyro().getYawAngularVelocity().in(DegreesPerSecond));
 
-        LimelightHelpers.PoseEstimate reefEstimate = reefLimelight.getLLHPoseEstimate(yaw, yawRate);
-        LimelightHelpers.PoseEstimate funnelEstimate = reefLimelight.getLLHPoseEstimate(yaw, yawRate);
+        LimelightHelpers.PoseEstimate reefEstimate = reefLimelight.getLLHPoseEstimate(yaw, 0);
+        LimelightHelpers.PoseEstimate funnelEstimate1 = funnelLimelight.getLLHPoseEstimate(yaw, 0);
+        LimelightHelpers.PoseEstimate funnelEstimate = null;
 
         // Pose2d reefPose = reefLimelight.getEstimatedPose(yaw, yawRate);
         // Pose2d funnelPose = funnelLimelight.getEstimatedPose(yaw, yawRate);
@@ -46,10 +49,12 @@ public class LimelightManager extends Command {
 
             SmartDashboard.putNumber("reef ambig", reefAmbig);
             SmartDashboard.putNumber("funnel ambig", funnelAmbig);
+
+            SmartDashboard.putNumber("swerve rot speed", yawRate);
         }
 
-        boolean reefEstim = (reefEstimate != null && reefCount > 1); // reefAmbig < 0.2 ||
-        boolean funnelEstim = (funnelEstimate != null && funnelCount > 1); // funnelAmbig < 0.2 ||
+        boolean reefEstim = (reefEstimate != null && reefCount > 1 && yawRate < Units.degreesToRadians(60)); // reefAmbig < 0.2 ||
+        boolean funnelEstim = (funnelEstimate != null && funnelCount > 1 && yawRate < Units.degreesToRadians(60)); // funnelAmbig < 0.2 ||
 
         if (reefEstim && funnelEstim) {
             if (reefCount > funnelCount) {
