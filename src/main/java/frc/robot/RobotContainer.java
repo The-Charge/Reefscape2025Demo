@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
@@ -27,11 +28,11 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.IntakeRumble;
+import frc.robot.commands.LoggingManager;
 import frc.robot.commands.algaerem.AlgaeRemSpin;
 import frc.robot.commands.climb.Climb;
 import frc.robot.commands.climb.ClimbClampDegreesManual;
 import frc.robot.commands.climb.ClimbLeverDegreesManual;
-import frc.robot.commands.climb.ClimbOverride;
 import frc.robot.commands.climb.Declimb;
 import frc.robot.commands.elev.MoveToInchesManual;
 import frc.robot.commands.elev.MoveToLevel;
@@ -86,8 +87,12 @@ public class RobotContainer {
     private SendableChooser<Command> autoChooser;
     private TeleopDrive teleopDrive;
     private LEDManager ledManager;
+    private DriveToTag dtt;
+    private LoggingManager logging;
     
     public RobotContainer() {
+        logging = new LoggingManager(swerve); //prevent from being accidentally restarted
+
         teleopDrive = new TeleopDrive(swerve,
             () -> -MathUtil.applyDeadband(driver1.getLeftY(), SwerveConstants.LEFT_Y_DEADBAND),
             () -> -MathUtil.applyDeadband(driver1.getLeftX(), SwerveConstants.LEFT_X_DEADBAND),
@@ -118,14 +123,8 @@ public class RobotContainer {
         setupAutoDisplay();
         SmartDashboard.putData("Auto Chooser", autoChooser);
 
-
         Field2d field = new Field2d();
         SmartDashboard.putData("Field", field);
-    }
-    private DriveToTag dtt;
-    private DriveToTag setupDtt(ReefPosition side, boolean reef) {
-        this.dtt = new DriveToTag(swerve, reef, side);
-        return this.dtt;
     }
 
     private void configureBindings() {
@@ -253,11 +252,9 @@ public class RobotContainer {
 
         AutoDisplayHelper.displayAutoPath(auto, isRed);
     }
-
     public Command getAutonomousCommand() {
         return autoChooser.getSelected();
     }
-
     public SwerveSubsystem getSwerveSubsystem() {
         return swerve;
     }
@@ -270,7 +267,6 @@ public class RobotContainer {
     public void clearTeleopDefaultCommand() {
         swerve.setDefaultCommand(new SwerveZero(swerve));
     }
-
     public void scheduleLimelight() {
         new LimelightManager(swerve, reeflimelight, funnellimelight).schedule();
     }
@@ -289,5 +285,12 @@ public class RobotContainer {
     }
     public LEDManager getLEDManager() {
         return ledManager;
+    }
+    private DriveToTag setupDtt(ReefPosition side, boolean reef) {
+        this.dtt = new DriveToTag(swerve, reef, side);
+        return this.dtt;
+    }
+    public void scheduleLoggingManager() {
+        logging.schedule();
     }
 }
