@@ -43,6 +43,8 @@ import frc.robot.commands.head.WaitForHasCoral;
 import frc.robot.commands.intake.Intake;
 import frc.robot.commands.intake.ManualIntake;
 import frc.robot.commands.leds.LEDManager;
+import frc.robot.commands.swervedrive.drivebase.DriveToReefDist;
+import frc.robot.commands.swervedrive.drivebase.DriveToSourceDist;
 import frc.robot.commands.swervedrive.drivebase.SwerveZero;
 import frc.robot.commands.swervedrive.drivebase.TeleopDrive;
 import frc.robot.commands.vision.DriveToTag;
@@ -186,6 +188,9 @@ public class RobotContainer {
          * <Subsytem><Action>
          * Use PascalCase
          */
+        NamedCommands.registerCommand("SwerveDriveToReefDist", new DriveToReefDist(swerve, head));
+        NamedCommands.registerCommand("SwerveDriveToSourceDist", new DriveToSourceDist(swerve, head));
+        
         NamedCommands.registerCommand("ElevHome", new MoveToLevel(elev, head, ElevSubsystem.Level.HOME, true));
         NamedCommands.registerCommand("ElevLevel1", new MoveToLevel(elev, head, ElevSubsystem.Level.LVL1, true));
         NamedCommands.registerCommand("ElevLevel2", new MoveToLevel(elev, head, ElevSubsystem.Level.LVL2, true));
@@ -203,9 +208,13 @@ public class RobotContainer {
     private void addTelemetry() {
         //one time telemetry values, such as dashboard commands
         if(TelemetryConstants.debugTelemetry) {
+            SmartDashboard.putData("Swerve DriveToReefDist", new DriveToReefDist(swerve, head));
+            SmartDashboard.putData("Swerve DriveToSourceDist", new DriveToSourceDist(swerve, head));
+
             SmartDashboard.putData("Elev Manual Move (IN)", new MoveToInchesManual(elev));
             SmartDashboard.putData("Elev Manual Move (TICKS)", new MoveToTicksManual(elev));
             SmartDashboard.putData("Elev Manual Move (LVL)", new MoveToLevelManual(elev));
+            SmartDashboard.putData("Elev Zero", new InstantCommand(elev::setAsZero).ignoringDisable(true));
 
             SmartDashboard.putData("Climb Lever Manual (DEG)", new ClimbLeverDegreesManual(climb));
             SmartDashboard.putData("Climb Clamp Manual (DEG)", new ClimbClampDegreesManual(climb));
