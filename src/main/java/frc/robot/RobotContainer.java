@@ -44,6 +44,7 @@ import frc.robot.commands.intake.ManualIntake;
 import frc.robot.commands.leds.LEDManager;
 import frc.robot.commands.swervedrive.drivebase.SwerveZero;
 import frc.robot.commands.swervedrive.drivebase.TeleopDrive;
+import frc.robot.commands.vision.AlignToTag;
 import frc.robot.commands.vision.DriveToTag;
 import frc.robot.commands.vision.LimelightManager;
 import frc.robot.constants.ClimbConstants;
@@ -129,6 +130,8 @@ public class RobotContainer {
 
         // limelight testing
         // driver1.a().onTrue(Commands.runOnce(swerve::addFakeVision(Reading));
+
+        driver1.a().whileTrue(new AlignToTag(swerve, reeflimelight, null));
         
         driver1.rightBumper().onTrue(new DriveToTag(swerve, true,
                 () -> (Math.abs(driver1.getLeftX()) < SwerveConstants.LEFT_X_DEADBAND

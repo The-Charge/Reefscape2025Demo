@@ -28,6 +28,11 @@ public class VisionSubsystem extends SubsystemBase {
     return LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(ll_name);
   }
   
+  public LimelightHelpers.PoseEstimate getLLHPoseEstimateTag1(double yaw, double yawRate) {
+    LimelightHelpers.SetRobotOrientation(ll_name, yaw, yawRate, 0, 0, 0, 0);
+    return LimelightHelpers.getBotPoseEstimate_wpiBlue(ll_name);
+  }
+  
   public Pose2d getEstimatedPose(double yaw, double yawRate) {
     NetworkTable table = NetworkTableInstance.getDefault().getTable(ll_name);
 
@@ -103,6 +108,10 @@ public class VisionSubsystem extends SubsystemBase {
       return -1;
     }
     return fids[1].distToCamera;
+  }
+
+  public Pose3d getTagPoseRobotSpace() {
+    return LimelightHelpers.getTargetPose3d_RobotSpace(ll_name);
   }
 
   public int getTagCount() {

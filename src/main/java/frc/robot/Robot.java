@@ -41,7 +41,6 @@ public class Robot extends TimedRobot {
             UsbCamera webCam = CameraServer.startAutomaticCapture();
             webCam.setResolution(320, 240);
             webCam.setFPS(30);
-            webCam.setPixelFormat(PixelFormat.kY16);
         }
         catch(Exception e) {
             DriverStation.reportWarning("Failed to connect to USB Camera", false);
@@ -118,7 +117,6 @@ public class Robot extends TimedRobot {
         disabledTimer.reset();
         disabledTimer.start();
         m_robotContainer.stopRumble();
-        // m_robotContainer.scheduleLimelight();
         m_robotContainer.getLEDManager().resetEndgameStarted();
     }
     

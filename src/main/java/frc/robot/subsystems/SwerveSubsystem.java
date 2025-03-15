@@ -35,6 +35,8 @@ import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -54,6 +56,7 @@ import swervelib.parser.SwerveControllerConfiguration;
 import swervelib.parser.SwerveDriveConfiguration;
 import swervelib.parser.SwerveParser;
 import swervelib.telemetry.SwerveDriveTelemetry;
+import edu.wpi.first.math.Matrix;
 
 public class SwerveSubsystem extends SubsystemBase
 {
@@ -69,7 +72,7 @@ public class SwerveSubsystem extends SubsystemBase
   /**
    * Enable vision odometry updates while driving.
    */
-  private final boolean             visionDriveTest     = false;
+  private final boolean             visionDriveTest     = true;
   /**
    * PhotonVision class to keep an accurate odometry.
    */
@@ -719,6 +722,13 @@ public class SwerveSubsystem extends SubsystemBase
    */
   public void addVisionReading(Pose2d pose, double timestampSeconds) {
     swerveDrive.addVisionMeasurement(pose, timestampSeconds);
+  }
+
+  /*
+   * Add odometry readings using vision
+   */
+  public void addVisionReading(Pose2d pose, double timestampSeconds, Matrix<N3, N1> stdDevs) {
+    swerveDrive.addVisionMeasurement(pose, timestampSeconds, stdDevs);
   }
 
   /**

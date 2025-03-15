@@ -7,7 +7,6 @@ import com.pathplanner.lib.path.PathConstraints;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.constants.SwerveConstants;
@@ -23,6 +22,7 @@ public class DriveToTag extends Command {
   private boolean reef;
   private boolean tagged;
   private ReefPosition reefPos;
+  private Command drivetoPose;
 
   public DriveToTag(SwerveSubsystem swerve, boolean reef, BooleanSupplier cancel, ReefPosition reefPos) {
     this.swerve = swerve;
@@ -75,10 +75,8 @@ public class DriveToTag extends Command {
     rot2d = ApriltagConstants.TAG_POSES[tagid].getRotation().toRotation2d();
     rot = rot2d.getRadians();
 
-    x = ApriltagConstants.TAG_POSES[tagid].getX() + (Units.inchesToMeters(16)) * Math.cos(rot)
-        - (ApriltagConstants.CENTER_TO_SCORER_OFFSET + offset) * Math.sin(rot);
-    y = ApriltagConstants.TAG_POSES[tagid].getY() + (Units.inchesToMeters(16)) * Math.sin(rot)
-        + (ApriltagConstants.CENTER_TO_SCORER_OFFSET + offset) * Math.cos(rot);
+    x = ApriltagConstants.TAG_POSES[tagid].getX() + 1 * Math.cos(rot) - offset * Math.sin(rot);
+    y = ApriltagConstants.TAG_POSES[tagid].getY() + 1 * Math.sin(rot) + offset * Math.cos(rot);
 
     if (!(tagid == 1 || tagid == 2 || tagid == 12 || tagid == 13)) {
       rot2d = rot2d.minus(Rotation2d.k180deg);
@@ -96,12 +94,20 @@ public class DriveToTag extends Command {
     }
 
     // run the path
-    Command drivetoPose = AutoBuilder.pathfindToPose(
+    drivetoPose = AutoBuilder.pathfindToPose(
         targetPose,
         constraints,
         0.0 // Goal end velocity in meters/sec
     );
 
     drivetoPose.onlyWhile(cancel).schedule();
+  }
+  
+  @Override
+  public boolean isFinished() {
+    if (drivetoPose != null) {
+      return drivetoPose.isFinished();
+    }
+    return false;
   }
 }
