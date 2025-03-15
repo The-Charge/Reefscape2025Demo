@@ -37,8 +37,10 @@ public abstract class SwerveConstants {
     public static final double DRIVE_SPEED = 1; //multiplies translation and rotation, 1 is 100%
     public static final double TRIGGER_DEADBAND = 0.1;
 
-    public static final double reefAcceptableDist = 100; //millimeters
-    public static final double reefAlignSpeed = 1; //meters/sec
-    public static final double sourceAcceptableDist = 100; //millimeters
+    public static final double reefAcceptableDist = 210; //millimeters
+    public static final double reefAlignSpeed = 0.1; //meters/sec
+    public static final double sourceAcceptableDist = 170; //millimeters
     public static final double sourceAlignSpeed = 1; //meters/sec
+    public static final double alignTimeout = 3; //seconds
+    public static final PIDConstants alignPID = new PIDConstants(0.01, 0, 0);
 }

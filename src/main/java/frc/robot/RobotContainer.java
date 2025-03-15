@@ -222,6 +222,7 @@ public class RobotContainer {
             SmartDashboard.putData("Climb Slow", new Climb(climb, ClimbConstants.leverSlowVbus));
 
             SmartDashboard.putData("Head Shoot", new Shoot(head, elev));
+            SmartDashboard.putData("Head ShootSlow", new ShootSlow(head, elev));
 
             SmartDashboard.putData("AlgaeRem Spin", new AlgaeRemSpin(algaeRem, true));
         }
