@@ -74,14 +74,14 @@
             }
           },
           {
-            "title": "USB Camera 0",
+            "title": "limelight-funnel",
             "x": 1024.0,
             "y": 0.0,
             "width": 512.0,
             "height": 512.0,
             "type": "Camera Stream",
             "properties": {
-              "topic": "/CameraPublisher/USB Camera 0",
+              "topic": "/CameraPublisher/limelight-funnel",
               "period": 0.06,
               "rotation_turns": 0
             }
@@ -329,6 +329,36 @@
               "period": 0.06,
               "data_type": "double",
               "show_submit_button": false
+            }
+          },
+          {
+            "title": "Elev HardStop",
+            "x": 768.0,
+            "y": 0.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Boolean Box",
+            "properties": {
+              "topic": "/SmartDashboard/Elev HardStop",
+              "period": 0.06,
+              "data_type": "boolean",
+              "true_color": 4283215696,
+              "false_color": 4294198070,
+              "true_icon": "None",
+              "false_icon": "None"
+            }
+          },
+          {
+            "title": "Elev Zero",
+            "x": 768.0,
+            "y": 576.0,
+            "width": 256.0,
+            "height": 128.0,
+            "type": "Command",
+            "properties": {
+              "topic": "/SmartDashboard/Elev Zero",
+              "period": 0.06,
+              "show_type": false
             }
           }
         ]
@@ -958,6 +988,74 @@
               "false_color": 4294198070,
               "true_icon": "None",
               "false_icon": "None"
+            }
+          },
+          {
+            "title": "Front Shooter Sensor (mm)",
+            "x": 576.0,
+            "y": 0.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/SmartDashboard/Front Shooter Sensor (mm)",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "Back Shooter Sensor (mm)",
+            "x": 576.0,
+            "y": 128.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/SmartDashboard/Back Shooter Sensor (mm)",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "Head RunningCommand",
+            "x": 1408.0,
+            "y": 576.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/SmartDashboard/Head RunningCommand",
+              "period": 0.06,
+              "data_type": "string",
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "DriveToReefDist",
+            "x": 576.0,
+            "y": 576.0,
+            "width": 256.0,
+            "height": 128.0,
+            "type": "Command",
+            "properties": {
+              "topic": "/SmartDashboard/Swerve DriveToReefDist",
+              "period": 0.06,
+              "show_type": false
+            }
+          },
+          {
+            "title": "DriveToSourceDist",
+            "x": 832.0,
+            "y": 576.0,
+            "width": 256.0,
+            "height": 128.0,
+            "type": "Command",
+            "properties": {
+              "topic": "/SmartDashboard/Swerve DriveToSourceDist",
+              "period": 0.06,
+              "show_type": false
             }
           }
         ]
