@@ -31,7 +31,6 @@ import frc.robot.commands.algaerem.AlgaeRemSpin;
 import frc.robot.commands.climb.Climb;
 import frc.robot.commands.climb.ClimbClampDegreesManual;
 import frc.robot.commands.climb.ClimbLeverDegreesManual;
-import frc.robot.commands.climb.ClimbOverride;
 import frc.robot.commands.climb.Declimb;
 import frc.robot.commands.elev.MoveToInchesManual;
 import frc.robot.commands.elev.MoveToLevel;
@@ -76,8 +75,8 @@ public class RobotContainer {
     private final CommandXboxController driver2 = new CommandXboxController(1);
     
     private final SwerveSubsystem swerve = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "swerve"));
-    private final VisionSubsystem reeflimelight = new VisionSubsystem(LLReefConstants.LL_NAME, LLReefConstants.CAMERA_OFFSET);
-    private final VisionSubsystem funnellimelight = new VisionSubsystem(LLFunnelConstants.LL_NAME, LLFunnelConstants.CAMERA_OFFSET);
+    private final VisionSubsystem reeflimelight = new VisionSubsystem(LLReefConstants.LL_NAME, LLReefConstants.CAMERA_OFFSET, false);
+    private final VisionSubsystem funnellimelight = new VisionSubsystem(LLFunnelConstants.LL_NAME, LLFunnelConstants.CAMERA_OFFSET, true);
     private final ElevSubsystem elev = new ElevSubsystem();
     private final ClimbSubsystem climb = new ClimbSubsystem();
     private final HeadSubsystem head = new HeadSubsystem();
