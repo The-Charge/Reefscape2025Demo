@@ -59,12 +59,15 @@ public class DriveToTag extends Command {
     switch (reefPos) {
       case LEFT:
         offset = ApriltagConstants.LEFT_ALIGN_OFFSET;
+        SmartDashboard.putString("side", "LEFT");
         break;
-      case RIGHT:
+        case RIGHT:
         offset = ApriltagConstants.RIGHT_ALIGN_OFFSET;
+        SmartDashboard.putString("side", "Rigth");
         break;
-      default:
+        default:
         offset = ApriltagConstants.MID_ALIGN_OFFSET;
+        SmartDashboard.putString("side", "center");
         break;
     }
 
@@ -93,6 +96,12 @@ public class DriveToTag extends Command {
       SmartDashboard.putNumber("swerve y", swerve.getPose().getY());
     }
 
+    if (drivetoPose != null) {
+      drivetoPose.cancel();
+      System.out.println("AHHHHHHHH");
+    }
+    // drivetoPose = null;
+
     // run the path
     drivetoPose = AutoBuilder.pathfindToPose(
         targetPose,
@@ -109,5 +118,10 @@ public class DriveToTag extends Command {
       return drivetoPose.isFinished();
     }
     return false;
+  }
+
+  @Override
+  public void end(boolean IntakeRumble) {
+    drivetoPose.cancel();
   }
 }
