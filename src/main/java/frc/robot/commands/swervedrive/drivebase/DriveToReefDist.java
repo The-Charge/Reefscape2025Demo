@@ -36,7 +36,8 @@ public class DriveToReefDist extends Command {
     public void execute() {
         double out = -pid.calculate(head.getFrontDistance());
         SmartDashboard.putNumber("Swerve AlignToReefDist pid", out);
-        swerve.drive(new Translation2d(MathUtil.clamp(out  * SwerveConstants.reefAlignSpeed, -0.3, 0.3), 0), 0, false);
+        SmartDashboard.putNumber("Swerve AlignToReefDist actual", MathUtil.clamp(out  * SwerveConstants.reefAlignSpeed + 0.18, -SwerveConstants.reefAlignSpeed, SwerveConstants.reefAlignSpeed));
+        swerve.drive(new Translation2d(MathUtil.clamp(out  * SwerveConstants.reefAlignSpeed + 0.18, -SwerveConstants.reefAlignSpeed, SwerveConstants.reefAlignSpeed), 0), 0, false);
     }
     @Override
     public void end(boolean interrupted) {
