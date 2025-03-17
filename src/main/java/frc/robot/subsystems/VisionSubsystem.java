@@ -14,13 +14,15 @@ import frc.robot.LimelightHelpers.RawFiducial;
 public class VisionSubsystem extends SubsystemBase {
   String ll_name;
 
-  public VisionSubsystem(String ll_name, Pose3d cameraOffset) {
+  public VisionSubsystem(String ll_name, Pose3d cameraOffset, boolean hasUSBCam) {
     this.ll_name = ll_name;
 
     LimelightHelpers.setCameraPose_RobotSpace(ll_name, cameraOffset.getX(), cameraOffset.getY(), cameraOffset.getZ(),
         Units.radiansToDegrees(cameraOffset.getRotation().getX()), Units.radiansToDegrees(cameraOffset.getRotation().getY()), Units.radiansToDegrees(cameraOffset.getRotation().getZ()));
     
-        setPipeline(1);
+    setPipeline(1);
+    if(hasUSBCam)
+      NetworkTableInstance.getDefault().getTable(ll_name).getEntry("stream").setNumber(2); //usb camera as main and limelight as PiP
   }
 
   public LimelightHelpers.PoseEstimate getLLHPoseEstimate(double yaw, double yawRate) {

@@ -36,15 +36,6 @@ public class Robot extends TimedRobot {
 
     public Robot() {
         instance = this;
-        
-        try {
-            UsbCamera webCam = CameraServer.startAutomaticCapture();
-            webCam.setResolution(320, 240);
-            webCam.setFPS(30);
-        }
-        catch(Exception e) {
-            DriverStation.reportWarning("Failed to connect to USB Camera", false);
-        }
     }
     
     public static Robot getInstance()
