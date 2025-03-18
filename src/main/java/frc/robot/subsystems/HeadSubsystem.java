@@ -9,11 +9,7 @@ import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.constants.HeadConstants;
 import frc.robot.constants.TelemetryConstants;
 
@@ -21,6 +17,8 @@ public class HeadSubsystem extends SubsystemBase {
 
     private TimeOfFlight funnelSensor;
     private TimeOfFlight shooterSensor;
+    private TimeOfFlight backSensor;
+    private TimeOfFlight frontSensor;
     private SparkMax headLeft;
     private SparkMax headRight;
     private boolean hasCoral = false;
@@ -28,9 +26,13 @@ public class HeadSubsystem extends SubsystemBase {
     public HeadSubsystem() {
         funnelSensor = new TimeOfFlight(HeadConstants.funnelSensorId);
         shooterSensor = new TimeOfFlight(HeadConstants.shooterSensorId);
+        backSensor = new TimeOfFlight(HeadConstants.backSensorId);
+        frontSensor = new TimeOfFlight(HeadConstants.frontSensorId);
 
-        funnelSensor.setRangingMode(RangingMode.Short, HeadConstants.sensorSampleTime);
-        shooterSensor.setRangingMode(RangingMode.Short, HeadConstants.sensorSampleTime);
+        funnelSensor.setRangingMode(RangingMode.Short, HeadConstants.shortSensorSampleTime);
+        shooterSensor.setRangingMode(RangingMode.Short, HeadConstants.shortSensorSampleTime);
+        backSensor.setRangingMode(RangingMode.Long, HeadConstants.longSensorSampleTime);
+        frontSensor.setRangingMode(RangingMode.Long, HeadConstants.longSensorSampleTime);
 
         headLeft = new SparkMax(HeadConstants.leftId, MotorType.kBrushless);
         headRight = new SparkMax(HeadConstants.rightId, MotorType.kBrushless);
@@ -56,6 +58,8 @@ public class HeadSubsystem extends SubsystemBase {
 
             SmartDashboard.putNumber("Head Funnel Sensor (mm)", funnelSensor.getRange());
             SmartDashboard.putNumber("Head Shooter Sensor (mm)", shooterSensor.getRange());
+            SmartDashboard.putNumber("Back Shooter Sensor (mm)", backSensor.getRange());
+            SmartDashboard.putNumber("Front Shooter Sensor (mm)", frontSensor.getRange());
     
             SmartDashboard.putNumber("Head Current L", headLeft.getOutputCurrent());
             SmartDashboard.putNumber("Head Current R", headRight.getOutputCurrent());
@@ -78,10 +82,16 @@ public class HeadSubsystem extends SubsystemBase {
     }
 
     public boolean getFunnelSensor() {
-        return funnelSensor.getRange() <= HeadConstants.sensorActivationDist;
+        return funnelSensor.getRange() <= HeadConstants.headActiviationDist;
     }
     public boolean getShooterSensor() {
-        return shooterSensor.getRange() <= HeadConstants.sensorActivationDist;
+        return shooterSensor.getRange() <= HeadConstants.headActiviationDist;
+    }
+    public double getBackDistance() {
+        return backSensor.getRange();
+    }
+    public double getFrontDistance() {
+        return frontSensor.getRange();
     }
     public boolean getHasCoral() {
         return hasCoral;

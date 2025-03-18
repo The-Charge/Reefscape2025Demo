@@ -19,11 +19,15 @@ public abstract class ElevConstants {
     public static final double targetThresholdInches = 0.2;
     public static final double targetThresholdSeconds = 0.1;
 
+    public static final boolean hardStopResetsEncoder = true;
+    public static final double hardStopResetValue = -0.1; //account for range of limit switch
+
     public static final double homeInches = 0;
     public static final double lvl1Inches = 12;
     public static final double lvl2Inches = 18;
     public static final double lvl3Inches = 34;
-    public static final double lvl4Inches = 59;
+    public static final double lvl4Inches = 58; //for home
+    // public static final double lvl4Inches = 59; //for competition
     public static final double algaeLowInches = 9;
     public static final double algaeHighInches = 21;
 

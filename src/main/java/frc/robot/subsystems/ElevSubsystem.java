@@ -6,6 +6,7 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.PositionDutyCycle;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.GravityTypeValue;
+import com.ctre.phoenix6.signals.ReverseLimitValue;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -33,6 +34,7 @@ public class ElevSubsystem extends SubsystemBase {
     private int targetCounter = 0;
     private boolean isAtTarget = true;
     private SendableChooser<Level> targetOverrideLvl;
+    private boolean hardStopLast = true;
 
     public ElevSubsystem() {
         motor = new TalonFX(ElevConstants.motorID);
@@ -59,6 +61,9 @@ public class ElevSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
+        if(ElevConstants.hardStopResetsEncoder)
+            checkHardStop();
+        
         targetCheck();
 
         if(TelemetryConstants.debugTelemetry) {
@@ -76,6 +81,7 @@ public class ElevSubsystem extends SubsystemBase {
 
             SmartDashboard.putNumber("Elev VBus", motor.get());
             SmartDashboard.putNumber("Elev Current", motor.getStatorCurrent().getValueAsDouble());
+            SmartDashboard.putBoolean("Elev HardStop", isAtHardStop());
             if(getCurrentCommand() == null)
                 SmartDashboard.putString("Elev RunningCommand", "None");
             else
@@ -137,6 +143,9 @@ public class ElevSubsystem extends SubsystemBase {
     public void stop() {
         motor.set(0);
     }
+    public void setAsZero() {
+        motor.setPosition(0);
+    }
 
     public double getPositionInches() {
         return getPositionTicks() * ElevConstants.tickToInConversion;
@@ -152,6 +161,9 @@ public class ElevSubsystem extends SubsystemBase {
     }
     public Level getOverrideLevel() {
         return targetOverrideLvl.getSelected();
+    }
+    public boolean isAtHardStop() {
+        return motor.getReverseLimit().getValue() == ReverseLimitValue.ClosedToGround;
     }
 
     private void configureMotor(TalonFX m) {
@@ -177,6 +189,9 @@ public class ElevSubsystem extends SubsystemBase {
         motionMagicConfigs.MotionMagicCruiseVelocity = 20; // Target cruise velocity of 80 rps
         motionMagicConfigs.MotionMagicAcceleration = 80; // Target acceleration of 80 rps/s (1 second)
         motionMagicConfigs.MotionMagicJerk = 800; // Target jerk of 800 rps/s/s (0.2 seconds)
+
+        // motorConfig.HardwareLimitSwitch.ReverseLimitAutosetPositionEnable = ElevConstants.hardStopResetsEncoder;
+        // motorConfig.HardwareLimitSwitch.ReverseLimitAutosetPositionValue = ElevConstants.hardStopResetValue;
         
         m.getConfigurator().apply(motorConfig);
         
@@ -225,5 +240,14 @@ public class ElevSubsystem extends SubsystemBase {
             isAtTarget = true;
         else
             isAtTarget = false;
+    }
+    private void checkHardStop() {
+        boolean hardStop = isAtHardStop();
+
+        if(hardStop && !hardStopLast) {
+            motor.setPosition(ElevConstants.hardStopResetValue);
+        }
+
+        hardStopLast = hardStop;
     }
 }
