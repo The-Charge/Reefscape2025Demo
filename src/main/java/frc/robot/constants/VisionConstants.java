@@ -18,10 +18,10 @@ public abstract class VisionConstants {
     public static final int ALGAE_PIPELINE = 2;
 
     //limelight pose in robotspace (in meters/radians) - Change later
-    public static final double X_CAMERA_OFFSET = 0.352425; //forward
-    public static final double Y_CAMERA_OFFSET = 0.13081; //right
-    public static final double Z_CAMERA_OFFSET = 0.2286; //up
-    public static final double ROLL_CAMERA_OFFSET = Units.degreesToRadians(3); //3 degree
+    public static final double X_CAMERA_OFFSET = Units.inchesToMeters(14); //forward
+    public static final double Y_CAMERA_OFFSET = Units.inchesToMeters(5); //right
+    public static final double Z_CAMERA_OFFSET = 0.28; //up
+    public static final double ROLL_CAMERA_OFFSET = Units.degreesToRadians(0); //3 degree
     public static final double YAW_CAMERA_OFFSET = Units.degreesToRadians(0);
     public static final double PITCH_CAMERA_OFFSET = Units.degreesToRadians(0);
     public static final Pose3d CAMERA_OFFSET = new Pose3d(X_CAMERA_OFFSET, Y_CAMERA_OFFSET, Z_CAMERA_OFFSET, 

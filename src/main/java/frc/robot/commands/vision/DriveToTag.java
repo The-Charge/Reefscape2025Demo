@@ -30,22 +30,23 @@ public class DriveToTag extends Command {
     this.cancel = cancel;
     this.reef = reef;
     this.tagged = false;
-
+    
     addRequirements(swerve);
   }
-
+  
   public DriveToTag(SwerveSubsystem swerve, int tagid, BooleanSupplier cancel, ReefPosition reefPos) {
     this.swerve = swerve;
     this.reefPos = reefPos;
     this.cancel = cancel;
     this.tagid = tagid;
     this.tagged = true;
-
+    
     addRequirements(swerve);
   }
-
+  
   @Override
   public void initialize() {
+    drivetoPose = null;
     double offset = 0;
 
     if (!tagged) {
@@ -123,5 +124,6 @@ public class DriveToTag extends Command {
   @Override
   public void end(boolean IntakeRumble) {
     drivetoPose.cancel();
+    drivetoPose = null;
   }
 }
