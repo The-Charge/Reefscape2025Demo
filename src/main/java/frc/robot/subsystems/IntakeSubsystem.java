@@ -7,6 +7,7 @@ import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.HeadConstants;
@@ -16,7 +17,7 @@ import frc.robot.constants.TelemetryConstants;
 public class IntakeSubsystem extends SubsystemBase {
     
     private SparkMax belt;
-
+    
     public IntakeSubsystem() {
         belt = new SparkMax(IntakeConstants.beltID, MotorType.kBrushless);
 
@@ -29,6 +30,7 @@ public class IntakeSubsystem extends SubsystemBase {
     public void periodic() {
         if(TelemetryConstants.debugTelemetry) {
             SmartDashboard.putNumber("Intake VBus", belt.get());
+            SmartDashboard.putNumber("Intake Velocity", belt.getEncoder().getVelocity());
 
             SmartDashboard.putNumber("Intake Current", belt.getOutputCurrent());
             if(getCurrentCommand() == null)
@@ -43,6 +45,10 @@ public class IntakeSubsystem extends SubsystemBase {
     }
     public void stop() {
         belt.set(0);
+    }
+    
+    public double getVelocity() {
+        return belt.getEncoder().getVelocity();
     }
 
     private void configureMotor(SparkMax m) {

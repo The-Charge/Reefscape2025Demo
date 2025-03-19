@@ -44,14 +44,14 @@
                 "data": {
                   "name": "ElevHome"
                 }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "HeadWaitForCoral"
+                }
               }
             ]
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "HeadWaitForCoral"
           }
         },
         {

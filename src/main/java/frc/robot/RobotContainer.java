@@ -220,7 +220,7 @@ public class RobotContainer {
 
         NamedCommands.registerCommand("HeadShoot", new Shoot(head, elev));
         NamedCommands.registerCommand("HeadShootSlow", new ShootSlow(head, elev));
-        NamedCommands.registerCommand("HeadWaitForCoral", new WaitForHasCoral(head));
+        NamedCommands.registerCommand("HeadWaitForCoral", new WaitForHasCoral(head, intake));
 
         NamedCommands.registerCommand("AlgaeRemSpin", new AlgaeRemSpin(algaeRem, true));
     }

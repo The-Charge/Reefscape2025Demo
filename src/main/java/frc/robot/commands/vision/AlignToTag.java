@@ -22,25 +22,18 @@ public class AlignToTag extends Command {
       addRequirements(swerve);
       addRequirements(limelight);
   }
-
-  @Override
-  public void initialize() {
-    // sideController.setPID(5, 0, 0);
-    // frontController.setPID(5, 0, 0);
-    // rotController.setPID(5, 0, 0);
-  }
   
   @Override 
   public void execute() {
-    double tx = limelight.getTagPoseRobotSpace().getX();
-    double ty = limelight.getTagPoseRobotSpace().getY();
-    double rot = limelight.getTagPoseRobotSpace().getRotation().getZ();
+    double tx = limelight.getRobotPoseTagSpace().getX();
+    double ty = limelight.getRobotPoseTagSpace().getY();
+    double rot = limelight.getRobotPoseTagSpace().getRotation().getY();
 
-    double pidtx = sideController.calculate(-tx, 0);
-    double pidty = frontController.calculate(-ty, 0);
+    double pidtx = sideController.calculate(ty, -0.4);
+    double pidty = frontController.calculate(tx, 0);
     double pidrot = rotController.calculate(-rot, 0);
 
-    SmartDashboard.putNumberArray("Align array", new Double[] {tx, ty, rot, pidtx, pidty, pidrot});
+    SmartDashboard.putNumberArray("Align array", new Double[] {ty, tx, rot, pidtx, pidty, pidrot});
 
     // ChassisSpeeds alignmentSpeeds = swerve.getTargetSpeeds(pidtx, pidty, new Rotation2d(pidrot));
     swerve.drive(new Translation2d(pidtx, pidty), pidrot, false);

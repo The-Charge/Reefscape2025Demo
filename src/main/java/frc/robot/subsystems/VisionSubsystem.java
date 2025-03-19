@@ -112,8 +112,8 @@ public class VisionSubsystem extends SubsystemBase {
     return fids[1].distToCamera;
   }
 
-  public Pose3d getTagPoseRobotSpace() {
-    return LimelightHelpers.getTargetPose3d_RobotSpace(ll_name);
+  public Pose3d getRobotPoseTagSpace() {
+    return LimelightHelpers.getBotPose3d_TargetSpace(ll_name);
   }
 
   public int getTagCount() {
