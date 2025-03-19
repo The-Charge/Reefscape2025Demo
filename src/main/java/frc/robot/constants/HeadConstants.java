@@ -1,16 +1,27 @@
 package frc.robot.constants;
 
+import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
+
 public abstract class HeadConstants {
 
-    public static final int sensorId1 = 0;
-    public static final int sensorId2 = 1;
-    public static final int leftId = 7;
-    public static final int rightId = 8;
+    public static final int funnelSensorId = 1;
+    public static final int shooterSensorId = 0;
+    public static final int backSensorId = 2;
+    public static final int frontSensorId = 3;
+    public static final int leftId = 12;
+    public static final int rightId = 11;
 
     public static final int currentLimit = 25;
+    public static final IdleMode idleMode = IdleMode.kBrake;
+    public static final int shortSensorSampleTime = 40; //milliseconds
+    public static final int longSensorSampleTime = 80; //milliseconds
+    public static final double headActiviationDist = 80; //millimeters
+    public static final boolean leftReversed = false;
+    public static final boolean rightReversed = true;
 
-    public static final double intakeVBus = 0.2;
+    public static final double indexerVbus = 0.2;
 
-    public static final double shootTime = 0.5;
-    public static final double shootVBus = 0.5;
+    public static final double shootTime = 0.75; //seconds
+    public static final double shootVBus = 1;
+    public static final double shootSlowVBus = 0.33;
 }

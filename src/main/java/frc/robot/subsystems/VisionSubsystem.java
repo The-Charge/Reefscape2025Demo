@@ -1,150 +1,120 @@
 package frc.robot.subsystems;
 
-import static edu.wpi.first.units.Units.DegreesPerSecond;
-
-import java.util.Optional;
-
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.apriltag.AprilTagFieldLayout;
-import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.util.Units;
+import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.LimelightHelpers;
-import frc.robot.constants.VisionConstants;
-import frc.robot.constants.VisionConstants.ApriltagConstants;
-import frc.robot.constants.VisionConstants.LLFunnelConstants;
-import frc.robot.constants.VisionConstants.LLReefConstants;
-import frc.robot.subsystems.SwerveSubsystem;
-import limelight.Limelight;
-import limelight.estimator.LimelightPoseEstimator;
-import limelight.estimator.PoseEstimate;
-import limelight.structures.AngularVelocity3d;
-import limelight.structures.LimelightSettings.LEDMode;
-import limelight.structures.Orientation3d;
+import frc.robot.LimelightHelpers.RawFiducial;
 
-public class VisionSubsystem extends SubsystemBase{
-    SwerveSubsystem swerve;
+public class VisionSubsystem extends SubsystemBase {
+  String ll_name;
 
-    private final AprilTagFieldLayout aprilTagFieldLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2025Reefscape);
+  public VisionSubsystem(String ll_name, Pose3d cameraOffset, boolean hasUSBCam) {
+    this.ll_name = ll_name;
 
-    public Timer detectiontimer = new Timer();
-    public boolean timerstarted = false;
-
-    Limelight reeflimelight;
-    LimelightPoseEstimator reefPoseEstimator;
-    public double[] tx = new double[2];               //X-offset
-    public double[] ty = new double[2];               //Y-offset
-    public boolean[] tv = new boolean[2];               //Target Identification
-    public double[] ta = new double[2];               //Area of tag
-    public double[] tid = new double[2];              //Tag id
-    public double[] tl = new double[2];               //latency contribution
-    public double[] cl = new double[2];               //Capture pipeline latency
-    public double[] getpipe = new double[2];          //get current pipeline
-    public double[] limelightlatency = new double[2]; //tl + cl
-    public double[] distance = new double[2];         //distance to target
-    public Pose2d[] robotpose = new Pose2d[2];        //Robot in Fieldspace (blue side)
-    public double[] prevtag = new double[2];
+    LimelightHelpers.setCameraPose_RobotSpace(ll_name, cameraOffset.getX(), cameraOffset.getY(), cameraOffset.getZ(),
+        Units.radiansToDegrees(cameraOffset.getRotation().getX()), Units.radiansToDegrees(cameraOffset.getRotation().getY()), Units.radiansToDegrees(cameraOffset.getRotation().getZ()));
     
+    setPipeline(1);
+    if(hasUSBCam)
+      NetworkTableInstance.getDefault().getTable(ll_name).getEntry("stream").setNumber(2); //usb camera as main and limelight as PiP
+  }
 
-    public VisionSubsystem(SwerveSubsystem swerve){
-      
-      //Setup YALL limelight object
-      reeflimelight = new Limelight(LLReefConstants.LL_NAME);
-      reeflimelight.getSettings().withLimelightLEDMode(LEDMode.PipelineControl).withCameraOffset(Pose3d.kZero).save();
-      reefPoseEstimator = reeflimelight.getPoseEstimator(true);
-      this.swerve = swerve;
+  public Pose2d getEstimatedPose(double yaw, double yawRate) {
+    NetworkTable table = NetworkTableInstance.getDefault().getTable(ll_name);
+
+    // Double[] poseArray = { yaw, yawRate, 0., 0., 0., 0. };
+    // table.getEntry("robot_orientation_set").setDoubleArray(poseArray);
+
+    Double[] botPoseArray = table.getEntry("botpose_wpiblue").getDoubleArray(new Double[] {});
+    if (botPoseArray.length == 0 || botPoseArray[7] == 0) {
+      return null;
     }
+    Pose2d pose = new Pose2d(botPoseArray[0], botPoseArray[1], new Rotation2d(Units.degreesToRadians(botPoseArray[5])));
 
-    @Override
-    public void periodic(){
-      
-      // This method will be called once per scheduler run
-      updateLimelightTracking();
-      UpdateLocalization();
+    return pose;
+  }
+
+  public double getPoseTimestamp() {
+    NetworkTable table = NetworkTableInstance.getDefault().getTable(ll_name);
+
+    Double[] botPoseArray = table.getEntry("botpose_wpiblue").getDoubleArray(new Double[] {});
+    if (botPoseArray.length == 0) {
+      return Double.NaN;
     }
-  
-    //updates limelight tracked values and puts on SmartDashboard
-    public void updateLimelightTracking(){ 
-        //LimelightHepers.setPipelineIndex(VisionConstants.LLReefConstants.LL_NAME, 1);
-        //Read general target values
-        tv[0] = LimelightHelpers.getTV(LLReefConstants.LL_NAME);
-        tx[0] = LimelightHelpers.getTX(LLReefConstants.LL_NAME);
-        ty[0] = LimelightHelpers.getTY(LLReefConstants.LL_NAME);
-        ta[0] = LimelightHelpers.getTA(LLReefConstants.LL_NAME);
-        tid[0] = NetworkTableInstance.getDefault().getTable(LLReefConstants.LL_NAME).getEntry("tid").getDouble(0);
-        tl[0] = LimelightHelpers.getLatency_Pipeline(LLReefConstants.LL_NAME);
-        cl[0] = LimelightHelpers.getLatency_Capture(LLReefConstants.LL_NAME);
-        getpipe[0] = LimelightHelpers.getCurrentPipelineIndex(LLReefConstants.LL_NAME);
+    double timeStamp = Timer.getFPGATimestamp() - Units.millisecondsToSeconds(botPoseArray[6]);
 
-        tv[1] = LimelightHelpers.getTV(LLFunnelConstants.LL_NAME);
-        tx[1] = LimelightHelpers.getTX(LLFunnelConstants.LL_NAME);
-        ty[1] = LimelightHelpers.getTY(LLFunnelConstants.LL_NAME);
-        ta[1] = LimelightHelpers.getTA(LLFunnelConstants.LL_NAME);
-        tid[1] = NetworkTableInstance.getDefault().getTable(LLFunnelConstants.LL_NAME).getEntry("tid").getDouble(0);
-        tl[1] = LimelightHelpers.getLatency_Pipeline(LLFunnelConstants.LL_NAME);
-        cl[1] = LimelightHelpers.getLatency_Capture(LLFunnelConstants.LL_NAME);
-        getpipe[1] = LimelightHelpers.getCurrentPipelineIndex(LLFunnelConstants.LL_NAME);
+    return timeStamp;
+  }
+
+  public void setPipeline(int index) {
+    LimelightHelpers.setPipelineIndex(ll_name, index);
+  }
+
+  public boolean getObjectedDetected() {
+    return LimelightHelpers.getTV(ll_name);
+  }
+
+  public int getTagID() {
+    return (int) LimelightHelpers.getFiducialID(ll_name);
+  }
+
+  public double getAmbiguity() {
+    Double[] array = NetworkTableInstance.getDefault().getTable(ll_name).getEntry("rawfiducials")
+        .getDoubleArray(new Double[] {});
+    if (array.length == 0) {
+      return Double.NaN;
     }
-
-    public void setPipeline(double index){
-      NetworkTableInstance.getDefault().getTable(LLReefConstants.LL_NAME).getEntry("pipeline").setNumber(index);
+    double avg = 0;
+    double arrlen = array.length / 7;
+    for (int i = 1; i <= arrlen; i++) {
+      avg += array[i * 7 - 1] / arrlen;
     }
+    return avg;
+  }
 
-    public void setRobotOrientation(double robotYaw){
-      LimelightHelpers.SetRobotOrientation(LLReefConstants.LL_NAME, robotYaw, 0.0, 0.0, 0.0, 0.0, 0.0);
+  public double getTX() {
+    return LimelightHelpers.getTX(ll_name);
+  }
+
+  public double getTY() {
+    return LimelightHelpers.getTY(ll_name);
+  }
+
+  public double getTA() {
+    return LimelightHelpers.getTA(ll_name);
+  }
+
+  public double getCurrentPipeline() {
+    return LimelightHelpers.getCurrentPipelineIndex(ll_name);
+  }
+
+  public double getDistToCamera() {
+    RawFiducial[] fids = LimelightHelpers.getRawFiducials(ll_name);
+    if (fids.length == 0) {
+      return -1;
     }
-   
-    public void UpdateLocalization(){
-      reeflimelight.getSettings()
-      .withRobotOrientation(new Orientation3d(new Rotation3d(0, 0, swerve.getHeading().getRadians()),
-                          new AngularVelocity3d(DegreesPerSecond.of(0),
-                                      DegreesPerSecond.of(0),
-                                      DegreesPerSecond.of(0))))
-      .save();
-      SmartDashboard.putNumber("swerve rotation", swerve.getRotation3d().getX());
-      // Get the vision estimate.
-      Optional<PoseEstimate> visionEstimate = reefPoseEstimator.getPoseEstimate(); // BotPose.BLUE_MEGATAG2.get(limelight);
-      visionEstimate.ifPresent((PoseEstimate poseEstimate) -> {
-      // If the average tag distance is less than 4 meters,
-      // there are more than 0 tags in view,
-      // and the average ambiguity between tags is less than 30% then we update the pose estimation.
-      if (poseEstimate.avgTagDist < 4 && poseEstimate.tagCount > 0 && poseEstimate.getMinTagAmbiguity() < 0.3)
-      {
-        swerve.addVisionReading(poseEstimate.pose.toPose2d(),poseEstimate.timestampSeconds);
-        SmartDashboard.putNumber("Tagx", poseEstimate.pose.toPose2d().getX());
-        SmartDashboard.putNumber("TagY", poseEstimate.pose.toPose2d().getY());
-        SmartDashboard.putNumber("Timestamp", poseEstimate.timestampSeconds);
-        SmartDashboard.putNumber("Rotationtag", poseEstimate.pose.toPose2d().getRotation().getDegrees());
-        SmartDashboard.putNumber("Distance to tag", poseEstimate.avgTagDist);
-        SmartDashboard.putBoolean("Pose Estimated", true);
-      }
-      else{
-        SmartDashboard.putBoolean("Pose Estimated", false);
-      }
-      SmartDashboard.putNumber("Tag Ambig", poseEstimate.getMinTagAmbiguity());
+    return fids[1].distToCamera;
+  }
 
-    });
-
+  public int getTagCount() {
+    try {
+      return LimelightHelpers.getBotPoseEstimate_wpiBlue(ll_name).tagCount;
+    } catch (Exception e) {
+      return -1;
     }
-   
-    /*
-     
-    public boolean checkForContinuousTarget(){
-      if (tv[0] > 0){
-        if (!timerstarted){
-          detectiontimer = new Timer();
-          detectiontimer.start();
-          timerstarted = true;
-        }
-        else if (detectiontimer.hasElapsed(0.5)){
+  }
 
-        }
-      }
-        
-    }
-      */
+  public String getName() {
+    return ll_name;
+  }
+
+  public enum ReefPosition {
+    LEFT, MIDDLE, RIGHT
+  }  
 }
