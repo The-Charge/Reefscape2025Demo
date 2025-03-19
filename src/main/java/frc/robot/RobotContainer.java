@@ -19,7 +19,6 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
@@ -291,6 +290,11 @@ public class RobotContainer {
         return this.dtt;
     }
     public void scheduleLoggingManager() {
-        logging.schedule();
+        if(!logging.isScheduled())
+            logging.schedule();
+    }
+    public void cancelLoggingManager() {
+        if(logging.isScheduled())
+            logging.cancel();
     }
 }

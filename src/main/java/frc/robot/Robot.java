@@ -39,15 +39,6 @@ public class Robot extends TimedRobot {
 
     public Robot() {
         instance = this;
-        
-        try {
-            UsbCamera webCam = CameraServer.startAutomaticCapture();
-            webCam.setResolution(640, 480);
-            webCam.setFPS(20);
-        }
-        catch(Exception e) {
-            DriverStation.reportWarning("Failed to connect to USB Camera", false);
-        }
     }
     
     public static Robot getInstance()
@@ -63,13 +54,21 @@ public class Robot extends TimedRobot {
     */
     @Override
     public void robotInit() {   
+        DataLogManager.start(); //All logging is dumped into either /home/lvuser/logs or a USB drive if one is connected to the robot
+        DriverStation.startDataLog(DataLogManager.getLog(), true); //enable logging DS control and joystick input
+
         // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
         // autonomous chooser on the dashboard.
         m_robotContainer = new RobotContainer();
 
-        DataLogManager.start(); //All logging is dumped into either /home/lvuser/logs or a USB drive if one is connected to the robot
-        DriverStation.startDataLog(DataLogManager.getLog(), true); //enable logging DS control and joystick input
-        m_robotContainer.scheduleLoggingManager();
+        try {
+            UsbCamera webCam = CameraServer.startAutomaticCapture();
+            webCam.setResolution(640, 480);
+            webCam.setFPS(20);
+        }
+        catch(Exception e) {
+            DriverStation.reportWarning("Failed to connect to USB Camera", false);
+        }
         
         // Create a timer to disable motor brake a few seconds after disable.  This will let the robot stop
         // immediately when disabled, but then also let it be pushed more 
@@ -118,6 +117,8 @@ public class Robot extends TimedRobot {
     @Override
     public void disabledInit()
     {
+        m_robotContainer.cancelLoggingManager();
+
         m_robotContainer.setMotorBrake(true);
         disabledTimer.reset();
         disabledTimer.start();
@@ -143,6 +144,8 @@ public class Robot extends TimedRobot {
     @Override
     public void autonomousInit()
     {
+        m_robotContainer.scheduleLoggingManager();
+
         m_robotContainer.clearTeleopDefaultCommand();
         m_robotContainer.setMotorBrake(true);
         m_autonomousCommand = m_robotContainer.getAutonomousCommand();
@@ -170,10 +173,6 @@ public class Robot extends TimedRobot {
     @Override
     public void teleopInit()
     {
-        // This makes sure that the autonomous stops running when
-        // teleop starts running. If you want the autonomous to
-        // continue until interrupted by another command, remove
-        // this line or comment it out.
         if (m_autonomousCommand != null)
         {
             m_autonomousCommand.cancel();
@@ -181,6 +180,7 @@ public class Robot extends TimedRobot {
         else {
             CommandScheduler.getInstance().cancelAll();
         }
+        m_robotContainer.scheduleLoggingManager();
 
         m_robotContainer.scheduleLimelight();
         
