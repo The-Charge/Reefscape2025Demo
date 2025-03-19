@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.HeadConstants;
 import frc.robot.constants.IntakeConstants;
+import frc.robot.constants.TelemetryConstants;
 
 public class IntakeSubsystem extends SubsystemBase {
     
@@ -26,7 +27,15 @@ public class IntakeSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        SmartDashboard.putNumber("Intake VBus", belt.get());
+        if(TelemetryConstants.debugTelemetry) {
+            SmartDashboard.putNumber("Intake VBus", belt.get());
+
+            SmartDashboard.putNumber("Intake Current", belt.getOutputCurrent());
+            if(getCurrentCommand() == null)
+                SmartDashboard.putString("Intake RunningCommand", "None");
+            else
+                SmartDashboard.putString("Intake RunningCommand", getCurrentCommand().getName());
+        }
     }
 
     public void vBus(double percent) {
@@ -40,6 +49,7 @@ public class IntakeSubsystem extends SubsystemBase {
         SparkMaxConfig config = new SparkMaxConfig();
         config.idleMode(IdleMode.kCoast);
         config.smartCurrentLimit(HeadConstants.currentLimit);
+        config.inverted(IntakeConstants.inverted);
 
         m.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     }

@@ -8,7 +8,9 @@ import static edu.wpi.first.units.Units.Meter;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
@@ -18,7 +20,6 @@ import org.json.simple.parser.ParseException;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.commands.PathfindingCommand;
-import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.path.PathConstraints;
@@ -43,6 +44,8 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Config;
 import frc.robot.constants.SwerveConstants;
+import frc.robot.constants.TelemetryConstants;
+import frc.robot.constants.VisionConstants.ApriltagConstants;
 import swervelib.SwerveController;
 import swervelib.SwerveDrive;
 import swervelib.SwerveDriveTest;
@@ -51,7 +54,6 @@ import swervelib.parser.SwerveControllerConfiguration;
 import swervelib.parser.SwerveDriveConfiguration;
 import swervelib.parser.SwerveParser;
 import swervelib.telemetry.SwerveDriveTelemetry;
-import swervelib.telemetry.SwerveDriveTelemetry.TelemetryVerbosity;
 
 public class SwerveSubsystem extends SubsystemBase
 {
@@ -78,10 +80,11 @@ public class SwerveSubsystem extends SubsystemBase
    *
    * @param directory Directory of swerve drive config files.
    */
+
   public SwerveSubsystem(File directory)
   {
     // Configure the Telemetry before creating the SwerveDrive to avoid unnecessary objects being created.
-    SwerveDriveTelemetry.verbosity = TelemetryVerbosity.HIGH;
+    SwerveDriveTelemetry.verbosity = TelemetryConstants.swerveVerbosity;
     try
     {
       swerveDrive = new SwerveParser(directory).createSwerveDrive(SwerveConstants.MAX_SPEED,
@@ -94,14 +97,12 @@ public class SwerveSubsystem extends SubsystemBase
     {
       throw new RuntimeException(e);
     }
+    
+    swerveDrive.setChassisDiscretization(SwerveConstants.useChassisVelocityCorrection, SwerveConstants.chassisVelocityCorrection);
     swerveDrive.setHeadingCorrection(false); // Heading correction should only be used while controlling the robot via angle.
-    swerveDrive.setCosineCompensator(false);//!SwerveDriveTelemetry.isSimulation); // Disables cosine compensation for simulations since it causes discrepancies not seen in real life.
-    swerveDrive.setAngularVelocityCompensation(true,
-                                               true,
-                                               0.1); //Correct for skew that gets worse as angular velocity increases. Start with a coefficient of 0.1.
-    swerveDrive.setModuleEncoderAutoSynchronize(false,
-                                                1); // Enable if you want to resynchronize your absolute encoders and motor encoders periodically when they are not moving.
-//    swerveDrive.pushOffsetsToEncoders(); // Set the absolute encoder to be used over the internal encoder and push the offsets onto it. Throws warning if not possible
+    swerveDrive.setCosineCompensator(SwerveConstants.useCosineCompensator && !SwerveDriveTelemetry.isSimulation); // Disables cosine compensation for simulations since it causes discrepancies not seen in real life.
+    swerveDrive.setAngularVelocityCompensation(SwerveConstants.useAngularCompensationTeleop, SwerveConstants.useAngularCompensationAuton, SwerveConstants.angularCompensation); //Correct for skew that gets worse as angular velocity increases. Start with a coefficient of 0.1
+
     if (visionDriveTest)
     {
 //      setupPhotonVision();
@@ -162,7 +163,7 @@ public class SwerveSubsystem extends SubsystemBase
     {
       config = RobotConfig.fromGUISettings();
 
-      final boolean enableFeedforward = true;
+      final boolean enableFeedforward = false;
       // Configure AutoBuilder last
       AutoBuilder.configure(
           this::getPose,
@@ -175,10 +176,10 @@ public class SwerveSubsystem extends SubsystemBase
             if (enableFeedforward)
             {
               swerveDrive.drive(
-                  speedsRobotRelative,
-                  swerveDrive.kinematics.toSwerveModuleStates(speedsRobotRelative),
-                  moduleFeedForwards.linearForces()
-                               );
+                speedsRobotRelative,
+                swerveDrive.kinematics.toSwerveModuleStates(speedsRobotRelative),
+                moduleFeedForwards.linearForces()
+              );
             } else
             {
               swerveDrive.setChassisSpeeds(speedsRobotRelative);
@@ -187,10 +188,8 @@ public class SwerveSubsystem extends SubsystemBase
           // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds. Also optionally outputs individual module feedforwards
           new PPHolonomicDriveController(
               // PPHolonomicController is the built in path following controller for holonomic drive trains
-              new PIDConstants(5.0, 0.0, 0.0),
-              // Translation PID constants
-              new PIDConstants(5.0, 0.0, 0.0)
-              // Rotation PID constants
+              SwerveConstants.pathPlannerTranslationPID, // Translation PID constants
+              SwerveConstants.pathPlannerRotationPID // Rotation PID constants
           ),
           config,
           // The robot configuration
@@ -718,8 +717,8 @@ public class SwerveSubsystem extends SubsystemBase
   /*
    * Add odometry readings using vision
    */
-  public void addVisionReading(Pose2d pose, double timestampSeconds){
-    swerveDrive.addVisionMeasurement(new Pose2d(pose.getX(), pose.getY(), Rotation2d.fromDegrees(pose.getRotation().getDegrees())), timestampSeconds);
+  public void addVisionReading(Pose2d pose, double timestampSeconds) {
+    swerveDrive.addVisionMeasurement(pose, timestampSeconds);
   }
 
   /**
@@ -738,5 +737,67 @@ public class SwerveSubsystem extends SubsystemBase
   public SwerveDrive getSwerveDrive()
   {
     return swerveDrive;
+  }
+  
+  public Pose2d getClosestReefTagPose() {
+    final List<Pose2d> tagPoses = new ArrayList<>();
+    for (int i = 1; i <= 22; i++) {
+      if (i == 4 || i == 5 || i == 14 || i == 15 || i == 3 || i == 16 || i == 1 || i == 2 || i == 12 || i == 13)
+        continue;
+      tagPoses.add(ApriltagConstants.TAG_POSES[i].toPose2d());
+    }
+    return swerveDrive.getPose().nearest(tagPoses);
+  }
+
+  public Pose2d getClosestStationTagPose() {
+    final List<Pose2d> tagPoses = new ArrayList<>();
+    for (int i = 1; i <= 22; i++) {
+      if (!(i == 1 || i == 2 || i == 12 || i == 13))
+        continue;
+      tagPoses.add(ApriltagConstants.TAG_POSES[i].toPose2d());
+    }
+    return swerveDrive.getPose().nearest(tagPoses);
+  }
+  
+  public Pose2d getClosestTagPose(){ //Ignores barge and processor
+    final List<Pose2d> tagPoses = new ArrayList<>();
+    for (int i = 1; i <= 22; i++) {
+            if (i == 4 || i == 5 || i == 14 || i == 15 || i == 3 || i == 16)
+                continue;
+            tagPoses.add(ApriltagConstants.TAG_POSES[i].toPose2d());
+        }
+        return swerveDrive.getPose().nearest(tagPoses);
+  }
+
+  public int getClosestTagID() {
+    Pose2d temp = getClosestTagPose();
+    for (int i = 1; i <= 22; i++) {
+      if (temp.equals(ApriltagConstants.TAG_POSES[i].toPose2d())) {
+        return i;
+      }
+    }
+    return -1;
+  }
+
+  public int getClosestTagIDReef() {
+    Pose2d temp = getClosestReefTagPose();
+    int[] array = {6,7,8,9,10,11,17,18,19,20,21,22};
+    for (int num : array) {
+      if (temp.equals(ApriltagConstants.TAG_POSES[num].toPose2d())) {
+        return num;
+      }
+    }
+    return -1;
+  }
+
+  public int getClosestTagIDStation() {
+    Pose2d temp = getClosestStationTagPose();
+    int[] array = { 1, 2, 12, 13 };
+    for (int num : array) {
+      if (temp.equals(ApriltagConstants.TAG_POSES[num].toPose2d())) {
+        return num;
+      }
+    }
+    return -1;
   }
 }
