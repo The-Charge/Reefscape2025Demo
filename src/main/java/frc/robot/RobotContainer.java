@@ -134,7 +134,7 @@ public class RobotContainer {
         // limelight testing
         // driver1.a().onTrue(Commands.runOnce(swerve::addFakeVision(Reading));
 
-        driver1.a().whileTrue(new AlignToTag(swerve, reeflimelight, null));
+        driver1.a().whileTrue(new AlignToTag(swerve, reeflimelight, ReefPosition.RIGHT));
         
         driver1.rightBumper().onTrue(new DriveToTag(swerve, true,
                 () -> (Math.abs(driver1.getLeftX()) < SwerveConstants.LEFT_X_DEADBAND
