@@ -58,10 +58,14 @@ public class LimelightManager extends Command {
 
             SmartDashboard.putNumber("swerve rot speed", yawRate);
 
+            if (reefEstimate != null) {
             SmartDashboard.putNumber("Reef BotX", reefEstimate.pose.getX());
             SmartDashboard.putNumber("Reef BotY", reefEstimate.pose.getY());
+            }
+            if (funnelEstimate != null) {
             SmartDashboard.putNumber("Funnel BotX", funnelEstimate.pose.getX());
             SmartDashboard.putNumber("Funnel BotY", funnelEstimate.pose.getY());
+            }
         }
 
         boolean reefEstim = (reefEstimate != null && reefCount > 0 && yawRate < Units.degreesToRadians(60)); // reefAmbig < 0.2 ||
