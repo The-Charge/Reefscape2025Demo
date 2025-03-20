@@ -90,7 +90,7 @@ public class RobotContainer {
     private LoggingManager logging;
     
     public RobotContainer() {
-        logging = new LoggingManager(swerve); //prevent from being accidentally restarted
+        logging = new LoggingManager(swerve);
 
         teleopDrive = new TeleopDrive(swerve,
             () -> -MathUtil.applyDeadband(driver1.getLeftY(), SwerveConstants.LEFT_Y_DEADBAND),

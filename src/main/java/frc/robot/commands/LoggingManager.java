@@ -19,13 +19,12 @@ public class LoggingManager extends Command {
         swerve = swerveSub;
 
         //I never close these because they should only be closed when the robot is turned off, and any memory leaks will be deleted by RAM shutting down
-        posePublisher = NetworkTableInstance.getDefault().getStructTopic("SwervePose", Pose2d.struct).publish();
+        posePublisher = NetworkTableInstance.getDefault().getStructTopic("AvScope/SwervePose", Pose2d.struct).publish();
     }
 
     @Override
     public void execute() {
         posePublisher.set(swerve.getPose());
-        System.out.println(swerve.getPose().toString());
     }
 
     @Override
