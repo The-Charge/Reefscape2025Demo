@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.LimelightHelpers;
 import frc.robot.LimelightHelpers.RawFiducial;
+import frc.robot.constants.VisionConstants.ApriltagConstants;
 
 public class VisionSubsystem extends SubsystemBase {
   String ll_name;
@@ -106,6 +107,16 @@ public class VisionSubsystem extends SubsystemBase {
     } catch (Exception e) {
       return -1;
     }
+  }
+
+  public Pose3d[] getTagPose3ds() {
+    Double[] table = NetworkTableInstance.getDefault().getTable(ll_name).getEntry("rawfiducials")
+        .getDoubleArray(new Double[] {});
+    Pose3d[] poses = new Pose3d[table.length / 7];
+    for (int i = 0; i < table.length / 7; i++) {
+      poses[i] = ApriltagConstants.TAG_POSES[(int) table[i * 7].doubleValue()];
+    }
+    return poses;
   }
 
   public String getName() {

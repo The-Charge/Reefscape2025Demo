@@ -90,7 +90,7 @@ public class RobotContainer {
     private LoggingManager logging;
     
     public RobotContainer() {
-        logging = new LoggingManager(swerve);
+        logging = new LoggingManager(swerve, reeflimelight, funnellimelight);
 
         teleopDrive = new TeleopDrive(swerve,
             () -> -MathUtil.applyDeadband(driver1.getLeftY(), SwerveConstants.LEFT_Y_DEADBAND),
