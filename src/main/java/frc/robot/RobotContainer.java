@@ -93,7 +93,6 @@ public class RobotContainer {
     private SendableChooser<Command> autoChooser;
     private TeleopDrive teleopDrive;
     private LEDManager ledManager;
-    private DriveToTag dtt;
     private LoggingManager logging;
     
     public RobotContainer() {
@@ -323,10 +322,6 @@ public class RobotContainer {
     }
     public LEDManager getLEDManager() {
         return ledManager;
-    }
-    private DriveToTag setupDtt(ReefPosition side, boolean reef) {
-        this.dtt = new DriveToTag(swerve, reef, side);
-        return this.dtt;
     }
     public void scheduleLoggingManager() {
         if(!logging.isScheduled())
