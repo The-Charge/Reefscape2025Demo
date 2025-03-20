@@ -9,12 +9,10 @@ import frc.robot.subsystems.HeadSubsystem;
 public class Shoot extends Command {
 
     private final HeadSubsystem head;
-    private final ElevSubsystem elev;
     private Timer timeout; 
 
     public Shoot(HeadSubsystem headSub, ElevSubsystem elevSub) {
         this.head = headSub;
-        this.elev = elevSub;
         addRequirements(head);
     }
 
