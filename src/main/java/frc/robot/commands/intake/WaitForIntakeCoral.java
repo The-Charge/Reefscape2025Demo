@@ -1,11 +1,11 @@
-package frc.robot.commands.head;
+package frc.robot.commands.intake;
 
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.HeadSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 
-public class WaitForHasCoral extends Command {
+public class WaitForIntakeCoral extends Command {
     
     private final HeadSubsystem head;
     private final IntakeSubsystem intake;
@@ -14,7 +14,7 @@ public class WaitForHasCoral extends Command {
     /**
      * NOTE: Doesn't require head sub, just needs it to read values
      */
-    public WaitForHasCoral(HeadSubsystem headSub, IntakeSubsystem intakeSub) {
+    public WaitForIntakeCoral(HeadSubsystem headSub, IntakeSubsystem intakeSub) {
         head = headSub;
         intake = intakeSub;
     }
@@ -25,7 +25,7 @@ public class WaitForHasCoral extends Command {
     }
     @Override
     public void execute() {
-        if (intake.getVelocity() > 5000)
+        if(intake.getVelocity() > 5600)
             timer.start();
         
     }

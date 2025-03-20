@@ -39,10 +39,12 @@ import frc.robot.commands.elev.MoveToLevelManual;
 import frc.robot.commands.elev.MoveToTicksManual;
 import frc.robot.commands.head.Shoot;
 import frc.robot.commands.head.ShootSlow;
-import frc.robot.commands.head.WaitForHasCoral;
+import frc.robot.commands.head.WaitForHeadCoral;
 import frc.robot.commands.intake.Intake;
 import frc.robot.commands.intake.ManualIntake;
+import frc.robot.commands.intake.WaitForIntakeCoral;
 import frc.robot.commands.leds.LEDManager;
+import frc.robot.commands.swervedrive.drivebase.AlignToBranch;
 import frc.robot.commands.swervedrive.drivebase.DriveToReefDist;
 import frc.robot.commands.swervedrive.drivebase.DriveToSourceDist;
 import frc.robot.commands.swervedrive.drivebase.SwerveZero;
@@ -108,7 +110,7 @@ public class RobotContainer {
         );
         swerve.setDefaultCommand(teleopDrive);
 
-        ledManager = new LEDManager(leds, head, driver1, driver2);
+        ledManager = new LEDManager(leds, head, elev, driver1, driver2);
 
         intake.setDefaultCommand(new Intake(intake, elev, head));
         leds.setDefaultCommand(ledManager);
@@ -220,7 +222,8 @@ public class RobotContainer {
 
         NamedCommands.registerCommand("HeadShoot", new Shoot(head, elev));
         NamedCommands.registerCommand("HeadShootSlow", new ShootSlow(head, elev));
-        NamedCommands.registerCommand("HeadWaitForCoral", new WaitForHasCoral(head, intake));
+        NamedCommands.registerCommand("HeadWaitForCoral", new WaitForHeadCoral(head));
+        NamedCommands.registerCommand("IntakeWaitForCoral", new WaitForIntakeCoral(head, intake));
 
         NamedCommands.registerCommand("AlgaeRemSpin", new AlgaeRemSpin(algaeRem, true));
     }
@@ -229,6 +232,7 @@ public class RobotContainer {
         if(TelemetryConstants.debugTelemetry) {
             SmartDashboard.putData("Swerve DriveToReefDist", new DriveToReefDist(swerve, head));
             SmartDashboard.putData("Swerve DriveToSourceDist", new DriveToSourceDist(swerve, head));
+            SmartDashboard.putData("Swerve AlignToBranch", new AlignToBranch(swerve, head));
 
             SmartDashboard.putData("Elev Manual Move (IN)", new MoveToInchesManual(elev));
             SmartDashboard.putData("Elev Manual Move (TICKS)", new MoveToTicksManual(elev));

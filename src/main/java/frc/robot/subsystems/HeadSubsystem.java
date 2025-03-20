@@ -15,8 +15,8 @@ import frc.robot.constants.TelemetryConstants;
 
 public class HeadSubsystem extends SubsystemBase {
 
-    private TimeOfFlight funnelSensor;
-    private TimeOfFlight shooterSensor;
+    private TimeOfFlight branchSensor;
+    private TimeOfFlight coralSensor;
     private TimeOfFlight backSensor;
     private TimeOfFlight frontSensor;
     private SparkMax headLeft;
@@ -24,13 +24,13 @@ public class HeadSubsystem extends SubsystemBase {
     private boolean hasCoral = false;
     
     public HeadSubsystem() {
-        funnelSensor = new TimeOfFlight(HeadConstants.funnelSensorId);
-        shooterSensor = new TimeOfFlight(HeadConstants.shooterSensorId);
+        branchSensor = new TimeOfFlight(HeadConstants.branchSensorId);
+        coralSensor = new TimeOfFlight(HeadConstants.coralSensorId);
         backSensor = new TimeOfFlight(HeadConstants.backSensorId);
         frontSensor = new TimeOfFlight(HeadConstants.frontSensorId);
 
-        funnelSensor.setRangingMode(RangingMode.Short, HeadConstants.shortSensorSampleTime);
-        shooterSensor.setRangingMode(RangingMode.Short, HeadConstants.shortSensorSampleTime);
+        branchSensor.setRangingMode(RangingMode.Long, HeadConstants.longSensorSampleTime);
+        coralSensor.setRangingMode(RangingMode.Short, HeadConstants.shortSensorSampleTime);
         backSensor.setRangingMode(RangingMode.Long, HeadConstants.longSensorSampleTime);
         frontSensor.setRangingMode(RangingMode.Long, HeadConstants.longSensorSampleTime);
 
@@ -46,20 +46,20 @@ public class HeadSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        hasCoral = getShooterSensor();
+        hasCoral = getCoralSensor();
 
         if(TelemetryConstants.debugTelemetry) {
             SmartDashboard.putNumber("Head VBus L", headLeft.get());
             SmartDashboard.putNumber("Head VBus R", headRight.get());
             SmartDashboard.putBoolean("Head HasCoral", getHasCoral());
             
-            SmartDashboard.putBoolean("Head Funnel Sensor (Bool)", getFunnelSensor());
-            SmartDashboard.putBoolean("Head Shooter Sensor (Bool)", getShooterSensor());
+            SmartDashboard.putBoolean("Head Branch Sensor (Bool)", getBranchSensor());
+            SmartDashboard.putBoolean("Head Coral Sensor (Bool)", getCoralSensor());
 
-            SmartDashboard.putNumber("Head Funnel Sensor (mm)", funnelSensor.getRange());
-            SmartDashboard.putNumber("Head Shooter Sensor (mm)", shooterSensor.getRange());
-            SmartDashboard.putNumber("Back Shooter Sensor (mm)", backSensor.getRange());
-            SmartDashboard.putNumber("Front Shooter Sensor (mm)", frontSensor.getRange());
+            SmartDashboard.putNumber("Head Branch Sensor (mm)", branchSensor.getRange());
+            SmartDashboard.putNumber("Head Coral Sensor (mm)", coralSensor.getRange());
+            SmartDashboard.putNumber("Head Back Sensor (mm)", backSensor.getRange());
+            SmartDashboard.putNumber("Head Front Sensor (mm)", frontSensor.getRange());
     
             SmartDashboard.putNumber("Head Current L", headLeft.getOutputCurrent());
             SmartDashboard.putNumber("Head Current R", headRight.getOutputCurrent());
@@ -81,11 +81,11 @@ public class HeadSubsystem extends SubsystemBase {
         headRight.set(0);
     }
 
-    public boolean getFunnelSensor() {
-        return funnelSensor.getRange() <= HeadConstants.headActiviationDist;
+    public boolean getBranchSensor() {
+        return branchSensor.getRange() <= HeadConstants.branchActivationDist;
     }
-    public boolean getShooterSensor() {
-        return shooterSensor.getRange() <= HeadConstants.headActiviationDist;
+    public boolean getCoralSensor() {
+        return coralSensor.getRange() <= HeadConstants.coralActivationDist;
     }
     public double getBackDistance() {
         return backSensor.getRange();
@@ -98,7 +98,7 @@ public class HeadSubsystem extends SubsystemBase {
     }
 
     public void recheckHasCoral() {
-        hasCoral = getShooterSensor();
+        hasCoral = getCoralSensor();
     }
 
     private void configureMotor(SparkMax m, boolean inverted) {

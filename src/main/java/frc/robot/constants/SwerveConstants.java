@@ -43,4 +43,6 @@ public abstract class SwerveConstants {
     public static final double sourceAlignSpeed = 1; //meters/sec
     public static final double alignTimeout = 3; //seconds
     public static final PIDConstants alignPID = new PIDConstants(0.003, 0, 0);
+
+    public static final double branchAlignSpeed = 0.3; //m/s
 }
