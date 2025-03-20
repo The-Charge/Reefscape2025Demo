@@ -2,9 +2,12 @@ package frc.robot.commands.vision;
 
 import static edu.wpi.first.units.Units.DegreesPerSecond;
 
-import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.util.Units;
+import edu.wpi.first.units.measure.Velocity;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.LimelightHelpers;
 import frc.robot.constants.TelemetryConstants;
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
@@ -21,20 +24,25 @@ public class LimelightManager extends Command {
     }
 
     @Override
-    public void initialize() {
-        // System.out.println("LimelightManager Initialize"); disable because println lags the rio
-    }
-    
-    @Override
     public void execute() {
         double yaw = swerve.getHeading().getDegrees();
-        double yawRate = swerve.getSwerveDrive().getGyro().getYawAngularVelocity().in(DegreesPerSecond);
+        double yawRate = Math.abs(swerve.getSwerveDrive().getGyro().getYawAngularVelocity().in(DegreesPerSecond));
+        double speed = Math.hypot(
+                swerve.getFieldVelocity().vxMetersPerSecond,
+                swerve.getFieldVelocity().vyMetersPerSecond
+        );
 
-        Pose2d reefPose = reefLimelight.getEstimatedPose(yaw, yawRate);
-        Pose2d funnelPose = funnelLimelight.getEstimatedPose(yaw, yawRate);
+        LimelightHelpers.PoseEstimate reefEstimate = reefLimelight.getLLHPoseEstimate(yaw, 0);
+        LimelightHelpers.PoseEstimate funnelEstimate = funnelLimelight.getLLHPoseEstimate(yaw, 0);
+        LimelightHelpers.PoseEstimate reefEstimateTag1 = reefLimelight.getLLHPoseEstimateTag1(yaw, 0);
+        LimelightHelpers.PoseEstimate funnelEstimateTag1 = funnelLimelight.getLLHPoseEstimateTag1(yaw, 0);
+        // LimelightHelpers.PoseEstimate funnelEstimate = null;
 
-        double reefTime = reefLimelight.getPoseTimestamp();
-        double funnelTime = funnelLimelight.getPoseTimestamp();
+        // Pose2d reefPose = reefLimelight.getEstimatedPose(yaw, yawRate);
+        // Pose2d funnelPose = funnelLimelight.getEstimatedPose(yaw, yawRate);
+
+        // double reefTime = reefLimelight.getPoseTimestamp();
+        // double funnelTime = funnelLimelight.getPoseTimestamp();
 
         double reefAmbig = reefLimelight.getAmbiguity();
         double funnelAmbig = funnelLimelight.getAmbiguity();
@@ -48,43 +56,61 @@ public class LimelightManager extends Command {
 
             SmartDashboard.putNumber("reef ambig", reefAmbig);
             SmartDashboard.putNumber("funnel ambig", funnelAmbig);
+
+            SmartDashboard.putNumber("swerve rot speed", yawRate);
+
+            SmartDashboard.putNumber("Reef BotX", reefEstimate.pose.getX());
+            SmartDashboard.putNumber("Reef BotY", reefEstimate.pose.getY());
+            SmartDashboard.putNumber("Funnel BotX", funnelEstimate.pose.getX());
+            SmartDashboard.putNumber("Funnel BotY", funnelEstimate.pose.getY());
         }
 
-        boolean reefEstim = (reefPose != null && reefAmbig < 0.2 || reefCount > 1);
-        boolean funnelEstim = (funnelPose != null && funnelAmbig < 0.2 || funnelCount > 1);
+        boolean reefEstim = (reefEstimate != null && reefCount > 0 && yawRate < Units.degreesToRadians(60)); // reefAmbig < 0.2 ||
+        boolean funnelEstim = (funnelEstimate != null && funnelCount > 0 && yawRate < Units.degreesToRadians(60)); // funnelAmbig < 0.2 ||
+
+        SmartDashboard.putBoolean("Tag1 rotation", false);
+        if ((reefAmbig < 0.2 || reefCount > 1) && yawRate < Units.degreesToRadians(36) && speed < 0.5) {
+            swerve.addVisionReading(reefEstimateTag1.pose, reefEstimateTag1.timestampSeconds, VecBuilder.fill(9999999,9999999,2));
+            SmartDashboard.putBoolean("Tag1 rotation", true);
+        }
+        
+        if ((funnelAmbig < 0.2 || funnelCount > 1) && yawRate < Units.degreesToRadians(36) && speed < 0.5) {
+            swerve.addVisionReading(funnelEstimateTag1.pose, funnelEstimateTag1.timestampSeconds, VecBuilder.fill(9999999,9999999,2));
+            SmartDashboard.putBoolean("Tag1 rotation", true);
+        }
 
         if (reefEstim && funnelEstim) {
             if (reefCount > funnelCount) {
                 if(TelemetryConstants.debugTelemetry)
                     SmartDashboard.putBoolean("reef estimated", true);
                 
-                swerve.addVisionReading(reefPose, reefTime);
+                swerve.addVisionReading(reefEstimate.pose, reefEstimate.timestampSeconds, VecBuilder.fill(.7,.7,9999999));
             } else if (reefCount < funnelCount) {
                 if(TelemetryConstants.debugTelemetry)
                     SmartDashboard.putBoolean("funnel estimated", true);
 
-                swerve.addVisionReading(funnelPose, funnelTime);
+                swerve.addVisionReading(funnelEstimate.pose, funnelEstimate.timestampSeconds, VecBuilder.fill(.7,.7,9999999));
             } else if (reefAmbig < funnelAmbig) {
                 if(TelemetryConstants.debugTelemetry)
                     SmartDashboard.putBoolean("reef estimated", true);
 
-                swerve.addVisionReading(reefPose, reefTime);
+                swerve.addVisionReading(reefEstimate.pose, reefEstimate.timestampSeconds, VecBuilder.fill(.7,.7,9999999));
             } else {
                 if(TelemetryConstants.debugTelemetry)
                     SmartDashboard.putBoolean("funnel estimated", true);
 
-                swerve.addVisionReading(funnelPose, funnelTime);
+                swerve.addVisionReading(funnelEstimate.pose, funnelEstimate.timestampSeconds, VecBuilder.fill(.7,.7,9999999));
             }
         } else if (reefEstim) {
             if(TelemetryConstants.debugTelemetry)
                 SmartDashboard.putBoolean("reef estimated", true);
 
-            swerve.addVisionReading(reefPose, reefTime);
+            swerve.addVisionReading(reefEstimate.pose, reefEstimate.timestampSeconds, VecBuilder.fill(.7,.7,9999999));
         } else if (funnelEstim) {
             if(TelemetryConstants.debugTelemetry)
                 SmartDashboard.putBoolean("funnel estimated", true);
                 
-            swerve.addVisionReading(funnelPose, funnelTime);
+            swerve.addVisionReading(funnelEstimate.pose, funnelEstimate.timestampSeconds, VecBuilder.fill(.7,.7,9999999));
         }
 
         // Rotation2d swerveRot = swerve.getHeading();

@@ -27,7 +27,7 @@ public class Index extends Command {
 
     @Override
     public boolean isFinished() {
-        return !head.getFunnelSensor() && head.getShooterSensor();
+        return !head.getBranchSensor() && head.getCoralSensor();
     }
 
 }

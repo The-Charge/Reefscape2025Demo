@@ -14,6 +14,7 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Filesystem;
+import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -39,12 +40,17 @@ import frc.robot.commands.elev.MoveToLevelManual;
 import frc.robot.commands.elev.MoveToTicksManual;
 import frc.robot.commands.head.Shoot;
 import frc.robot.commands.head.ShootSlow;
-import frc.robot.commands.head.WaitForHasCoral;
+import frc.robot.commands.head.WaitForHeadCoral;
 import frc.robot.commands.intake.Intake;
 import frc.robot.commands.intake.ManualIntake;
+import frc.robot.commands.intake.WaitForIntakeCoral;
 import frc.robot.commands.leds.LEDManager;
+import frc.robot.commands.swervedrive.drivebase.AlignToBranch;
+import frc.robot.commands.swervedrive.drivebase.DriveToReefDist;
+import frc.robot.commands.swervedrive.drivebase.DriveToSourceDist;
 import frc.robot.commands.swervedrive.drivebase.SwerveZero;
 import frc.robot.commands.swervedrive.drivebase.TeleopDrive;
+import frc.robot.commands.vision.AlignToTag;
 import frc.robot.commands.vision.DriveToTag;
 import frc.robot.commands.vision.LimelightManager;
 import frc.robot.constants.ClimbConstants;
@@ -72,10 +78,11 @@ public class RobotContainer {
 
     private final CommandXboxController driver1 = new CommandXboxController(0);
     private final CommandXboxController driver2 = new CommandXboxController(1);
+    private final GenericHID  driver3 = new GenericHID(2);
     
     private final SwerveSubsystem swerve = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "swerve"));
-    private final VisionSubsystem reeflimelight = new VisionSubsystem(LLReefConstants.LL_NAME, LLReefConstants.CAMERA_OFFSET);
-    private final VisionSubsystem funnellimelight = new VisionSubsystem(LLFunnelConstants.LL_NAME, LLFunnelConstants.CAMERA_OFFSET);
+    private final VisionSubsystem reeflimelight = new VisionSubsystem(LLReefConstants.LL_NAME, LLReefConstants.CAMERA_OFFSET, false);
+    private final VisionSubsystem funnellimelight = new VisionSubsystem(LLFunnelConstants.LL_NAME, LLFunnelConstants.CAMERA_OFFSET, true);
     private final ElevSubsystem elev = new ElevSubsystem();
     private final ClimbSubsystem climb = new ClimbSubsystem();
     private final HeadSubsystem head = new HeadSubsystem();
@@ -108,7 +115,7 @@ public class RobotContainer {
         );
         swerve.setDefaultCommand(teleopDrive);
 
-        ledManager = new LEDManager(leds, head, driver1, driver2);
+        ledManager = new LEDManager(leds, head, elev, driver1, driver2);
 
         intake.setDefaultCommand(new Intake(intake, elev, head));
         leds.setDefaultCommand(ledManager);
@@ -132,12 +139,34 @@ public class RobotContainer {
 
         // limelight testing
         // driver1.a().onTrue(Commands.runOnce(swerve::addFakeVision(Reading));
+
+        driver1.a().whileTrue(new AlignToTag(swerve, reeflimelight, ReefPosition.RIGHT));
         
-        driver1.rightBumper().whileTrue(setupDtt(ReefPosition.RIGHT, true)); //Drive to closest tag
-        driver1.leftBumper().whileTrue(setupDtt(ReefPosition.LEFT, true));
-        driver1.y().whileTrue(setupDtt(ReefPosition.MIDDLE, false));
+        driver1.rightBumper().onTrue(new DriveToTag(swerve, true,
+                () -> (Math.abs(driver1.getLeftX()) < SwerveConstants.LEFT_X_DEADBAND
+                        && Math.abs(driver1.getLeftY()) < SwerveConstants.LEFT_Y_DEADBAND
+                        && Math.abs(driver1.getRightX()) < SwerveConstants.RIGHT_X_DEADBAND),
+                ReefPosition.RIGHT)); // Drive to closest tag
+        driver1.leftBumper().onTrue(new DriveToTag(swerve, true,
+                () -> (Math.abs(driver1.getLeftX()) < SwerveConstants.LEFT_X_DEADBAND
+                        && Math.abs(driver1.getLeftY()) < SwerveConstants.LEFT_Y_DEADBAND
+                        && Math.abs(driver1.getRightX()) < SwerveConstants.RIGHT_X_DEADBAND),
+                ReefPosition.LEFT));
+        driver1.y().onTrue(new DriveToTag(swerve, false,
+                () -> (Math.abs(driver1.getLeftX()) < SwerveConstants.LEFT_X_DEADBAND
+                        && Math.abs(driver1.getLeftY()) < SwerveConstants.LEFT_Y_DEADBAND
+                        && Math.abs(driver1.getRightX()) < SwerveConstants.RIGHT_X_DEADBAND),
+                ReefPosition.MIDDLE));
         
-        new Trigger(() -> ((MathUtil.applyDeadband(Math.abs(driver1.getLeftX()), SwerveConstants.LEFT_X_DEADBAND) > 0 || MathUtil.applyDeadband(Math.abs(driver1.getLeftY()), SwerveConstants.LEFT_Y_DEADBAND) > 0.1) && dtt != null)).onTrue(new InstantCommand() {@Override public void execute(){if (dtt.getDriveToPose() != null)dtt.getDriveToPose().end(true);}});
+        new Trigger(() -> driver3.getRawButton(7)).onTrue(new DriveToTag(swerve, 21, 
+                () -> (Math.abs(driver1.getLeftX()) < SwerveConstants.LEFT_X_DEADBAND
+                        && Math.abs(driver1.getLeftY()) < SwerveConstants.LEFT_Y_DEADBAND
+                        && Math.abs(driver1.getRightX()) < SwerveConstants.RIGHT_X_DEADBAND), ReefPosition.RIGHT));
+        
+        new Trigger(() -> driver3.getRawButton(8)).onTrue(new DriveToTag(swerve, 10, 
+                () -> (Math.abs(driver1.getLeftX()) < SwerveConstants.LEFT_X_DEADBAND
+                        && Math.abs(driver1.getLeftY()) < SwerveConstants.LEFT_Y_DEADBAND
+                        && Math.abs(driver1.getRightX()) < SwerveConstants.RIGHT_X_DEADBAND), ReefPosition.RIGHT));
         
         // driver1.a().whileTrue(new DriveToAlgae(swerve, reeflimelight));
         
@@ -184,6 +213,9 @@ public class RobotContainer {
          * <Subsytem><Action>
          * Use PascalCase
          */
+        NamedCommands.registerCommand("SwerveDriveToReefDist", new DriveToReefDist(swerve, head));
+        NamedCommands.registerCommand("SwerveDriveToSourceDist", new DriveToSourceDist(swerve, head));
+        
         NamedCommands.registerCommand("ElevHome", new MoveToLevel(elev, head, ElevSubsystem.Level.HOME, true));
         NamedCommands.registerCommand("ElevLevel1", new MoveToLevel(elev, head, ElevSubsystem.Level.LVL1, true));
         NamedCommands.registerCommand("ElevLevel2", new MoveToLevel(elev, head, ElevSubsystem.Level.LVL2, true));
@@ -194,16 +226,22 @@ public class RobotContainer {
 
         NamedCommands.registerCommand("HeadShoot", new Shoot(head, elev));
         NamedCommands.registerCommand("HeadShootSlow", new ShootSlow(head, elev));
-        NamedCommands.registerCommand("HeadWaitForCoral", new WaitForHasCoral(head));
+        NamedCommands.registerCommand("HeadWaitForCoral", new WaitForHeadCoral(head));
+        NamedCommands.registerCommand("IntakeWaitForCoral", new WaitForIntakeCoral(head, intake));
 
         NamedCommands.registerCommand("AlgaeRemSpin", new AlgaeRemSpin(algaeRem, true));
     }
     private void addTelemetry() {
         //one time telemetry values, such as dashboard commands
         if(TelemetryConstants.debugTelemetry) {
+            SmartDashboard.putData("Swerve DriveToReefDist", new DriveToReefDist(swerve, head));
+            SmartDashboard.putData("Swerve DriveToSourceDist", new DriveToSourceDist(swerve, head));
+            SmartDashboard.putData("Swerve AlignToBranch", new AlignToBranch(swerve, head));
+
             SmartDashboard.putData("Elev Manual Move (IN)", new MoveToInchesManual(elev));
             SmartDashboard.putData("Elev Manual Move (TICKS)", new MoveToTicksManual(elev));
             SmartDashboard.putData("Elev Manual Move (LVL)", new MoveToLevelManual(elev));
+            SmartDashboard.putData("Elev Zero", new InstantCommand(elev::setAsZero).ignoringDisable(true));
 
             SmartDashboard.putData("Climb Lever Manual (DEG)", new ClimbLeverDegreesManual(climb));
             SmartDashboard.putData("Climb Clamp Manual (DEG)", new ClimbClampDegreesManual(climb));
@@ -212,6 +250,7 @@ public class RobotContainer {
             SmartDashboard.putData("Climb Slow", new Climb(climb, ClimbConstants.leverSlowVbus));
 
             SmartDashboard.putData("Head Shoot", new Shoot(head, elev));
+            SmartDashboard.putData("Head ShootSlow", new ShootSlow(head, elev));
 
             SmartDashboard.putData("AlgaeRem Spin", new AlgaeRemSpin(algaeRem, true));
         }

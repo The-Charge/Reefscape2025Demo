@@ -32,8 +32,17 @@ public abstract class SwerveConstants {
     // Joystick Deadband
     public static final double LEFT_Y_DEADBAND = 0.1;
     public static final double LEFT_X_DEADBAND = 0.2; //left x is pretty sensitive, so increased deadband
-    public static final double RIGHT_X_DEADBAND = 0.3; //damaged joystick on white controller, need high deadband
+    public static final double RIGHT_X_DEADBAND = 0.1;
     public static final double TURN_CONSTANT = 6;
     public static final double DRIVE_SPEED = 1; //multiplies translation and rotation, 1 is 100%
     public static final double TRIGGER_DEADBAND = 0.1;
+
+    public static final double reefAcceptableDist = 210; //millimeters
+    public static final double reefAlignSpeed = 1; //meters/sec
+    public static final double sourceAcceptableDist = 170; //millimeters
+    public static final double sourceAlignSpeed = 1; //meters/sec
+    public static final double alignTimeout = 3; //seconds
+    public static final PIDConstants alignPID = new PIDConstants(0.003, 0, 0);
+
+    public static final double branchAlignSpeed = 0.3; //m/s
 }

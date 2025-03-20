@@ -8,9 +8,12 @@ import edu.wpi.first.wpilibj.util.Color;
 public abstract class LEDConstants {
     
     public static final int ledPort = 9;
-    public static final int ledLength = 114;
+    public static final int ledLength = 151;
     public static final ColorOrder ledColorOrder = ColorOrder.kGRB;
     public static final Distance ledSpacing = Units.Meters.of(1 / 60.0); //60 leds per meter
+    public static final int[] brokenIndicies = new int[] {
+        ledLength - 28
+    };
 
     public static final Color chargeGreen = new Color("#008800");
     public static final Color chargeGold = new Color("#ffaa00");
