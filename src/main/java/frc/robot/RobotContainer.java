@@ -28,6 +28,7 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.IntakeRumble;
+import frc.robot.commands.LoggingManager;
 import frc.robot.commands.algaerem.AlgaeRemSpin;
 import frc.robot.commands.climb.Climb;
 import frc.robot.commands.climb.ClimbClampDegreesManual;
@@ -92,8 +93,11 @@ public class RobotContainer {
     private SendableChooser<Command> autoChooser;
     private TeleopDrive teleopDrive;
     private LEDManager ledManager;
+    private LoggingManager logging;
     
     public RobotContainer() {
+        logging = new LoggingManager(swerve, reeflimelight, funnellimelight);
+
         teleopDrive = new TeleopDrive(swerve,
             () -> -MathUtil.applyDeadband(driver1.getLeftY(), SwerveConstants.LEFT_Y_DEADBAND),
             () -> -MathUtil.applyDeadband(driver1.getLeftX(), SwerveConstants.LEFT_X_DEADBAND),
@@ -123,7 +127,6 @@ public class RobotContainer {
         autoChooser = AutoBuilder.buildAutoChooser();
         setupAutoDisplay();
         SmartDashboard.putData("Auto Chooser", autoChooser);
-
 
         Field2d field = new Field2d();
         SmartDashboard.putData("Field", field);
@@ -232,7 +235,7 @@ public class RobotContainer {
         if(TelemetryConstants.debugTelemetry) {
             SmartDashboard.putData("Swerve DriveToReefDist", new DriveToReefDist(swerve, head));
             SmartDashboard.putData("Swerve DriveToSourceDist", new DriveToSourceDist(swerve, head));
-            SmartDashboard.putData("Swerve AlignToBranch", new AlignToBranch(swerve, head));
+            SmartDashboard.putData("Swerve AlignToBranch", new AlignToBranch(swerve, head, elev));
 
             SmartDashboard.putData("Elev Manual Move (IN)", new MoveToInchesManual(elev));
             SmartDashboard.putData("Elev Manual Move (TICKS)", new MoveToTicksManual(elev));
@@ -286,11 +289,9 @@ public class RobotContainer {
 
         AutoDisplayHelper.displayAutoPath(auto, isRed);
     }
-
     public Command getAutonomousCommand() {
         return autoChooser.getSelected();
     }
-
     public SwerveSubsystem getSwerveSubsystem() {
         return swerve;
     }
@@ -303,7 +304,6 @@ public class RobotContainer {
     public void clearTeleopDefaultCommand() {
         swerve.setDefaultCommand(new SwerveZero(swerve));
     }
-
     public void scheduleLimelight() {
         new LimelightManager(swerve, reeflimelight, funnellimelight).schedule();
     }
@@ -322,5 +322,13 @@ public class RobotContainer {
     }
     public LEDManager getLEDManager() {
         return ledManager;
+    }
+    public void scheduleLoggingManager() {
+        if(!logging.isScheduled())
+            logging.schedule();
+    }
+    public void cancelLoggingManager() {
+        if(logging.isScheduled())
+            logging.cancel();
     }
 }

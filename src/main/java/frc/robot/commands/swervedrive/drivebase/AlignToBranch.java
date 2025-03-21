@@ -3,6 +3,7 @@ package frc.robot.commands.swervedrive.drivebase;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.constants.SwerveConstants;
+import frc.robot.subsystems.ElevSubsystem;
 import frc.robot.subsystems.HeadSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
 
@@ -10,10 +11,12 @@ public class AlignToBranch extends Command {
     
     private final SwerveSubsystem swerve;
     private final HeadSubsystem head;
+    private final ElevSubsystem elev;
 
-    public AlignToBranch(SwerveSubsystem swerveSub, HeadSubsystem headSub) {
+    public AlignToBranch(SwerveSubsystem swerveSub, HeadSubsystem headSub, ElevSubsystem elevSub) {
         swerve = swerveSub;
         head = headSub;
+        elev = elevSub;
 
         addRequirements(swerve);
     }
@@ -29,6 +32,6 @@ public class AlignToBranch extends Command {
 
     @Override
     public boolean isFinished() {
-        return head.getBranchSensor();
+        return head.getBranchSensor(elev.getPositionLevel());
     }
 }
