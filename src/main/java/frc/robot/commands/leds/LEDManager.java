@@ -84,7 +84,7 @@ public class LEDManager extends Command {
         }
 
         if(head.getHasCoral()) {
-            if(branchAlignLevels.contains(elev.getPositionLevel()) && head.getBranchSensor()) {
+            if(branchAlignLevels.contains(elev.getPositionLevel()) && head.getBranchSensor(elev.getPositionLevel())) {
                 branchAligned.applyTo(leds.fullBuff());
                 return;
             }

@@ -33,6 +33,7 @@ public class HeadSubsystem extends SubsystemBase {
         coralSensor.setRangingMode(RangingMode.Short, HeadConstants.shortSensorSampleTime);
         backSensor.setRangingMode(RangingMode.Long, HeadConstants.longSensorSampleTime);
         frontSensor.setRangingMode(RangingMode.Long, HeadConstants.longSensorSampleTime);
+        branchSensor.setRangeOfInterest(8, 8, 12, 12);
 
         headLeft = new SparkMax(HeadConstants.leftId, MotorType.kBrushless);
         headRight = new SparkMax(HeadConstants.rightId, MotorType.kBrushless);
@@ -53,7 +54,8 @@ public class HeadSubsystem extends SubsystemBase {
             SmartDashboard.putNumber("Head VBus R", headRight.get());
             SmartDashboard.putBoolean("Head HasCoral", getHasCoral());
             
-            SmartDashboard.putBoolean("Head Branch Sensor (Bool)", getBranchSensor());
+            SmartDashboard.putBoolean("Head Branch Sensor LVL3 (Bool)", getBranchSensor(ElevSubsystem.Level.LVL3));
+            SmartDashboard.putBoolean("Head Branch Sensor LVL4 (Bool)", getBranchSensor(ElevSubsystem.Level.LVL4));
             SmartDashboard.putBoolean("Head Coral Sensor (Bool)", getCoralSensor());
 
             SmartDashboard.putNumber("Head Branch Sensor (mm)", branchSensor.getRange());
@@ -81,8 +83,15 @@ public class HeadSubsystem extends SubsystemBase {
         headRight.set(0);
     }
 
-    public boolean getBranchSensor() {
-        return branchSensor.getRange() <= HeadConstants.branchActivationDist;
+    public boolean getBranchSensor(ElevSubsystem.Level level) {
+        switch (level) {
+            case LVL4:
+                return branchSensor.getRange() <= HeadConstants.branchLVL4ActivationDist;
+        case LVL3:
+            return branchSensor.getRange() <= HeadConstants.branchLVL3ActivationDist;
+        default:
+            return false;
+    }
     }
     public boolean getCoralSensor() {
         return coralSensor.getRange() <= HeadConstants.coralActivationDist;

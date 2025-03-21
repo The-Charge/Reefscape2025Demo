@@ -128,9 +128,16 @@ public class VisionSubsystem extends SubsystemBase {
   public Pose3d[] getTagPose3ds() {
     Double[] table = NetworkTableInstance.getDefault().getTable(ll_name).getEntry("rawfiducials")
         .getDoubleArray(new Double[] {});
+    if (table.length == 0) {
+      return new Pose3d[] {};
+    }
     Pose3d[] poses = new Pose3d[table.length / 7];
     for (int i = 0; i < table.length / 7; i++) {
-      poses[i] = ApriltagConstants.TAG_POSES[(int) table[i * 7].doubleValue()];
+      int id = (int) table[i * 7].doubleValue();
+      if (id > 23 || id < 1) {
+        continue;
+      }
+      poses[i] = ApriltagConstants.TAG_POSES[id];
     }
     return poses;
   }

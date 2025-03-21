@@ -235,7 +235,7 @@ public class RobotContainer {
         if(TelemetryConstants.debugTelemetry) {
             SmartDashboard.putData("Swerve DriveToReefDist", new DriveToReefDist(swerve, head));
             SmartDashboard.putData("Swerve DriveToSourceDist", new DriveToSourceDist(swerve, head));
-            SmartDashboard.putData("Swerve AlignToBranch", new AlignToBranch(swerve, head));
+            SmartDashboard.putData("Swerve AlignToBranch", new AlignToBranch(swerve, head, elev));
 
             SmartDashboard.putData("Elev Manual Move (IN)", new MoveToInchesManual(elev));
             SmartDashboard.putData("Elev Manual Move (TICKS)", new MoveToTicksManual(elev));
