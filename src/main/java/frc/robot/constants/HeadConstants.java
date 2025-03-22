@@ -16,7 +16,7 @@ public abstract class HeadConstants {
     public static final int shortSensorSampleTime = 40; //milliseconds
     public static final int longSensorSampleTime = 80; //milliseconds
     public static final double coralActivationDist = 80; //millimeters
-    public static final double branchLVL3ActivationDist = 490; //millimeters
+    public static final double branchLVL3ActivationDist = 725; //millimeters
     public static final double branchLVL4ActivationDist = 285; //millimeters
     public static final boolean leftReversed = false;
     public static final boolean rightReversed = true;
