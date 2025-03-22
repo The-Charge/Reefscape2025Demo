@@ -1,0 +1,53 @@
+{
+  "name": "Ion",
+  "rotations": [
+    {
+      "axis": "x",
+      "degrees": 90
+    },
+    {
+      "axis": "z",
+      "degrees": 270
+    }
+  ],
+  "position": [
+    4.15,
+    0.5,
+    2
+  ],
+  "cameras": [
+    {
+      "name": "Reef Limelight",
+      "rotations": [],
+      "position": [
+        0.35,
+        0,
+        0.5
+      ],
+      "resolution": [
+        480,
+        240
+      ],
+      "fov": 63.3
+    },
+    {
+      "name": "Funnel Limelight",
+      "rotations": [
+        {
+          "axis": "z",
+          "degrees": 180
+        }
+      ],
+      "position": [
+        -0.35,
+        0,
+        0.5
+      ],
+      "resolution": [
+        960,
+        720
+      ],
+      "fov": 90
+    }
+  ]
+}
