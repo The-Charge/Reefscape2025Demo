@@ -23,12 +23,12 @@ public class LoggingManager extends Command {
     private final ClimbSubsystem climb;
 
     private final StructPublisher<Pose2d> posePublisher;
-    private final StructPublisher<Pose2d> testPosePublisher;
     private final StructArrayPublisher<Pose3d> reefTagPublisher;
     private final StructArrayPublisher<Pose3d> funnelTagPublisher;
     private final StructPublisher<Pose3d> elevPublisher;
     private final StructPublisher<Pose3d> leverPublisher;
     private final StructPublisher<Pose3d> clampPublisher;
+    private final StructPublisher<Pose3d> bumperPublisher;
 
     /**
      * Note: Doesn't require any subsystems, just needs them for querying data
@@ -42,27 +42,29 @@ public class LoggingManager extends Command {
 
         //I never close these because they should only be closed when the robot is turned off, and any memory leaks will be deleted by RAM shutting down
         posePublisher = NetworkTableInstance.getDefault().getStructTopic("AvScope/SwervePose", Pose2d.struct).publish();
-        testPosePublisher = NetworkTableInstance.getDefault().getStructTopic("AvScope/TestPose", Pose2d.struct)
-                .publish();
         reefTagPublisher = NetworkTableInstance.getDefault().getStructArrayTopic("AvScope/ReefTags", Pose3d.struct).publish();
         funnelTagPublisher = NetworkTableInstance.getDefault().getStructArrayTopic("AvScope/FunnelTags", Pose3d.struct).publish();
         elevPublisher = NetworkTableInstance.getDefault().getStructTopic("AvScope/ElevPose", Pose3d.struct).publish();
         leverPublisher = NetworkTableInstance.getDefault().getStructTopic("AvScope/LeverPose", Pose3d.struct).publish();
         clampPublisher = NetworkTableInstance.getDefault().getStructTopic("AvScope/ClampPose", Pose3d.struct).publish();
+        bumperPublisher = NetworkTableInstance.getDefault().getStructTopic("AvScope/BumperPose", Pose3d.struct).publish();
     }
 
+    @Override
+    public void initialize() {
+        bumperPublisher.set(Pose3d.kZero);
+    }
     @Override
     public void execute() {
         posePublisher.set(swerve.getPose());
         
-        testPosePublisher.set(new Pose2d(0, 0, new Rotation2d(0)));
         reefTagPublisher.set(reef.getTagPose3ds());
         funnelTagPublisher.set(funnel.getTagPose3ds());
 
-        elevPublisher.set(new Pose3d(new Translation3d(0, 0, elev.getPositionInches()), Rotation3d.kZero));
+        elevPublisher.set(new Pose3d(new Translation3d(0, 0, elev.getPositionInches() / 39.37), Rotation3d.kZero));
 
         leverPublisher.set(new Pose3d(Translation3d.kZero, new Rotation3d(0, climb.getLeverDegrees() * Math.PI / 180, 0)));
-        clampPublisher.set(new Pose3d(Translation3d.kZero, new Rotation3d(0, 0, climb.getClampDegrees() * Math.PI / 180)));
+        clampPublisher.set(new Pose3d(Translation3d.kZero, new Rotation3d(0, 0, -climb.getClampDegrees() * Math.PI / 180)));
     }
 
     @Override
