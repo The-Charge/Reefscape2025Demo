@@ -149,6 +149,11 @@ public class SwerveSubsystem extends SubsystemBase
 //      vision.updatePoseEstimation(swerveDrive);
     }
 
+    if(getCurrentCommand() == null)
+          SmartDashboard.putString("Swerve RunningCommand", "None");
+      else
+          SmartDashboard.putString("Swerve RunningCommand", getCurrentCommand().getName());
+
     if(TelemetryConstants.debugTelemetry) {
       SmartDashboard.putNumber("Swerve BotX", getPose().getX());
       SmartDashboard.putNumber("Swerve BotY", getPose().getY());
