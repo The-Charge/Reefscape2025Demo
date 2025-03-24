@@ -66,6 +66,11 @@ public class ElevSubsystem extends SubsystemBase {
         
         targetCheck();
 
+        if(getCurrentCommand() == null)
+            SmartDashboard.putString("Elev RunningCommand", "None");
+        else
+            SmartDashboard.putString("Elev RunningCommand", getCurrentCommand().getName());
+
         if(TelemetryConstants.debugTelemetry) {
             SmartDashboard.putString("Elev Pos (LVL)", getPositionLevel().name());
             SmartDashboard.putString("Elev Target (LVL)", getTargetLevel().name());
@@ -82,10 +87,6 @@ public class ElevSubsystem extends SubsystemBase {
             SmartDashboard.putNumber("Elev VBus", motor.get());
             SmartDashboard.putNumber("Elev Current", motor.getStatorCurrent().getValueAsDouble());
             SmartDashboard.putBoolean("Elev HardStop", isAtHardStop());
-            if(getCurrentCommand() == null)
-                SmartDashboard.putString("Elev RunningCommand", "None");
-            else
-                SmartDashboard.putString("Elev RunningCommand", getCurrentCommand().getName());
         }
     }
 

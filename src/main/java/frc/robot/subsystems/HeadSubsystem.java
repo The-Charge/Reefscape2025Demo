@@ -49,6 +49,11 @@ public class HeadSubsystem extends SubsystemBase {
     public void periodic() {
         hasCoral = getCoralSensor();
 
+        if(getCurrentCommand() == null)
+            SmartDashboard.putString("Head RunningCommand", "None");
+        else
+            SmartDashboard.putString("Head RunningCommand", getCurrentCommand().getName());
+
         if(TelemetryConstants.debugTelemetry) {
             SmartDashboard.putNumber("Head VBus L", headLeft.get());
             SmartDashboard.putNumber("Head VBus R", headRight.get());
@@ -65,10 +70,6 @@ public class HeadSubsystem extends SubsystemBase {
     
             SmartDashboard.putNumber("Head Current L", headLeft.getOutputCurrent());
             SmartDashboard.putNumber("Head Current R", headRight.getOutputCurrent());
-            if(getCurrentCommand() == null)
-                SmartDashboard.putString("Head RunningCommand", "None");
-            else
-                SmartDashboard.putString("Head RunningCommand", getCurrentCommand().getName());
         }
     }
 

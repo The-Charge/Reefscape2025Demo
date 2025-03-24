@@ -52,6 +52,11 @@ public class ClimbSubsystem extends SubsystemBase {
         leverTargetCheck();
         clampTargetCheck();
 
+        if(getCurrentCommand() == null)
+            SmartDashboard.putString("Climb RunningCommand", "None");
+        else
+            SmartDashboard.putString("Climb RunningCommand", getCurrentCommand().getName());
+
         if(TelemetryConstants.debugTelemetry) {
             SmartDashboard.putString("Climb Lever Ang (STA)", getLeverState().name());
             SmartDashboard.putString("Climb Lever Target (STA)", getLeverTargetState().name());
@@ -81,11 +86,6 @@ public class ClimbSubsystem extends SubsystemBase {
             SmartDashboard.putNumber("Climb Clamp VBus", clamp.get());
             SmartDashboard.putNumber("Climb Clamp Current", clamp.getStatorCurrent().getValueAsDouble());
             SmartDashboard.putNumber("Climb Clamp Temp (deg C)", clamp.getDeviceTemp().getValueAsDouble());
-
-            if(getCurrentCommand() == null)
-                SmartDashboard.putString("Climb RunningCommand", "None");
-            else
-                SmartDashboard.putString("Climb RunningCommand", getCurrentCommand().getName());
         }
     }
 

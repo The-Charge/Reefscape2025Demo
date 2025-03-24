@@ -47,6 +47,19 @@ public class LEDSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
+        update();
+
+        if(getCurrentCommand() == null)
+            SmartDashboard.putString("LED RunningCommand", "None");
+        else
+            SmartDashboard.putString("LED RunningCommand", getCurrentCommand().getName());
+    }
+
+    public AddressableLEDBufferView fullBuff() {
+        return fullBuffSeg;
+    }
+
+    private void update() {
         for(int i : LEDConstants.brokenIndicies) {
             if(i < 0 || i >= buff.getLength())
                 continue;
@@ -54,16 +67,5 @@ public class LEDSubsystem extends SubsystemBase {
             buff.setLED(i, Color.kBlack);
         }
         leds.setData(buff);
-
-        if(TelemetryConstants.debugTelemetry) {
-            if(getCurrentCommand() == null)
-                SmartDashboard.putString("LED RunningCommand", "None");
-            else
-                SmartDashboard.putString("LED RunningCommand", getCurrentCommand().getName());
-        }
-    }
-
-    public AddressableLEDBufferView fullBuff() {
-        return fullBuffSeg;
     }
 }
