@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -76,9 +77,9 @@ import frc.robot.subsystems.VisionSubsystem.ReefPosition;
 */
 public class RobotContainer {
 
-    private final CommandXboxController driver1 = new CommandXboxController(0);
-    private final CommandXboxController driver2 = new CommandXboxController(1);
-    private final GenericHID  driver3 = new GenericHID(2);
+    private final CommandXboxController driver1;
+    private final CommandXboxController driver2;
+    private final XboxController hid1, hid2;
     
     private final SwerveSubsystem swerve = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "swerve"));
     private final VisionSubsystem reeflimelight = new VisionSubsystem(LLReefConstants.LL_NAME, LLReefConstants.CAMERA_OFFSET, true);
@@ -98,19 +99,19 @@ public class RobotContainer {
     public RobotContainer() {
         logging = new LoggingManager(swerve, reeflimelight, funnellimelight, elev, climb);
 
+        driver1 = new CommandXboxController(0);
+        driver2 = new CommandXboxController(1);
+        hid1 = driver1.getHID(); //use hid objects to reduce performance impact. Using getBoolean() on the trigger from CommandXboxController causes large CPU usage
+        hid2 = driver2.getHID();
+
         teleopDrive = new TeleopDrive(swerve,
-            () -> -MathUtil.applyDeadband(driver1.getLeftY(), SwerveConstants.LEFT_Y_DEADBAND),
-            () -> -MathUtil.applyDeadband(driver1.getLeftX(), SwerveConstants.LEFT_X_DEADBAND),
-            () -> -MathUtil.applyDeadband(driver1.getRightX(), SwerveConstants.RIGHT_X_DEADBAND),
-            () -> driver1.povCenter().getAsBoolean(),
-            () -> driver1.povDown().getAsBoolean(), () -> driver1.povDownLeft().getAsBoolean(),
-            () -> driver1.povDownRight().getAsBoolean(),
-            () -> driver1.povLeft().getAsBoolean(), () -> driver1.povRight().getAsBoolean(),
-            () -> driver1.povUp().getAsBoolean(),
-            () -> driver1.povUpLeft().getAsBoolean(), () -> driver1.povUpRight().getAsBoolean(),
-            () -> driver1.leftTrigger(SwerveConstants.TRIGGER_DEADBAND).getAsBoolean(),
-            () -> driver1.back().getAsBoolean(),
-            () -> driver1.getRightTriggerAxis()
+            () -> -MathUtil.applyDeadband(hid1.getLeftY(), SwerveConstants.LEFT_Y_DEADBAND),
+            () -> -MathUtil.applyDeadband(hid1.getLeftX(), SwerveConstants.LEFT_X_DEADBAND),
+            () -> -MathUtil.applyDeadband(hid1.getRightX(), SwerveConstants.RIGHT_X_DEADBAND),
+            () -> hid1.getPOV(),
+            () -> hid1.getLeftTriggerAxis() > SwerveConstants.TRIGGER_DEADBAND,
+            () -> hid1.getBackButton(),
+            () -> MathUtil.applyDeadband(hid1.getRightTriggerAxis(), SwerveConstants.TRIGGER_DEADBAND)
         );
         swerve.setDefaultCommand(teleopDrive);
 
@@ -122,7 +123,6 @@ public class RobotContainer {
         configureNamedCommands();
         configureBindings();
         addTelemetry();
-        DriverStation.silenceJoystickConnectionWarning(true);
 
         autoChooser = AutoBuilder.buildAutoChooser();
         setupAutoDisplay();
@@ -157,16 +157,6 @@ public class RobotContainer {
                         && Math.abs(driver1.getRightX()) < SwerveConstants.RIGHT_X_DEADBAND),
                 ReefPosition.MIDDLE));
         
-        new Trigger(() -> driver3.getRawButton(7)).onTrue(new DriveToTag(swerve, 21, 
-                () -> (Math.abs(driver1.getLeftX()) < SwerveConstants.LEFT_X_DEADBAND
-                        && Math.abs(driver1.getLeftY()) < SwerveConstants.LEFT_Y_DEADBAND
-                        && Math.abs(driver1.getRightX()) < SwerveConstants.RIGHT_X_DEADBAND), ReefPosition.RIGHT));
-        
-        new Trigger(() -> driver3.getRawButton(8)).onTrue(new DriveToTag(swerve, 10, 
-                () -> (Math.abs(driver1.getLeftX()) < SwerveConstants.LEFT_X_DEADBAND
-                        && Math.abs(driver1.getLeftY()) < SwerveConstants.LEFT_Y_DEADBAND
-                        && Math.abs(driver1.getRightX()) < SwerveConstants.RIGHT_X_DEADBAND), ReefPosition.RIGHT));
-        
         // driver1.a().whileTrue(new DriveToAlgae(swerve, reeflimelight));
         
         driver2.a().onTrue(new Climb(climb));
@@ -192,17 +182,6 @@ public class RobotContainer {
             new MoveToLevel(elev, head, Level.ALGAE_LOW, true),
             new AlgaeRemSpin(algaeRem, false)
         ));
-
-        // new Trigger(() -> head.getFunnelSensor()).onTrue(new Index(head).withInterruptBehavior(InterruptionBehavior.kCancelIncoming)); //we don't want the head to do anything until indexing is finished
-
-        //driverXbox.b().whileTrue(
-        //    swerve.driveToPose(
-        //        new Pose2d(new Translation2d(4, 4), Rotation2d.fromDegrees(0)))
-        //                        );
-        //driverXbox.start().whileTrue(Commands.none());
-        //driverXbox.back().whileTrue(Commands.none());
-        //driverXbox.leftBumper().whileTrue(Commands.runOnce(swerve::lock, swerve).repeatedly());
-        //driverXbox.rightBumper().onTrue(Commands.none());
     }
     private void configureNamedCommands() {
         //Pathplanner named commands

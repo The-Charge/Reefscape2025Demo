@@ -2,6 +2,7 @@ package frc.robot.commands.swervedrive.drivebase;
 
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
+import java.util.function.IntSupplier;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -16,8 +17,7 @@ public class TeleopDrive extends Command {
     private final SwerveSubsystem swerve;
     private final DoubleSupplier vX, vY;
     private final DoubleSupplier heading;
-    private final BooleanSupplier povCenter, povDown, povDownleft, povDownRight, povLeft, povRight, povUp, povUpLeft,
-            povUpRight;
+    private final IntSupplier pov;
     private final DoubleSupplier shiftScalar;
     private final BooleanSupplier reefLock;
     private final BooleanSupplier centricToggle;
@@ -25,31 +25,24 @@ public class TeleopDrive extends Command {
     private boolean isFieldCentric = true;
     private boolean centricToggleLast = false;
 
-    private enum Mode {JOYSTICK, POV, REEF};
+    private enum Mode {
+        JOYSTICK,
+        POV,
+        REEF
+    };
 
     private Mode mode = Mode.JOYSTICK;
 
-    public TeleopDrive(SwerveSubsystem swerve, DoubleSupplier vX, DoubleSupplier vY, DoubleSupplier heading,
-            BooleanSupplier povCenter, BooleanSupplier povDown, BooleanSupplier povDownleft,
-            BooleanSupplier povDownRight, BooleanSupplier povLeft, BooleanSupplier povRight, BooleanSupplier povUp,
-            BooleanSupplier povUpLeft, BooleanSupplier povUpRight, BooleanSupplier reefLock,
-            BooleanSupplier centricToggle, DoubleSupplier shift) {
+    public TeleopDrive(SwerveSubsystem swerve, DoubleSupplier vX, DoubleSupplier vY, DoubleSupplier heading, IntSupplier pov, BooleanSupplier reefLock, BooleanSupplier centricToggle, DoubleSupplier shift) {
         this.swerve = swerve;
         this.vX = vX;
         this.vY = vY;
         this.heading = heading;
-        this.povCenter = povCenter;
-        this.povDown = povDown;
-        this.povDownleft = povDownleft;
-        this.povDownRight = povDownRight;
-        this.povLeft = povLeft;
-        this.povRight = povRight;
-        this.povUp = povUp;
-        this.povUpLeft = povUpLeft;
-        this.povUpRight = povUpRight;
+        this.pov = pov;
         this.reefLock = reefLock;
         this.centricToggle = centricToggle;
         this.shiftScalar = shift;
+
         addRequirements(swerve);
     }
 
@@ -60,104 +53,111 @@ public class TeleopDrive extends Command {
 
     @Override
     public void execute() {
+        int povVal = pov.getAsInt();
+        boolean centricToggleVal = centricToggle.getAsBoolean();
+        boolean reefLockVal = reefLock.getAsBoolean();
+        double headingVal = heading.getAsDouble();
+        double shiftScalarVal = shiftScalar.getAsDouble();
+        double vXVal = vX.getAsDouble();
+        double vYVal = vY.getAsDouble();
+
         // Handle field-centric toggle
-        if (centricToggle.getAsBoolean() && !centricToggleLast) {
+        if(centricToggleVal && !centricToggleLast) {
             isFieldCentric = !isFieldCentric;
             SmartDashboard.putBoolean("Swerve IsFieldCentric", isFieldCentric);
         }
-        centricToggleLast = centricToggle.getAsBoolean();
+        centricToggleLast = centricToggleVal;
 
         // reefLock get priority, then POV, then normal
-        if (reefLock.getAsBoolean()) {
+        if(reefLockVal) {
             mode = Mode.REEF;
-        } else if(!povCenter.getAsBoolean()) {
+        }
+        else if(povVal != -1) {
             mode = Mode.POV;
-        } else if (Math.abs(heading.getAsDouble()) >= SwerveConstants.RIGHT_X_DEADBAND) {
+        }
+        else if(Math.abs(headingVal) >= SwerveConstants.RIGHT_X_DEADBAND) {
             mode = Mode.JOYSTICK;
         }
+        //no else statement, just leave as last value
 
         // Calculate speed multiplier
-        double shiftAmt = -0.9 * shiftScalar.getAsDouble() + 1;
-
-        // Calculate rotation
-        double rotationSpeed = heading.getAsDouble() * swerve.getSwerveController().config.maxAngularVelocity;
-        rotationSpeed *= shiftAmt * SwerveConstants.DRIVE_SPEED;
+        double shiftAmt = -0.9 * shiftScalarVal + 1;
 
         // Calculate translation
-        Translation2d translation = new Translation2d(vX.getAsDouble(), vY.getAsDouble())
-                .times(SwerveConstants.MAX_SPEED)
-                .times(shiftAmt)
-                .times(SwerveConstants.DRIVE_SPEED)
-                .times(isFieldCentric ? swerve.isRedAlliance() ? -1 : 1 : 1);
+        double transMult = SwerveConstants.MAX_SPEED * shiftAmt * SwerveConstants.DRIVE_SPEED;
+        transMult *= isFieldCentric ? (swerve.isRedAlliance() ? -1 : 1) : 1;
+        Translation2d translation = new Translation2d(vXVal * transMult, vYVal * transMult);
 
         switch (mode) {
             case POV:
                 // Drive with POV
-                swerve.drive(translation, POVDrive(), isFieldCentric);
+                swerve.drive(translation, POVDrive(povVal, vXVal, vYVal), isFieldCentric);
                 break;
             case REEF:
                 // Drive with Reef Rotation
-                swerve.drive(translation, ReefLock(), isFieldCentric);
+                swerve.drive(translation, ReefLock(vXVal, vYVal), isFieldCentric);
                 break;
             default:
                 // Drive normally
+                double rotationSpeed = headingVal * swerve.getSwerveController().config.maxAngularVelocity;
+                rotationSpeed *= shiftAmt * SwerveConstants.DRIVE_SPEED;
+
                 swerve.drive(translation, rotationSpeed, isFieldCentric);
                 break;
         }
     }
 
-    private double POVDrive() {
+    private double POVDrive(int povVal, double vXVal, double vYVal) {
         double headingX = 0;
         double headingY = 0;
 
-        if (povDown.getAsBoolean()) {
-            headingY = -1;
-        } else if (povDownleft.getAsBoolean()) {
-            headingX = 1;
-            headingY = -1;
-        } else if (povDownRight.getAsBoolean()) {
-            headingX = -1;
-            headingY = -1;
-        } else if (povLeft.getAsBoolean()) {
-            headingX = 1;
-        } else if (povRight.getAsBoolean()) {
-            headingX = -1;
-        } else if (povUp.getAsBoolean()) {
-            headingY = 1;
-        } else if (povUpLeft.getAsBoolean()) {
-            headingX = 1;
-            headingY = 1;
-        } else if (povUpRight.getAsBoolean()) {
-            headingX = -1;
-            headingY = 1;
+        switch(povVal) {
+            case 0:
+                headingY = 1;
+                break;
+            case 45:
+                headingX = -1;
+                headingY = 1;
+                break;
+            case 90:
+                headingX = -1;
+                break;
+            case 135:
+                headingX = -1;
+                headingY = -1;
+            case 180:
+                headingY = -1;
+                break;
+            case 225:
+                headingX = 1;
+                headingY = -1;
+                break;
+            case 270:
+                headingX = 1;
+                break;
+            case 315:
+                headingX = 1;
+                headingY = 1;
+                break;
         }
 
         double isRedAlliance = swerve.isRedAlliance() ? -1 : 1;
-        ChassisSpeeds povSpeeds = swerve.getTargetSpeeds(vY.getAsDouble(), vX.getAsDouble(), headingX * isRedAlliance,
-                headingY * isRedAlliance);
+        ChassisSpeeds povSpeeds = swerve.getTargetSpeeds(vYVal, vXVal, headingX * isRedAlliance, headingY * isRedAlliance);
 
         return povSpeeds.omegaRadiansPerSecond;
     }
     
-    private double ReefLock() {
+    private double ReefLock(double vXVal, double vYVal) {
         int tag = swerve.getClosestTagID();
         Rotation2d targetRotation = swerve.getClosestTagPose().getRotation();
-        if (!(tag == 1 || tag == 2 || tag == 12 || tag == 13)) {
+        if(!(tag == 1 || tag == 2 || tag == 12 || tag == 13)) {
             targetRotation = targetRotation.minus(Rotation2d.fromDegrees(180));
         }
-        ChassisSpeeds reefLockSpeeds = swerve.getTargetSpeeds(
-                vX.getAsDouble(), vY.getAsDouble(),
-                targetRotation.getSin(),
-                targetRotation.getCos());
+
+        ChassisSpeeds reefLockSpeeds = swerve.getTargetSpeeds(vXVal, vYVal, targetRotation.getSin(), targetRotation.getCos());
         return reefLockSpeeds.omegaRadiansPerSecond;
     }
 
-    // Called once the command ends or is interrupted.
-    @Override
-    public void end(boolean interrupted) {
-    }
-
-    // Returns true when the command should end.
     @Override
     public boolean isFinished() {
         return false;
