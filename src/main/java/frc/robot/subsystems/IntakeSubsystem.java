@@ -50,6 +50,10 @@ public class IntakeSubsystem extends SubsystemBase {
         return belt.getEncoder().getVelocity();
     }
 
+    public double getAmps() {
+        return belt.getOutputCurrent();
+    }
+
     private void configureMotor(SparkMax m) {
         SparkMaxConfig config = new SparkMaxConfig();
         config.idleMode(IdleMode.kCoast);

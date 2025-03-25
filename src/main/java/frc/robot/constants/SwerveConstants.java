@@ -27,7 +27,7 @@ public abstract class SwerveConstants {
 
     public static final PIDConstants pathPlannerTranslationPID = new PIDConstants(5, 0, 0);
     public static final PIDConstants pathPlannerRotationPID = new PIDConstants(5, 0, 0);
-    public static final double autonVisionTime = 15; //number of seconds vision is enabled for in auton
+    public static final double autonVisionTime = 0; //number of seconds vision is enabled for in auton
 
     // Joystick Deadband
     public static final double LEFT_Y_DEADBAND = 0.1;
@@ -41,8 +41,8 @@ public abstract class SwerveConstants {
     public static final double reefAlignSpeed = 1; //meters/sec
     public static final double sourceAcceptableDist = 170; //millimeters
     public static final double sourceAlignSpeed = 1; //meters/sec
-    public static final double alignTimeout = 3; //seconds
+    public static final double alignTimeout = 2; //seconds
     public static final PIDConstants alignPID = new PIDConstants(0.003, 0, 0);
 
-    public static final double branchAlignSpeed = 0.3; //m/s
+    public static final double branchAlignSpeed = 0.24; //m/s
 }

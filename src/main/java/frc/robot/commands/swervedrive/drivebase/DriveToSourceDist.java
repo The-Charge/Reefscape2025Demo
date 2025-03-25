@@ -49,6 +49,7 @@ public class DriveToSourceDist extends Command {
 
     @Override
     public boolean isFinished() {
-        return head.getBackDistance() <= SwerveConstants.sourceAcceptableDist; // timeout.hasElapsed(SwerveConstants.alignTimeout) ||
+        return head.getBackDistance() <= SwerveConstants.sourceAcceptableDist
+                || timeout.hasElapsed(SwerveConstants.alignTimeout);
     }
 }

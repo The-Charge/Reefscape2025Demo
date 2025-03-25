@@ -214,6 +214,7 @@ public class RobotContainer {
          */
         NamedCommands.registerCommand("SwerveDriveToReefDist", new DriveToReefDist(swerve, head));
         NamedCommands.registerCommand("SwerveDriveToSourceDist", new DriveToSourceDist(swerve, head));
+        NamedCommands.registerCommand("SwerveAlignToBranch", new AlignToBranch(swerve, head, elev));
         
         NamedCommands.registerCommand("ElevHome", new MoveToLevel(elev, head, ElevSubsystem.Level.HOME, true));
         NamedCommands.registerCommand("ElevLevel1", new MoveToLevel(elev, head, ElevSubsystem.Level.LVL1, true));

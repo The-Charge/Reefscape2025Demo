@@ -1,6 +1,7 @@
 package frc.robot.commands.swervedrive.drivebase;
 
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.constants.SwerveConstants;
 import frc.robot.subsystems.ElevSubsystem;
@@ -12,6 +13,7 @@ public class AlignToBranch extends Command {
     private final SwerveSubsystem swerve;
     private final HeadSubsystem head;
     private final ElevSubsystem elev;
+    private Timer timeout;
 
     public AlignToBranch(SwerveSubsystem swerveSub, HeadSubsystem headSub, ElevSubsystem elevSub) {
         swerve = swerveSub;
@@ -19,6 +21,12 @@ public class AlignToBranch extends Command {
         elev = elevSub;
 
         addRequirements(swerve);
+    }
+
+    @Override
+    public void initialize() {
+        timeout = new Timer();
+        timeout.start();
     }
 
     @Override
@@ -32,6 +40,6 @@ public class AlignToBranch extends Command {
 
     @Override
     public boolean isFinished() {
-        return head.getBranchSensor(elev.getPositionLevel());
+        return head.getBranchSensor(elev.getPositionLevel()) || timeout.hasElapsed(SwerveConstants.alignTimeout);
     }
 }

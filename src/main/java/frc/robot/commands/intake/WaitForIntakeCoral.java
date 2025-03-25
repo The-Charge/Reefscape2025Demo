@@ -31,6 +31,6 @@ public class WaitForIntakeCoral extends Command {
     }
     @Override
     public boolean isFinished() {
-        return head.getHasCoral() || (intake.getVelocity() < 5600 && timer.hasElapsed(1));
+        return head.getHasCoral() || (intake.getAmps() > 7 && timer.hasElapsed(1));
     }
 }

@@ -5,13 +5,19 @@
     "data": {
       "commands": [
         {
+          "type": "path",
+          "data": {
+            "pathName": "StartF-BRR"
+          }
+        },
+        {
           "type": "parallel",
           "data": {
             "commands": [
               {
-                "type": "path",
+                "type": "named",
                 "data": {
-                  "pathName": "StartB-BLR"
+                  "name": "SwerveDriveToReefDist"
                 }
               },
               {
@@ -21,6 +27,12 @@
                 }
               }
             ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "SwerveAlignToBranch"
           }
         },
         {
@@ -36,7 +48,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "BLR-LeftSource"
+                  "pathName": "BRR-RightSource"
                 }
               },
               {
@@ -49,9 +61,22 @@
           }
         },
         {
-          "type": "named",
+          "type": "deadline",
           "data": {
-            "name": "HeadWaitForCoral"
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "IntakeWaitForCoral"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "SwerveDriveToSourceDist"
+                }
+              }
+            ]
           }
         },
         {
@@ -61,7 +86,26 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "LeftSource-FLR"
+                  "pathName": "RightSource-FRR"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "HeadWaitForCoral"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "SwerveDriveToReefDist"
                 }
               },
               {
@@ -71,6 +115,12 @@
                 }
               }
             ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "SwerveAlignToBranch"
           }
         },
         {

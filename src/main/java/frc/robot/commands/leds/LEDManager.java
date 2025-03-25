@@ -53,7 +53,7 @@ public class LEDManager extends Command {
             .scrollAtAbsoluteSpeed(Units.MetersPerSecond.of(3), LEDConstants.ledSpacing);
         branchAligned = LEDPattern.solid(LEDConstants.chargeGreen).blink(Units.Seconds.of(0.33), Units.Seconds.of(0.33));
         
-        branchAlignLevels = List.of(ElevSubsystem.Level.LVL3, ElevSubsystem.Level.LVL4);
+        branchAlignLevels = List.of(ElevSubsystem.Level.LVL2, ElevSubsystem.Level.LVL3, ElevSubsystem.Level.LVL4);
     }
 
     @Override

@@ -54,11 +54,13 @@ public class HeadSubsystem extends SubsystemBase {
             SmartDashboard.putNumber("Head VBus R", headRight.get());
             SmartDashboard.putBoolean("Head HasCoral", getHasCoral());
             
+            SmartDashboard.putBoolean("Head Branch Sensor LVL2 (Bool)", getBranchSensor(ElevSubsystem.Level.LVL2));
             SmartDashboard.putBoolean("Head Branch Sensor LVL3 (Bool)", getBranchSensor(ElevSubsystem.Level.LVL3));
             SmartDashboard.putBoolean("Head Branch Sensor LVL4 (Bool)", getBranchSensor(ElevSubsystem.Level.LVL4));
             SmartDashboard.putBoolean("Head Coral Sensor (Bool)", getCoralSensor());
 
             SmartDashboard.putNumber("Head Branch Sensor (mm)", branchSensor.getRange());
+            SmartDashboard.putNumber("Head Branch Sensor (sigma)", branchSensor.getRangeSigma());
             SmartDashboard.putNumber("Head Coral Sensor (mm)", coralSensor.getRange());
             SmartDashboard.putNumber("Head Back Sensor (mm)", backSensor.getRange());
             SmartDashboard.putNumber("Head Front Sensor (mm)", frontSensor.getRange());
@@ -86,13 +88,20 @@ public class HeadSubsystem extends SubsystemBase {
     public boolean getBranchSensor(ElevSubsystem.Level level) {
         switch (level) {
             case LVL4:
-                return branchSensor.getRange() <= HeadConstants.branchLVL4ActivationDist;
-        case LVL3:
-            return branchSensor.getRange() <= HeadConstants.branchLVL3ActivationDist;
-        default:
-            return false;
+                return branchSensor.getRange() <= HeadConstants.branchLVL4ActivationDist
+                        && branchSensor.getRangeSigma() < HeadConstants.branchSigmaActivation;
+            case LVL3:
+                return branchSensor.getRange() <= HeadConstants.branchLVL3ActivationDist && branchSensor
+                        .getRange() >= HeadConstants.branchLVL3MinActivationDist 
+                        && branchSensor.getRangeSigma() < HeadConstants.branchSigmaActivation;
+            case LVL2:
+                return branchSensor.getRange() <= HeadConstants.branchLVL2ActivationDist 
+                        && branchSensor.getRangeSigma() < HeadConstants.branchSigmaActivation;
+            default:
+                return false;
+        }
     }
-    }
+
     public boolean getCoralSensor() {
         return coralSensor.getRange() <= HeadConstants.coralActivationDist;
     }
