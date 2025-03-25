@@ -49,6 +49,22 @@ public class LimelightManager extends Command {
         int reefCount = reefLimelight.getTagCount();
         int funnelCount = funnelLimelight.getTagCount();
 
+        if (reefEstimate != null) {
+            SmartDashboard.putNumber("Reef BotX Tag2", reefEstimate.pose.getX());
+            SmartDashboard.putNumber("Reef BotY Tag2", reefEstimate.pose.getY());
+        }
+        if(reefEstimateTag1 != null) {
+            SmartDashboard.putNumber("Reef BotX Tag1", reefEstimateTag1.pose.getX());
+            SmartDashboard.putNumber("Reef BotY Tag1", reefEstimateTag1.pose.getY());
+        }
+        if (funnelEstimate != null) {
+            SmartDashboard.putNumber("Funnel BotX Tag2", funnelEstimate.pose.getX());
+            SmartDashboard.putNumber("Funnel BotY Tag2", funnelEstimate.pose.getY());
+        }
+        if(funnelEstimateTag1 != null) {
+            SmartDashboard.putNumber("Funnel BotX Tag1", funnelEstimateTag1.pose.getX());
+            SmartDashboard.putNumber("Funnel BotY Tag1", funnelEstimateTag1.pose.getY());
+        }
         if(TelemetryConstants.debugTelemetry) {
             SmartDashboard.putBoolean("reef estimated", false);
             SmartDashboard.putBoolean("funnel estimated", false);
@@ -57,15 +73,6 @@ public class LimelightManager extends Command {
             SmartDashboard.putNumber("funnel ambig", funnelAmbig);
 
             SmartDashboard.putNumber("swerve rot speed", yawRate);
-
-            if (reefEstimate != null) {
-                SmartDashboard.putNumber("Reef BotX", reefEstimate.pose.getX());
-                SmartDashboard.putNumber("Reef BotY", reefEstimate.pose.getY());
-            }
-            if (funnelEstimate != null) {
-                SmartDashboard.putNumber("Funnel BotX", funnelEstimate.pose.getX());
-                SmartDashboard.putNumber("Funnel BotY", funnelEstimate.pose.getY());
-            }
         }
 
         boolean reefEstim = (reefEstimate != null && reefCount > 0 && yawRate < Units.degreesToRadians(60)); // reefAmbig < 0.2 ||

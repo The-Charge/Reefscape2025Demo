@@ -53,22 +53,23 @@ public class HeadSubsystem extends SubsystemBase {
             SmartDashboard.putString("Head RunningCommand", "None");
         else
             SmartDashboard.putString("Head RunningCommand", getCurrentCommand().getName());
+        
+        SmartDashboard.putBoolean("Head HasCoral", getHasCoral());
+        SmartDashboard.putNumber("Head Branch Sensor (mm)", branchSensor.getRange());
+        SmartDashboard.putNumber("Head Branch Sensor (sigma)", branchSensor.getRangeSigma());
+        SmartDashboard.putNumber("Head Back Sensor (mm)", backSensor.getRange());
+        SmartDashboard.putNumber("Head Front Sensor (mm)", frontSensor.getRange());
+        SmartDashboard.putBoolean("Head Branch Sensor LVL2 (Bool)", getBranchSensor(ElevSubsystem.Level.LVL2));
+        SmartDashboard.putBoolean("Head Branch Sensor LVL3 (Bool)", getBranchSensor(ElevSubsystem.Level.LVL3));
+        SmartDashboard.putBoolean("Head Branch Sensor LVL4 (Bool)", getBranchSensor(ElevSubsystem.Level.LVL4));
 
         if(TelemetryConstants.debugTelemetry) {
             SmartDashboard.putNumber("Head VBus L", headLeft.get());
             SmartDashboard.putNumber("Head VBus R", headRight.get());
-            SmartDashboard.putBoolean("Head HasCoral", getHasCoral());
             
-            SmartDashboard.putBoolean("Head Branch Sensor LVL2 (Bool)", getBranchSensor(ElevSubsystem.Level.LVL2));
-            SmartDashboard.putBoolean("Head Branch Sensor LVL3 (Bool)", getBranchSensor(ElevSubsystem.Level.LVL3));
-            SmartDashboard.putBoolean("Head Branch Sensor LVL4 (Bool)", getBranchSensor(ElevSubsystem.Level.LVL4));
             SmartDashboard.putBoolean("Head Coral Sensor (Bool)", getCoralSensor());
 
-            SmartDashboard.putNumber("Head Branch Sensor (mm)", branchSensor.getRange());
-            SmartDashboard.putNumber("Head Branch Sensor (sigma)", branchSensor.getRangeSigma());
             SmartDashboard.putNumber("Head Coral Sensor (mm)", coralSensor.getRange());
-            SmartDashboard.putNumber("Head Back Sensor (mm)", backSensor.getRange());
-            SmartDashboard.putNumber("Head Front Sensor (mm)", frontSensor.getRange());
     
             SmartDashboard.putNumber("Head Current L", headLeft.getOutputCurrent());
             SmartDashboard.putNumber("Head Current R", headRight.getOutputCurrent());

@@ -56,6 +56,11 @@ public class ClimbSubsystem extends SubsystemBase {
             SmartDashboard.putString("Climb RunningCommand", "None");
         else
             SmartDashboard.putString("Climb RunningCommand", getCurrentCommand().getName());
+        
+        SmartDashboard.putNumber("Climb Lever Ang (Ticks)", getLeverTicks());
+        SmartDashboard.putNumber("Climb Lever Ang (Deg)", getLeverDegrees());
+        SmartDashboard.putNumber("Climb Lever VBus", lever.get());
+        SmartDashboard.putNumber("Climb Lever Current", lever.getStatorCurrent().getValueAsDouble());
 
         if(TelemetryConstants.debugTelemetry) {
             SmartDashboard.putString("Climb Lever Ang (STA)", getLeverState().name());
@@ -65,14 +70,12 @@ public class ClimbSubsystem extends SubsystemBase {
             SmartDashboard.putString("Climb Clamp Target (STA)", getClampTargetState().name());
             SmartDashboard.putBoolean("Climb Clamp isAtTarget", isClampIsAtTarget());
 
-            SmartDashboard.putNumber("Climb Lever Ang (Deg)", getLeverDegrees());
             SmartDashboard.putNumber("Climb Lever Err (Deg)", (leverTargetTicks - getLeverTicks()) * ClimbConstants.leverTickToDegConversion);
             SmartDashboard.putNumber("Climb Lever Target (Deg)", leverTargetTicks * ClimbConstants.leverTickToDegConversion);
             SmartDashboard.putNumber("Climb Clamp Ang (Deg)", getClampDegrees());
             SmartDashboard.putNumber("Climb Clamp Err (Deg)", (clampTargetTicks - getClampTicks()) * ClimbConstants.clampTickToDegConversion);
             SmartDashboard.putNumber("Climb Clamp Target (Deg)", clampTargetTicks * ClimbConstants.clampTickToDegConversion);
 
-            SmartDashboard.putNumber("Climb Lever Ang (Ticks)", getLeverTicks());
             SmartDashboard.putNumber("Climb Lever Err (Ticks)", leverTargetTicks - getLeverTicks());
             SmartDashboard.putNumber("Climb Lever Target (Ticks)", leverTargetTicks);
             SmartDashboard.putNumber("Climb Clamp Ang (Ticks)", getClampTicks());
@@ -80,8 +83,6 @@ public class ClimbSubsystem extends SubsystemBase {
             SmartDashboard.putNumber("Climb Clamp Target (Ticks)", clampTargetTicks);
             SmartDashboard.putBoolean("Climb Lever Swich", getLeverLimitSwitch());
 
-            SmartDashboard.putNumber("Climb Lever VBus", lever.get());
-            SmartDashboard.putNumber("Climb Lever Current", lever.getStatorCurrent().getValueAsDouble());
             SmartDashboard.putNumber("Climb Lever Temp (deg C)", lever.getDeviceTemp().getValueAsDouble());
             SmartDashboard.putNumber("Climb Clamp VBus", clamp.get());
             SmartDashboard.putNumber("Climb Clamp Current", clamp.getStatorCurrent().getValueAsDouble());

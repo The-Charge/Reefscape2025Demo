@@ -31,12 +31,12 @@ public class IntakeSubsystem extends SubsystemBase {
             SmartDashboard.putString("Intake RunningCommand", "None");
         else
             SmartDashboard.putString("Intake RunningCommand", getCurrentCommand().getName());
+        
+        SmartDashboard.putNumber("Intake Velocity", belt.getEncoder().getVelocity());
+        SmartDashboard.putNumber("Intake Current", belt.getOutputCurrent());
 
         if(TelemetryConstants.debugTelemetry) {
             SmartDashboard.putNumber("Intake VBus", belt.get());
-            SmartDashboard.putNumber("Intake Velocity", belt.getEncoder().getVelocity());
-
-            SmartDashboard.putNumber("Intake Current", belt.getOutputCurrent());
         }
     }
 
