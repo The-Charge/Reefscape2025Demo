@@ -80,7 +80,6 @@ public class RobotContainer {
     private final CommandXboxController driver1;
     private final CommandXboxController driver2;
     private final XboxController hid1, hid2;
-    private final GenericHID  driver3 = new GenericHID(2);
     
     private final SwerveSubsystem swerve = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "swerve"));
     private final VisionSubsystem reeflimelight = new VisionSubsystem(LLReefConstants.LL_NAME, LLReefConstants.CAMERA_OFFSET, true);
@@ -157,16 +156,6 @@ public class RobotContainer {
                         && Math.abs(driver1.getLeftY()) < SwerveConstants.LEFT_Y_DEADBAND
                         && Math.abs(driver1.getRightX()) < SwerveConstants.RIGHT_X_DEADBAND),
                 ReefPosition.MIDDLE));
-        
-        new Trigger(() -> driver3.getRawButton(7)).onTrue(new DriveToTag(swerve, 21, 
-                () -> (Math.abs(driver1.getLeftX()) < SwerveConstants.LEFT_X_DEADBAND
-                        && Math.abs(driver1.getLeftY()) < SwerveConstants.LEFT_Y_DEADBAND
-                        && Math.abs(driver1.getRightX()) < SwerveConstants.RIGHT_X_DEADBAND), ReefPosition.RIGHT));
-        
-        new Trigger(() -> driver3.getRawButton(8)).onTrue(new DriveToTag(swerve, 10, 
-                () -> (Math.abs(driver1.getLeftX()) < SwerveConstants.LEFT_X_DEADBAND
-                        && Math.abs(driver1.getLeftY()) < SwerveConstants.LEFT_Y_DEADBAND
-                        && Math.abs(driver1.getRightX()) < SwerveConstants.RIGHT_X_DEADBAND), ReefPosition.RIGHT));
         
         // driver1.a().whileTrue(new DriveToAlgae(swerve, reeflimelight));
         

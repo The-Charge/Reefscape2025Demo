@@ -116,27 +116,27 @@ public class TeleopDrive extends Command {
                 headingY = 1;
                 break;
             case 45:
-                headingX = 1;
+                headingX = -1;
                 headingY = 1;
                 break;
             case 90:
-                headingX = 1;
+                headingX = -1;
                 break;
             case 135:
-                headingX = 1;
+                headingX = -1;
                 headingY = -1;
             case 180:
                 headingY = -1;
                 break;
             case 225:
-                headingX = -1;
+                headingX = 1;
                 headingY = -1;
                 break;
             case 270:
-                headingX = -1;
+                headingX = 1;
                 break;
             case 315:
-                headingX = -1;
+                headingX = 1;
                 headingY = 1;
                 break;
         }
