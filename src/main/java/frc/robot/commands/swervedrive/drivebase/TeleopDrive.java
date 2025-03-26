@@ -78,6 +78,7 @@ public class TeleopDrive extends Command {
         else if(Math.abs(headingVal) >= SwerveConstants.RIGHT_X_DEADBAND) {
             mode = Mode.JOYSTICK;
         }
+        SmartDashboard.putString("Teleop Mode", mode.name());
         //no else statement, just leave as last value
 
         // Calculate speed multiplier
