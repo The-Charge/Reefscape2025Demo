@@ -16,7 +16,7 @@ public class DriveToReefDist extends Command {
     private final HeadSubsystem head;
     private Timer timeout;
     private PIDController pid;
-    private int acumulator;
+    private int acumulator = 0;
     private double prev;
 
     public DriveToReefDist(SwerveSubsystem swerveSub, HeadSubsystem headSub) {
@@ -32,6 +32,7 @@ public class DriveToReefDist extends Command {
         timeout.start();
 
         prev = head.getFrontDistance();
+        acumulator = 0;
 
         pid = new PIDController(SwerveConstants.alignPID.kP, SwerveConstants.alignPID.kI, SwerveConstants.alignPID.kD);
         pid.setSetpoint(SwerveConstants.reefAcceptableDist);

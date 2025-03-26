@@ -7,7 +7,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "StartF-BRR"
+            "pathName": "StartB-BLR"
           }
         },
         {
@@ -36,6 +36,12 @@
           }
         },
         {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.25
+          }
+        },
+        {
           "type": "named",
           "data": {
             "name": "HeadShoot"
@@ -48,7 +54,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "BRR-RightSource"
+                  "pathName": "BLR-LeftSource"
                 }
               },
               {
@@ -86,7 +92,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "RightSource-FRR"
+                  "pathName": "LeftSource-FLR"
                 }
               },
               {
@@ -121,6 +127,12 @@
           "type": "named",
           "data": {
             "name": "SwerveAlignToBranch"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.25
           }
         },
         {

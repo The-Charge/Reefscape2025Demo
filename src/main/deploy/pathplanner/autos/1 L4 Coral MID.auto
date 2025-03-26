@@ -5,19 +5,25 @@
     "data": {
       "commands": [
         {
+          "type": "path",
+          "data": {
+            "pathName": "OOOOOOOOOOOOOOOOOOOOOOOOOOOO"
+          }
+        },
+        {
           "type": "parallel",
           "data": {
             "commands": [
               {
-                "type": "path",
+                "type": "named",
                 "data": {
-                  "pathName": "StartF-BRR"
+                  "name": "SwerveDriveToReefDist"
                 }
               },
               {
                 "type": "named",
                 "data": {
-                  "name": "ElevLevel1"
+                  "name": "ElevLevel4"
                 }
               }
             ]
@@ -26,7 +32,19 @@
         {
           "type": "named",
           "data": {
-            "name": "HeadShootSlow"
+            "name": "SwerveAlignToBranch"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.25
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "HeadShoot"
           }
         }
       ]
