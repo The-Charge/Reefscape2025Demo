@@ -9,10 +9,14 @@ import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.ReverseLimitValue;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.commands.LoggingManager;
 import frc.robot.constants.ElevConstants;
 import frc.robot.constants.TelemetryConstants;
 
@@ -67,13 +71,14 @@ public class ElevSubsystem extends SubsystemBase {
         targetCheck();
 
         if(getCurrentCommand() == null)
-            SmartDashboard.putString("Elev RunningCommand", "None");
+            LoggingManager.logAndAutoSendValue("Elev RunningCommand", "None");
         else
-            SmartDashboard.putString("Elev RunningCommand", getCurrentCommand().getName());
+            LoggingManager.logAndAutoSendValue("Elev RunningCommand", getCurrentCommand().getName());
         
-        SmartDashboard.putNumber("Elev Pos (In)", getPositionInches());
-        SmartDashboard.putBoolean("Elev isAtTarget", isAtTarget());
-        SmartDashboard.putBoolean("Elev HardStop", isAtHardStop());
+        LoggingManager.logAndAutoSendValue("Elev Pos (In)", getPositionInches());
+        LoggingManager.logAndAutoSendValue("Elev isAtTarget", isAtTarget());
+        LoggingManager.logAndAutoSendValue("Elev HardStop", isAtHardStop());
+        LoggingManager.logValue("ElevPose", Pose3d.struct, new Pose3d(new Translation3d(0, 0, getPositionInches() / 39.37), Rotation3d.kZero), true);
 
         if(TelemetryConstants.debugTelemetry) {
             SmartDashboard.putString("Elev Pos (LVL)", getPositionLevel().name());

@@ -4,7 +4,9 @@
 
 package frc.robot;
 
+import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.net.PortForwarder;
+import edu.wpi.first.util.datalog.DataLog;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PowerDistribution;
@@ -50,6 +52,8 @@ public class Robot extends TimedRobot {
     @Override
     public void robotInit() {   
         DataLogManager.start("", "", 0.125); //Use default dir and filename, All logging is dumped into either /home/lvuser/logs or a USB drive if one is connected to the robot
+        DataLogManager.logNetworkTables(false); //use custom logging with LoggingManager
+        DataLogManager.logConsoleOutput(true);
         DriverStation.startDataLog(DataLogManager.getLog(), true); //enable logging DS control and joystick input
 
         // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
@@ -103,8 +107,6 @@ public class Robot extends TimedRobot {
     @Override
     public void disabledInit()
     {
-        m_robotContainer.cancelLoggingManager();
-
         m_robotContainer.setMotorBrake(true);
         disabledTimer.reset();
         disabledTimer.start();
@@ -130,8 +132,6 @@ public class Robot extends TimedRobot {
     @Override
     public void autonomousInit()
     {
-        m_robotContainer.scheduleLoggingManager();
-
         m_robotContainer.clearTeleopDefaultCommand();
         m_robotContainer.setMotorBrake(true);
         m_autonomousCommand = m_robotContainer.getAutonomousCommand();
@@ -166,8 +166,6 @@ public class Robot extends TimedRobot {
         else {
             CommandScheduler.getInstance().cancelAll();
         }
-        m_robotContainer.scheduleLoggingManager();
-
         m_robotContainer.scheduleLimelight();
         
         m_robotContainer.setTeleopDefaultCommand();

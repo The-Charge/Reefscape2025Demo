@@ -92,11 +92,8 @@ public class RobotContainer {
     private SendableChooser<Command> autoChooser;
     private TeleopDrive teleopDrive;
     private LEDManager ledManager;
-    private LoggingManager logging;
     
     public RobotContainer() {
-        logging = new LoggingManager(swerve, reeflimelight, funnellimelight, elev, climb);
-
         driver1 = new CommandXboxController(0);
         driver2 = new CommandXboxController(1);
         hid1 = driver1.getHID(); //use hid objects to reduce performance impact. Using getBoolean() on the trigger from CommandXboxController causes large CPU usage
@@ -303,13 +300,5 @@ public class RobotContainer {
     }
     public LEDManager getLEDManager() {
         return ledManager;
-    }
-    public void scheduleLoggingManager() {
-        if(!logging.isScheduled())
-            logging.schedule();
-    }
-    public void cancelLoggingManager() {
-        if(logging.isScheduled())
-            logging.cancel();
     }
 }
