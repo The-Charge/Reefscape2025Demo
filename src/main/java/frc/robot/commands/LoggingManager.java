@@ -153,7 +153,7 @@ public abstract class LoggingManager {
 
         if(!structArrayEntries.containsKey(newKey)) {
             StructArrayLogEntry<T> entry = StructArrayLogEntry.create(DataLogManager.getLog(), newKey, struct);
-            entry.update(val); //no chance of repeat value but still need to use update rather than append in order to update last value
+            entry.update(vals); //no chance of repeat value but still need to use update rather than append in order to update last value
 
             structArrayEntries.put(newKey, entry);
             return;
