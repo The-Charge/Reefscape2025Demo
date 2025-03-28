@@ -82,17 +82,18 @@ public abstract class LoggingManager {
 
         if(!boolEntries.containsKey(newKey)) {
             BooleanLogEntry entry = new BooleanLogEntry(DataLogManager.getLog(), newKey);
-            entry.append(val);
+            entry.update(val); //no chance of repeat value but still need to use update rather than append in order to update last value
 
             boolEntries.put(newKey, entry);
             return;
         }
 
         BooleanLogEntry entry = boolEntries.get(newKey);
-        if(ignoreRepeats && entry.hasLastValue() && entry.getLastValue() == val)
-            return; //don't log data if it hasn't changed
-
-        boolEntries.get(newKey).append(val);
+        if(ignoreRepeats) {
+            entry.update(val); //update will check if the values has changed before logging
+            return;
+        }
+        entry.append(val);
     }
     /**
      * Logs a value to the on-robot log file. Note that the key automatically has "/AvScope/" appended to the beginning
@@ -102,17 +103,18 @@ public abstract class LoggingManager {
 
         if(!doubleEntries.containsKey(newKey)) {
             DoubleLogEntry entry = new DoubleLogEntry(DataLogManager.getLog(), newKey);
-            entry.append(val);
+            entry.update(val); //no chance of repeat value but still need to use update rather than append in order to update last value
 
             doubleEntries.put(newKey, entry);
             return;
         }
 
         DoubleLogEntry entry = doubleEntries.get(newKey);
-        if(ignoreRepeats && entry.hasLastValue() && entry.getLastValue() == val)
-            return; //don't log data if it hasn't changed
-
-        doubleEntries.get(newKey).append(val);
+        if(ignoreRepeats) {
+            entry.update(val); //update will check if the values has changed before logging
+            return;
+        }
+        entry.append(val);
     }
     /**
      * Logs a value to the on-robot log file. Note that the key automatically has "/AvScope/" appended to the beginning
@@ -123,7 +125,7 @@ public abstract class LoggingManager {
 
         if(!structEntries.containsKey(newKey)) {
             StructLogEntry<T> entry = StructLogEntry.create(DataLogManager.getLog(), newKey, struct);
-            entry.append(val);
+            entry.update(val); //no chance of repeat value but still need to use update rather than append in order to update last value
 
             structEntries.put(newKey, entry);
             return;
@@ -132,10 +134,11 @@ public abstract class LoggingManager {
         //don't know if a try catch will even work, doing it anyways
         try {
             StructLogEntry entry = structEntries.get(newKey);
-            if(ignoreRepeats && entry.hasLastValue() && entry.getLastValue().equals(val))
-                return; //don't log data if it hasn't changed
-
-            structEntries.get(newKey).append(val);
+            if(ignoreRepeats) {
+                entry.update(val); //update will check if the values has changed before logging
+                return;
+            }
+            entry.append(val);
         }
         catch(Exception e) {
             DriverStation.reportWarning("Raw type exception in logValue of Struct", e.getStackTrace());
@@ -150,7 +153,7 @@ public abstract class LoggingManager {
 
         if(!structArrayEntries.containsKey(newKey)) {
             StructArrayLogEntry<T> entry = StructArrayLogEntry.create(DataLogManager.getLog(), newKey, struct);
-            entry.append(vals);
+            entry.update(val); //no chance of repeat value but still need to use update rather than append in order to update last value
 
             structArrayEntries.put(newKey, entry);
             return;
@@ -159,10 +162,11 @@ public abstract class LoggingManager {
         //don't know if a try catch will even work, doing it anyways
         try {
             StructArrayLogEntry entry = structArrayEntries.get(newKey);
-            if(ignoreRepeats && entry.hasLastValue() && entry.getLastValue().equals(vals))
-                return; //don't log data if it hasn't changed
-
-            structArrayEntries.get(newKey).append(vals);
+            if(ignoreRepeats) {
+                entry.update(vals); //update will check if the values has changed before logging
+                return;
+            }
+            entry.append(vals);
         }
         catch(Exception e) {
             DriverStation.reportWarning("Raw type exception in logValue of StructArray", e.getStackTrace());
@@ -176,17 +180,18 @@ public abstract class LoggingManager {
 
         if(!stringEntries.containsKey(newKey)) {
             StringLogEntry entry = new StringLogEntry(DataLogManager.getLog(), newKey);
-            entry.append(val);
+            entry.update(val); //no chance of repeat value but still need to use update rather than append in order to update last value
 
             stringEntries.put(newKey, entry);
             return;
         }
 
         StringLogEntry entry = stringEntries.get(newKey);
-        if(ignoreRepeats && entry.hasLastValue() && entry.getLastValue().equals(val))
-            return; //don't log data if it hasn't changed
-
-        stringEntries.get(newKey).append(val);
+        if(ignoreRepeats) {
+            entry.update(val); //update will check if the values has changed before logging
+            return;
+        }
+        entry.append(val);
     }
     /**
      * Logs a value to the on-robot log file. Note that the key automatically has "/AvScope/" appended to the beginning
@@ -196,17 +201,18 @@ public abstract class LoggingManager {
 
         if(!intEntries.containsKey(newKey)) {
             IntegerLogEntry entry = new IntegerLogEntry(DataLogManager.getLog(), newKey);
-            entry.append(val);
+            entry.update(val); //no chance of repeat value but still need to use update rather than append in order to update last value
 
             intEntries.put(newKey, entry);
             return;
         }
 
         IntegerLogEntry entry = intEntries.get(newKey);
-        if(ignoreRepeats && entry.hasLastValue() && entry.getLastValue() == val)
-            return; //don't log data if it hasn't changed
-
-        intEntries.get(newKey).append(val);
+        if(ignoreRepeats) {
+            entry.update(val); //update will check if the values has changed before logging
+            return;
+        }
+        entry.append(val);
     }
 
     /**
