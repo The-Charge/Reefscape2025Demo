@@ -78,6 +78,11 @@ public abstract class LoggingManager {
      * Logs a value to the on-robot log file. Note that the key automatically has "/AvScope/" appended to the beginning
      */
     public static void logValue(String key, boolean val, boolean ignoreRepeats) {
+        if(DataLogManager.getLogDir().isEmpty()) {
+            DriverStation.reportWarning("Attempted to log to file before logging has started", false);
+            return;
+        }
+
         String newKey = "/AvScope/" + key; //unsafe, I don't care
 
         if(!boolEntries.containsKey(newKey)) {
@@ -99,6 +104,11 @@ public abstract class LoggingManager {
      * Logs a value to the on-robot log file. Note that the key automatically has "/AvScope/" appended to the beginning
      */
     public static void logValue(String key, double val, boolean ignoreRepeats) {
+        if(DataLogManager.getLogDir().isEmpty()) {
+            DriverStation.reportWarning("Attempted to log to file before logging has started", false);
+            return;
+        }
+
         String newKey = "/AvScope/" + key; //unsafe, I don't care
 
         if(!doubleEntries.containsKey(newKey)) {
@@ -121,6 +131,11 @@ public abstract class LoggingManager {
      */
     @SuppressWarnings("unchecked")
     public static <T> void logValue(String key, Struct<T> struct, T val, boolean ignoreRepeats) {
+        if(DataLogManager.getLogDir().isEmpty()) {
+            DriverStation.reportWarning("Attempted to log to file before logging has started", false);
+            return;
+        }
+
         String newKey = "/AvScope/" + key; //unsafe, I don't care
 
         if(!structEntries.containsKey(newKey)) {
@@ -141,7 +156,7 @@ public abstract class LoggingManager {
             entry.append(val);
         }
         catch(Exception e) {
-            DriverStation.reportWarning("Raw type exception in logValue of Struct", e.getStackTrace());
+            DriverStation.reportError("Raw type exception in logValue of Struct", e.getStackTrace());
         }
     }
     /**
@@ -149,6 +164,11 @@ public abstract class LoggingManager {
      */
     @SuppressWarnings("unchecked")
     public static <T> void logValue(String key, Struct<T> struct, T[] vals, boolean ignoreRepeats) {
+        if(DataLogManager.getLogDir().isEmpty()) {
+            DriverStation.reportWarning("Attempted to log to file before logging has started", false);
+            return;
+        }
+
         String newKey = "/AvScope/" + key; //unsafe, I don't care
 
         if(!structArrayEntries.containsKey(newKey)) {
@@ -169,13 +189,18 @@ public abstract class LoggingManager {
             entry.append(vals);
         }
         catch(Exception e) {
-            DriverStation.reportWarning("Raw type exception in logValue of StructArray", e.getStackTrace());
+            DriverStation.reportError("Raw type exception in logValue of StructArray", e.getStackTrace());
         }
     }
     /**
      * Logs a value to the on-robot log file. Note that the key automatically has "/AvScope/" appended to the beginning
      */
     public static void logValue(String key, String val, boolean ignoreRepeats) {
+        if(DataLogManager.getLogDir().isEmpty()) {
+            DriverStation.reportWarning("Attempted to log to file before logging has started", false);
+            return;
+        }
+
         String newKey = "/AvScope/" + key; //unsafe, I don't care
 
         if(!stringEntries.containsKey(newKey)) {
@@ -197,6 +222,11 @@ public abstract class LoggingManager {
      * Logs a value to the on-robot log file. Note that the key automatically has "/AvScope/" appended to the beginning
      */
     public static void logValue(String key, int val, boolean ignoreRepeats) {
+        if(DataLogManager.getLogDir().isEmpty()) {
+            DriverStation.reportWarning("Attempted to log to file before logging has started", false);
+            return;
+        }
+
         String newKey = "/AvScope/" + key; //unsafe, I don't care
 
         if(!intEntries.containsKey(newKey)) {

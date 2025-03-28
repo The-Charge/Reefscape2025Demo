@@ -38,7 +38,7 @@ public class ElevSubsystem extends SubsystemBase {
     private int targetCounter = 0;
     private boolean isAtTarget = true;
     private SendableChooser<Level> targetOverrideLvl;
-    private boolean hardStopLast = true;
+    private boolean hardStopLast = false;
 
     public ElevSubsystem() {
         motor = new TalonFX(ElevConstants.motorID);

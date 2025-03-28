@@ -53,7 +53,6 @@ public class Robot extends TimedRobot {
     public void robotInit() {   
         DataLogManager.start("", "", 0.125); //Use default dir and filename, All logging is dumped into either /home/lvuser/logs or a USB drive if one is connected to the robot
         DataLogManager.logNetworkTables(false); //use custom logging with LoggingManager
-        DataLogManager.logConsoleOutput(true);
         DriverStation.startDataLog(DataLogManager.getLog(), true); //enable logging DS control and joystick input
 
         // Instantiate our RobotContainer.  This will perform all our button bindings, and put our

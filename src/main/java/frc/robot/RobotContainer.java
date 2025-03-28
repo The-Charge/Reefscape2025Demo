@@ -232,11 +232,21 @@ public class RobotContainer {
     private void setupAutoDisplay() {
         //update the displayed auto path in smartdashboard when ever the selection is changed
         //display is cleared in teleopInit
+        if(autoChooser.getSelected() != null)
+            LoggingManager.logValue("SelectedAuto", autoChooser.getSelected().getName());
+        else
+            LoggingManager.logValue("SelectedAuto", "Null");
+        
         autoChooser.onChange((selected) -> {
             if(DriverStation.isTeleopEnabled()) //don't display auton path in teleop
                 return;
 
             displayAuto();
+
+            if(autoChooser.getSelected() != null)
+                LoggingManager.logValue("SelectedAuto", autoChooser.getSelected().getName());
+            else
+                LoggingManager.logValue("SelectedAuto", "Null");
         });
 
         /*
@@ -285,6 +295,10 @@ public class RobotContainer {
     public void scheduleLimelightAuton() {
         if(SwerveConstants.autonVisionTime == 0)
             return;
+        if(SwerveConstants.autonVisionTime == 15) {
+            new LimelightManager(swerve, reeflimelight, funnellimelight).schedule();
+            return;
+        }
 
         new ParallelRaceGroup(
             new LimelightManager(swerve, reeflimelight, funnellimelight),
