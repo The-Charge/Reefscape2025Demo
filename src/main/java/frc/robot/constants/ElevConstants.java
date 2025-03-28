@@ -30,7 +30,7 @@ public abstract class ElevConstants {
     // public static final double lvl4Inches = 56; //for home
     public static final double lvl4Inches = 59.5; //for competition
     public static final double algaeLowInches = 9;
-    public static final double algaeHighInches = 21;
+    public static final double algaeHighInches = 25;
 
     public static final String overrideInName = "Elev Target Override (In)";
     public static final String overrideTicksName = "Elev Target Override (Ticks)";

@@ -295,10 +295,6 @@ public class RobotContainer {
     public void scheduleLimelightAuton() {
         if(SwerveConstants.autonVisionTime == 0)
             return;
-        if(SwerveConstants.autonVisionTime == 15) {
-            new LimelightManager(swerve, reeflimelight, funnellimelight).schedule();
-            return;
-        }
 
         new ParallelRaceGroup(
             new LimelightManager(swerve, reeflimelight, funnellimelight),
