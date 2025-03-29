@@ -144,6 +144,7 @@ public class Robot extends TimedRobot {
 
         m_robotContainer.displayAuto();
         m_robotContainer.getHeadSubsystem().recheckHasCoral();
+        m_robotContainer.scheduleLimelightAuton();
     }
     
     /**

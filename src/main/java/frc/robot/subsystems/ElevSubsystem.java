@@ -39,13 +39,13 @@ public class ElevSubsystem extends SubsystemBase {
     private boolean isAtTarget = true;
     private SendableChooser<Level> targetOverrideLvl;
     private boolean hardStopLast = false;
-    private double l4Height;
+    private double l4Override;
 
     public ElevSubsystem() {
         motor = new TalonFX(ElevConstants.motorID);
 
         configureMotor(motor);
-        resetL4Override();
+        resetL4Override(); //also called in robotInit
 
         if(TelemetryConstants.debugTelemetry) {
             //used for smartdashboard override commands, read only
@@ -80,7 +80,8 @@ public class ElevSubsystem extends SubsystemBase {
         LoggingManager.logAndAutoSendValue("Elev Pos (In)", getPositionInches());
         LoggingManager.logAndAutoSendValue("Elev isAtTarget", isAtTarget());
         LoggingManager.logAndAutoSendValue("Elev HardStop", isAtHardStop());
-        LoggingManager.logAndAutoSendValue("Elev L4 Override", l4Height);
+        LoggingManager.logAndAutoSendValue("Elev L4 Override", l4Override);
+        LoggingManager.logAndAutoSendValue("Elev Appropriate L4 Height", getAppropriateL4Height());
         LoggingManager.logValue("ElevPose", Pose3d.struct, new Pose3d(new Translation3d(0, 0, getPositionInches() / 39.37), Rotation3d.kZero), true);
 
         if(TelemetryConstants.debugTelemetry) {
@@ -132,7 +133,7 @@ public class ElevSubsystem extends SubsystemBase {
 
             case LVL4:
             // val = ElevConstants.lvl4Inches;
-            val = l4Height;
+            val = getAppropriateL4Height();
             break;
 
             case ALGAE_LOW:
@@ -158,10 +159,10 @@ public class ElevSubsystem extends SubsystemBase {
         motor.setPosition(0);
     }
     public void resetL4Override() {
-        l4Height = ElevConstants.lvl4Inches;
+        l4Override = ElevConstants.lvl4InchesTele;
     }
     public void setL4Override(double inches) {
-        l4Height = inches;
+        l4Override = inches;
     }
 
     public double getPositionInches() {
@@ -183,7 +184,13 @@ public class ElevSubsystem extends SubsystemBase {
         return motor.getReverseLimit().getValue() == ReverseLimitValue.ClosedToGround;
     }
     public double getL4Override() {
-        return l4Height;
+        return l4Override;
+    }
+    public double getAppropriateL4Height() {
+        if(DriverStation.isAutonomous())
+            return ElevConstants.lvl4InchesAuto;
+        
+        return l4Override;
     }
 
     private void configureMotor(TalonFX m) {
@@ -235,7 +242,7 @@ public class ElevSubsystem extends SubsystemBase {
         else if(Math.abs(inches - ElevConstants.lvl3Inches) <= ElevConstants.targetThresholdInches)
             return Level.LVL3;
         // else if(Math.abs(inches - ElevConstants.lvl4Inches) <= ElevConstants.targetThresholdInches)
-        else if(Math.abs(inches - l4Height) <= ElevConstants.targetThresholdInches)
+        else if(Math.abs(inches - getAppropriateL4Height()) <= ElevConstants.targetThresholdInches)
             return Level.LVL4;
         else if(Math.abs(inches - ElevConstants.algaeLowInches) <= ElevConstants.targetThresholdInches)
             return Level.ALGAE_LOW;
