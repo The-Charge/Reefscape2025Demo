@@ -80,6 +80,7 @@ public class ElevSubsystem extends SubsystemBase {
         LoggingManager.logAndAutoSendValue("Elev Pos (In)", getPositionInches());
         LoggingManager.logAndAutoSendValue("Elev isAtTarget", isAtTarget());
         LoggingManager.logAndAutoSendValue("Elev HardStop", isAtHardStop());
+        LoggingManager.logAndAutoSendValue("Elev L4 Override", l4Height);
         LoggingManager.logValue("ElevPose", Pose3d.struct, new Pose3d(new Translation3d(0, 0, getPositionInches() / 39.37), Rotation3d.kZero), true);
 
         if(TelemetryConstants.debugTelemetry) {

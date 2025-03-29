@@ -25,6 +25,10 @@ public class LimelightManager extends Command {
     }
 
     @Override
+    public void initialize() {
+        LoggingManager.logAndAutoSendValue("LimelightManager running", true);
+    }
+    @Override
     public void execute() {
         double yaw = swerve.getHeading().getDegrees();
         double yawRate = Math.abs(swerve.getSwerveDrive().getGyro().getYawAngularVelocity().in(DegreesPerSecond));
@@ -154,6 +158,10 @@ public class LimelightManager extends Command {
         // }
 
         // swerve.addVisionReading(avgPose, avgTime);
+    }
+    @Override
+    public void end(boolean interrupted) {
+        LoggingManager.logAndAutoSendValue("LimelightManager running", false);
     }
 
     @Override

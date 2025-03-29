@@ -179,8 +179,8 @@ public class RobotContainer {
             new MoveToLevel(elev, head, Level.ALGAE_LOW, true),
             new AlgaeRemSpin(algaeRem, false)
         ));
-        // new Trigger(() -> hid2.getRightY() < SwerveConstants.RIGHT_Y_DEADBAND).whileTrue(new AdjustL4Override(elev, 0.025));
-        // new Trigger(() -> hid2.getRightY() > SwerveConstants.RIGHT_Y_DEADBAND).whileTrue(new AdjustL4Override(elev, -0.025));
+        new Trigger(() -> hid2.getRightY() < -SwerveConstants.RIGHT_Y_DEADBAND && elev.getPositionLevel() == ElevSubsystem.Level.LVL4).whileTrue(new AdjustL4Override(elev, 0.025));
+        new Trigger(() -> hid2.getRightY() > SwerveConstants.RIGHT_Y_DEADBAND && elev.getPositionLevel() == ElevSubsystem.Level.LVL4).whileTrue(new AdjustL4Override(elev, -0.025));
     }
     private void configureNamedCommands() {
         //Pathplanner named commands

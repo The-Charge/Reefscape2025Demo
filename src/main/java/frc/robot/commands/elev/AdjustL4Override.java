@@ -7,23 +7,23 @@ import frc.robot.subsystems.ElevSubsystem.Level;
 public class AdjustL4Override extends Command {
     
     private final ElevSubsystem elev;
-    private final double delta;
+    private final double offset;
 
-    public AdjustL4Override(ElevSubsystem elevSub, double offset) {
+    public AdjustL4Override(ElevSubsystem elevSub, double delta) {
         elev = elevSub;
-        delta = offset;
+        offset = delta;
 
         addRequirements(elev);
     }
 
     @Override
-    public void initialize() {
-        elev.setL4Override(elev.getL4Override() + delta);
+    public void execute() {
+        elev.setL4Override(elev.getL4Override() + offset);
         elev.setTargetPositionLevel(Level.LVL4);
     }
     
     @Override
     public boolean isFinished() {
-        return true;
+        return false; //made for use wth a trigger whileTrue
     }
 }
