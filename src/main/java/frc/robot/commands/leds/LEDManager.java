@@ -28,8 +28,8 @@ public class LEDManager extends Command {
     private final LEDPattern endgame;
     private final LEDPattern branchAligned;
 
-    private final double endgameSecs = 20; //seconds left for endgame
-    private final double endgameDisplayTime = 20; //amount of time the endgame pattern is displayed for
+    private final double endgameSecs = 30; //seconds left for endgame
+    private final double endgameDisplayTime = 30; //amount of time the endgame pattern is displayed for
     private final double endgameRumbleTime = 2; //amount of time the controllers rumble for
 
     private final List<ElevSubsystem.Level> branchAlignLevels;

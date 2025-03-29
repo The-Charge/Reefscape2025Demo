@@ -26,6 +26,7 @@ import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.IntakeRumble;
 import frc.robot.commands.LoggingManager;
 import frc.robot.commands.algaerem.AlgaeRemSpin;
@@ -33,6 +34,7 @@ import frc.robot.commands.climb.Climb;
 import frc.robot.commands.climb.ClimbClampDegreesManual;
 import frc.robot.commands.climb.ClimbLeverDegreesManual;
 import frc.robot.commands.climb.Declimb;
+import frc.robot.commands.elev.AdjustL4Override;
 import frc.robot.commands.elev.MoveToInchesManual;
 import frc.robot.commands.elev.MoveToLevel;
 import frc.robot.commands.elev.MoveToLevelManual;
@@ -177,6 +179,8 @@ public class RobotContainer {
             new MoveToLevel(elev, head, Level.ALGAE_LOW, true),
             new AlgaeRemSpin(algaeRem, false)
         ));
+        // new Trigger(() -> hid2.getRightY() < SwerveConstants.RIGHT_Y_DEADBAND).whileTrue(new AdjustL4Override(elev, 0.025));
+        // new Trigger(() -> hid2.getRightY() > SwerveConstants.RIGHT_Y_DEADBAND).whileTrue(new AdjustL4Override(elev, -0.025));
     }
     private void configureNamedCommands() {
         //Pathplanner named commands
@@ -310,5 +314,8 @@ public class RobotContainer {
     }
     public LEDManager getLEDManager() {
         return ledManager;
+    }
+    public ElevSubsystem getElev() {
+        return elev;
     }
 }

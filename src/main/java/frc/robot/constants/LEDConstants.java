@@ -11,7 +11,9 @@ public abstract class LEDConstants {
     public static final int ledLength = 148;
     public static final ColorOrder ledColorOrder = ColorOrder.kGRB;
     public static final Distance ledSpacing = Units.Meters.of(1 / 60.0); //60 leds per meter
-    public static final int[] brokenIndicies = new int[] {};
+    public static final int[] brokenIndicies = new int[] {
+        ledLength - 12 * 3 + 1
+    };
 
     public static final Color chargeGreen = new Color("#008800");
     public static final Color chargeGold = new Color("#ffaa00");

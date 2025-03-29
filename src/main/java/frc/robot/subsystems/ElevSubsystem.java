@@ -39,11 +39,13 @@ public class ElevSubsystem extends SubsystemBase {
     private boolean isAtTarget = true;
     private SendableChooser<Level> targetOverrideLvl;
     private boolean hardStopLast = false;
+    private double l4Height;
 
     public ElevSubsystem() {
         motor = new TalonFX(ElevConstants.motorID);
 
         configureMotor(motor);
+        resetL4Override();
 
         if(TelemetryConstants.debugTelemetry) {
             //used for smartdashboard override commands, read only
@@ -128,7 +130,8 @@ public class ElevSubsystem extends SubsystemBase {
             break;
 
             case LVL4:
-            val = ElevConstants.lvl4Inches;
+            // val = ElevConstants.lvl4Inches;
+            val = l4Height;
             break;
 
             case ALGAE_LOW:
@@ -153,6 +156,12 @@ public class ElevSubsystem extends SubsystemBase {
     public void setAsZero() {
         motor.setPosition(0);
     }
+    public void resetL4Override() {
+        l4Height = ElevConstants.lvl4Inches;
+    }
+    public void setL4Override(double inches) {
+        l4Height = inches;
+    }
 
     public double getPositionInches() {
         return getPositionTicks() * ElevConstants.tickToInConversion;
@@ -171,6 +180,9 @@ public class ElevSubsystem extends SubsystemBase {
     }
     public boolean isAtHardStop() {
         return motor.getReverseLimit().getValue() == ReverseLimitValue.ClosedToGround;
+    }
+    public double getL4Override() {
+        return l4Height;
     }
 
     private void configureMotor(TalonFX m) {
@@ -221,7 +233,8 @@ public class ElevSubsystem extends SubsystemBase {
             return Level.LVL2;
         else if(Math.abs(inches - ElevConstants.lvl3Inches) <= ElevConstants.targetThresholdInches)
             return Level.LVL3;
-        else if(Math.abs(inches - ElevConstants.lvl4Inches) <= ElevConstants.targetThresholdInches)
+        // else if(Math.abs(inches - ElevConstants.lvl4Inches) <= ElevConstants.targetThresholdInches)
+        else if(Math.abs(inches - l4Height) <= ElevConstants.targetThresholdInches)
             return Level.LVL4;
         else if(Math.abs(inches - ElevConstants.algaeLowInches) <= ElevConstants.targetThresholdInches)
             return Level.ALGAE_LOW;
