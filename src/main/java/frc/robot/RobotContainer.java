@@ -47,6 +47,7 @@ import frc.robot.commands.intake.ManualIntake;
 import frc.robot.commands.intake.WaitForIntakeCoral;
 import frc.robot.commands.leds.LEDManager;
 import frc.robot.commands.swervedrive.drivebase.AlignToBranch;
+import frc.robot.commands.swervedrive.drivebase.DriveSlow;
 import frc.robot.commands.swervedrive.drivebase.DriveToReefDist;
 import frc.robot.commands.swervedrive.drivebase.DriveToSourceDist;
 import frc.robot.commands.swervedrive.drivebase.SwerveZero;
@@ -138,16 +139,20 @@ public class RobotContainer {
 
         driver1.a().whileTrue(new AlignToTag(swerve, reeflimelight, ReefPosition.RIGHT));
         
-        driver1.rightBumper().onTrue(new DriveToTag(swerve, true,
-                () -> (Math.abs(driver1.getLeftX()) < SwerveConstants.LEFT_X_DEADBAND
-                        && Math.abs(driver1.getLeftY()) < SwerveConstants.LEFT_Y_DEADBAND
-                        && Math.abs(driver1.getRightX()) < SwerveConstants.RIGHT_X_DEADBAND),
-                ReefPosition.RIGHT)); // Drive to closest tag
-        driver1.leftBumper().onTrue(new DriveToTag(swerve, true,
-                () -> (Math.abs(driver1.getLeftX()) < SwerveConstants.LEFT_X_DEADBAND
-                        && Math.abs(driver1.getLeftY()) < SwerveConstants.LEFT_Y_DEADBAND
-                        && Math.abs(driver1.getRightX()) < SwerveConstants.RIGHT_X_DEADBAND),
-                ReefPosition.LEFT));
+        // driver1.rightBumper().onTrue(new DriveToTag(swerve, true,
+        //         () -> (Math.abs(driver1.getLeftX()) < SwerveConstants.LEFT_X_DEADBAND
+        //                 && Math.abs(driver1.getLeftY()) < SwerveConstants.LEFT_Y_DEADBAND
+        //                 && Math.abs(driver1.getRightX()) < SwerveConstants.RIGHT_X_DEADBAND),
+        //         ReefPosition.RIGHT)); // Drive to closest tag
+        // driver1.leftBumper().onTrue(new DriveToTag(swerve, true,
+        //         () -> (Math.abs(driver1.getLeftX()) < SwerveConstants.LEFT_X_DEADBAND
+        //                 && Math.abs(driver1.getLeftY()) < SwerveConstants.LEFT_Y_DEADBAND
+        //                 && Math.abs(driver1.getRightX()) < SwerveConstants.RIGHT_X_DEADBAND),
+        //         ReefPosition.LEFT));
+        // driver1.rightBumper().whileTrue(new AlignToBranch(swerve, head, elev, true));
+        // driver1.leftBumper().whileTrue(new AlignToBranch(swerve, head, elev, false));
+        driver1.rightBumper().whileTrue(new DriveSlow(swerve, true));
+        driver1.leftBumper().whileTrue(new DriveSlow(swerve, false));
         driver1.y().onTrue(new DriveToTag(swerve, false,
                 () -> (Math.abs(driver1.getLeftX()) < SwerveConstants.LEFT_X_DEADBAND
                         && Math.abs(driver1.getLeftY()) < SwerveConstants.LEFT_Y_DEADBAND

@@ -101,7 +101,7 @@ public class HeadSubsystem extends SubsystemBase {
                 return branchSensor.getRange() <= HeadConstants.branchLVL2ActivationDist 
                         && branchSensor.getRangeSigma() < HeadConstants.branchSigmaActivation;
             default:
-                return false;
+                return true;
         }
     }
 
