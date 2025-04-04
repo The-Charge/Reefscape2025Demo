@@ -29,7 +29,7 @@ public abstract class ElevConstants {
     public static final double lvl3Inches = 33; //for competition
     // public static final double lvl4Inches = 56; //for home
     public static final double lvl4InchesAuto = 57.5; //for competition
-    public static final double lvl4InchesTele = 56.125; //for competition
+    public static final double lvl4InchesTele = 57.25; //for competition
     public static final double algaeLowInches = 9;
     public static final double algaeHighInches = 21;
 

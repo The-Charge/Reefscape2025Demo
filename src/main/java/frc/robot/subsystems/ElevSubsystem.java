@@ -164,6 +164,9 @@ public class ElevSubsystem extends SubsystemBase {
     public void setL4Override(double inches) {
         l4Override = inches;
     }
+    public void setVbus(double pow) {
+        motor.set(pow);
+    }
 
     public double getPositionInches() {
         return getPositionTicks() * ElevConstants.tickToInConversion;

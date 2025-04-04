@@ -25,6 +25,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
+import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.IntakeRumble;
@@ -35,6 +36,7 @@ import frc.robot.commands.climb.ClimbClampDegreesManual;
 import frc.robot.commands.climb.ClimbLeverDegreesManual;
 import frc.robot.commands.climb.Declimb;
 import frc.robot.commands.elev.AdjustL4Override;
+import frc.robot.commands.elev.ElevManualUp;
 import frc.robot.commands.elev.MoveToInchesManual;
 import frc.robot.commands.elev.MoveToLevel;
 import frc.robot.commands.elev.MoveToLevelManual;
@@ -186,6 +188,7 @@ public class RobotContainer {
         ));
         new Trigger(() -> hid2.getRightY() < -SwerveConstants.RIGHT_Y_DEADBAND && elev.getPositionLevel() == ElevSubsystem.Level.LVL4).whileTrue(new AdjustL4Override(elev, 0.025));
         new Trigger(() -> hid2.getRightY() > SwerveConstants.RIGHT_Y_DEADBAND && elev.getPositionLevel() == ElevSubsystem.Level.LVL4).whileTrue(new AdjustL4Override(elev, -0.025));
+        driver2.start().whileTrue(new ElevManualUp(elev).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
     }
     private void configureNamedCommands() {
         //Pathplanner named commands

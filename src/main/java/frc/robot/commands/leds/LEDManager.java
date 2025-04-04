@@ -1,7 +1,5 @@
 package frc.robot.commands.leds;
 
-import java.util.List;
-
 import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
@@ -28,12 +26,6 @@ public class LEDManager extends Command {
     private final LEDPattern endgame;
     private final LEDPattern branchAligned;
 
-    private final double endgameSecs = 30; //seconds left for endgame
-    private final double endgameDisplayTime = 30; //amount of time the endgame pattern is displayed for
-    private final double endgameRumbleTime = 2; //amount of time the controllers rumble for
-
-    private final List<ElevSubsystem.Level> branchAlignLevels;
-
     private boolean endgameStarted;
 
     public LEDManager(LEDSubsystem ledSub, HeadSubsystem headSub, ElevSubsystem elevSub, CommandXboxController driver1, CommandXboxController driver2) {
@@ -52,8 +44,6 @@ public class LEDManager extends Command {
         endgame = LEDPattern.rainbow(255, 255)
             .scrollAtAbsoluteSpeed(Units.MetersPerSecond.of(3), LEDConstants.ledSpacing);
         branchAligned = LEDPattern.solid(LEDConstants.chargeGreen).blink(Units.Seconds.of(0.33), Units.Seconds.of(0.33));
-        
-        branchAlignLevels = List.of(ElevSubsystem.Level.LVL2, ElevSubsystem.Level.LVL3, ElevSubsystem.Level.LVL4);
     }
 
     @Override
@@ -65,7 +55,7 @@ public class LEDManager extends Command {
         }
 
         if(DriverStation.isTeleopEnabled()) {
-            if(Timer.getMatchTime() <= endgameSecs && Timer.getMatchTime() >= endgameSecs - endgameDisplayTime) {
+            if(Timer.getMatchTime() <= LEDConstants.endgameSecs && Timer.getMatchTime() >= LEDConstants.endgameSecs - LEDConstants.endgameDisplayTime) {
                 endgame.applyTo(leds.fullBuff());
                 
                 if(!endgameStarted) {
@@ -75,7 +65,7 @@ public class LEDManager extends Command {
                     endgameStarted = true;
                 }
 
-                if(Timer.getMatchTime() < endgameSecs - endgameRumbleTime && endgameStarted) {
+                if(Timer.getMatchTime() < LEDConstants.endgameSecs - LEDConstants.endgameRumbleTime && endgameStarted) {
                     driver1.setRumble(RumbleType.kBothRumble, 0);
                     driver2.setRumble(RumbleType.kBothRumble, 0);
                 }
@@ -84,7 +74,7 @@ public class LEDManager extends Command {
         }
 
         if(head.getHasCoral()) {
-            if(branchAlignLevels.contains(elev.getPositionLevel()) && head.getBranchSensor(elev.getPositionLevel())) {
+            if(LEDConstants.branchAlignLevels.contains(elev.getPositionLevel()) && head.getBranchSensor(elev.getPositionLevel())) {
                 branchAligned.applyTo(leds.fullBuff());
                 return;
             }

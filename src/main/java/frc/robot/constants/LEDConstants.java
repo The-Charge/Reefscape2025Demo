@@ -1,9 +1,12 @@
 package frc.robot.constants;
 
+import java.util.List;
+
 import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.AddressableLED.ColorOrder;
 import edu.wpi.first.wpilibj.util.Color;
+import frc.robot.subsystems.ElevSubsystem;
 
 public abstract class LEDConstants {
     
@@ -19,4 +22,10 @@ public abstract class LEDConstants {
     public static final Color chargeGold = new Color("#ffaa00");
     public static final Color orange = new Color("#ff2200");
     public static final Color white = new Color("#ffffff");
+
+    public static final double endgameSecs = 30; //seconds left for endgame
+    public static final double endgameDisplayTime = 30; //amount of time the endgame pattern is displayed for
+    public static final double endgameRumbleTime = 2; //amount of time the controllers rumble for
+
+    public static final List<ElevSubsystem.Level> branchAlignLevels = List.of(ElevSubsystem.Level.LVL2, ElevSubsystem.Level.LVL3, ElevSubsystem.Level.LVL4);
 }
