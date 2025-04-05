@@ -24,7 +24,7 @@ public class VisionSubsystem extends SubsystemBase {
     
     setPipeline(1);
     if(hasUSBCam)
-      NetworkTableInstance.getDefault().getTable(ll_name).getEntry("stream").setNumber(2); //usb camera as main and limelight as PiP
+      setPiP();
   }
 
   @Override
@@ -158,4 +158,8 @@ public class VisionSubsystem extends SubsystemBase {
   public enum ReefPosition {
     LEFT, MIDDLE, RIGHT
   }  
+
+  public void setPiP() {
+    NetworkTableInstance.getDefault().getTable(ll_name).getEntry("stream").setNumber(2); //usb camera as main and limelight as PiP
+  }
 }

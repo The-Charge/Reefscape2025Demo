@@ -8,6 +8,8 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.leds.patterns.LEDDualBreatheAnimation;
+import frc.robot.commands.leds.patterns.LEDScanAnimation;
+import frc.robot.commands.leds.patterns.LEDStepsAnimation;
 import frc.robot.constants.LEDConstants;
 import frc.robot.subsystems.ElevSubsystem;
 import frc.robot.subsystems.HeadSubsystem;
@@ -21,6 +23,9 @@ public class LEDManager extends Command {
     private final CommandXboxController driver1, driver2;
     
     private final LEDDualBreatheAnimation breathe;
+    // private final LEDStepsAnimation steps;
+    // private final LEDScanAnimation scan;
+    // private final LEDPattern rainbow;
     private final LEDPattern hasCoral;
     private final LEDPattern noCoral;
     private final LEDPattern endgame;
@@ -39,6 +44,11 @@ public class LEDManager extends Command {
         endgameStarted = false;
 
         breathe = new LEDDualBreatheAnimation(LEDConstants.chargeGreen, LEDConstants.chargeGold, 4, 0.2, 0.4);
+        // steps = new LEDStepsAnimation(LEDConstants.chargeGreen, LEDConstants.chargeGold, 4, Units.MetersPerSecond.of(Integer.MAX_VALUE));
+        // scan = new LEDScanAnimation(LEDConstants.chargeGold, 10, 6);
+        // rainbow = LEDPattern.rainbow(255, 255)
+        //     .scrollAtAbsoluteSpeed(Units.MetersPerSecond.of(4), LEDConstants.ledSpacing);
+
         hasCoral = LEDPattern.solid(LEDConstants.white);
         noCoral = LEDPattern.solid(LEDConstants.orange);
         endgame = LEDPattern.rainbow(255, 255)
@@ -51,6 +61,11 @@ public class LEDManager extends Command {
         if(DriverStation.isDisabled()) {
             breathe.update();
             breathe.evaluate(leds.fullBuff());
+            // steps.update();
+            // steps.evaluate(leds.fullBuff());
+            // scan.update();
+            // scan.evaluate(leds.fullBuff());
+            // rainbow.applyTo(leds.fullBuff());
             return;
         }
 

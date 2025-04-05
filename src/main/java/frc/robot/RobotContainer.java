@@ -20,12 +20,12 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
-import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.IntakeRumble;
@@ -57,6 +57,7 @@ import frc.robot.commands.swervedrive.drivebase.TeleopDrive;
 import frc.robot.commands.vision.AlignToTag;
 import frc.robot.commands.vision.DriveToTag;
 import frc.robot.commands.vision.LimelightManager;
+import frc.robot.commands.vision.ResetLLPiP;
 import frc.robot.constants.ClimbConstants;
 import frc.robot.constants.SwerveConstants;
 import frc.robot.constants.TelemetryConstants;
@@ -218,6 +219,9 @@ public class RobotContainer {
         NamedCommands.registerCommand("AlgaeRemSpin", new AlgaeRemSpin(algaeRem, true));
     }
     private void addTelemetry() {
+        SmartDashboard.putData("Reset Reef PiP", new ResetLLPiP(reeflimelight));
+        SmartDashboard.putData("Reset Funnel PiP", new ResetLLPiP(funnellimelight));
+
         //one time telemetry values, such as dashboard commands
         if(TelemetryConstants.debugTelemetry) {
             SmartDashboard.putData("Swerve DriveToReefDist", new DriveToReefDist(swerve, head));
