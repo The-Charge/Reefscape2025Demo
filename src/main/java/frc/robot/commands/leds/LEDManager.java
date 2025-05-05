@@ -2,9 +2,8 @@ package frc.robot.commands.leds;
 
 import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.LEDPattern;
-import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.leds.patterns.LEDDualBreatheAnimation;
@@ -23,8 +22,8 @@ public class LEDManager extends Command {
     private final CommandXboxController driver1, driver2;
     
     private final LEDDualBreatheAnimation breathe;
-    // private final LEDStepsAnimation steps;
-    // private final LEDScanAnimation scan;
+    private final LEDStepsAnimation steps;
+    private final LEDScanAnimation scan;
     // private final LEDPattern rainbow;
     private final LEDPattern hasCoral;
     private final LEDPattern noCoral;
@@ -32,6 +31,8 @@ public class LEDManager extends Command {
     private final LEDPattern branchAligned;
 
     private boolean endgameStarted;
+    private int ledMode;
+    private final int ledModeCount = 5;
 
     public LEDManager(LEDSubsystem ledSub, HeadSubsystem headSub, ElevSubsystem elevSub, CommandXboxController driver1, CommandXboxController driver2) {
         leds = ledSub;
@@ -42,10 +43,11 @@ public class LEDManager extends Command {
         addRequirements(leds);
 
         endgameStarted = false;
+        ledMode = 0;
 
         breathe = new LEDDualBreatheAnimation(LEDConstants.chargeGreen, LEDConstants.chargeGold, 4, 0.2, 0.4);
-        // steps = new LEDStepsAnimation(LEDConstants.chargeGreen, LEDConstants.chargeGold, 4, Units.MetersPerSecond.of(Integer.MAX_VALUE));
-        // scan = new LEDScanAnimation(LEDConstants.chargeGold, 10, 6);
+        steps = new LEDStepsAnimation(LEDConstants.chargeGreen, LEDConstants.chargeGold, 4, Units.MetersPerSecond.of(Integer.MAX_VALUE));
+        scan = new LEDScanAnimation(LEDConstants.chargeGold, 10, 6);
         // rainbow = LEDPattern.rainbow(255, 255)
         //     .scrollAtAbsoluteSpeed(Units.MetersPerSecond.of(4), LEDConstants.ledSpacing);
 
@@ -54,6 +56,10 @@ public class LEDManager extends Command {
         endgame = LEDPattern.rainbow(255, 255)
             .scrollAtAbsoluteSpeed(Units.MetersPerSecond.of(3), LEDConstants.ledSpacing);
         branchAligned = LEDPattern.solid(LEDConstants.chargeGreen).blink(Units.Seconds.of(0.33), Units.Seconds.of(0.33));
+    }
+
+    public void incrementMode() {
+        ledMode = (ledMode + 1) % ledModeCount;
     }
 
     @Override
@@ -69,36 +75,49 @@ public class LEDManager extends Command {
             return;
         }
 
-        if(DriverStation.isTeleopEnabled()) {
-            if(Timer.getMatchTime() <= LEDConstants.endgameSecs && Timer.getMatchTime() >= LEDConstants.endgameSecs - LEDConstants.endgameDisplayTime) {
+        String ledName;
+        switch(ledMode) {
+            default:
+            case 0: {
+                ledName = "Default";
+                if(head.getHasCoral()) {
+                    if(LEDConstants.branchAlignLevels.contains(elev.getPositionLevel()) && head.getBranchSensor(elev.getPositionLevel())) {
+                        branchAligned.applyTo(leds.fullBuff());
+                        return;
+                    }
+        
+                    hasCoral.applyTo(leds.fullBuff());
+                    return;
+                }
+        
+                noCoral.applyTo(leds.fullBuff());
+                break;
+            }
+            case 1: {
+                ledName = "Endgame";
                 endgame.applyTo(leds.fullBuff());
-                
-                if(!endgameStarted) {
-                    driver1.setRumble(RumbleType.kBothRumble, 1);
-                    driver2.setRumble(RumbleType.kBothRumble, 1);
-
-                    endgameStarted = true;
-                }
-
-                if(Timer.getMatchTime() < LEDConstants.endgameSecs - LEDConstants.endgameRumbleTime && endgameStarted) {
-                    driver1.setRumble(RumbleType.kBothRumble, 0);
-                    driver2.setRumble(RumbleType.kBothRumble, 0);
-                }
-                return;
+                break;
+            }
+            case 2: {
+                ledName = "Breathe";
+                breathe.evaluate(leds.fullBuff());
+                breathe.update();
+                break;
+            }
+            case 3: {
+                ledName = "Steps";
+                steps.evaluate(leds.fullBuff());
+                steps.update();
+                break;
+            }
+            case 4: {
+                ledName = "Scan";
+                scan.evaluate(leds.fullBuff());
+                scan.update();
+                break;
             }
         }
-
-        if(head.getHasCoral()) {
-            if(LEDConstants.branchAlignLevels.contains(elev.getPositionLevel()) && head.getBranchSensor(elev.getPositionLevel())) {
-                branchAligned.applyTo(leds.fullBuff());
-                return;
-            }
-
-            hasCoral.applyTo(leds.fullBuff());
-            return;
-        }
-
-        noCoral.applyTo(leds.fullBuff());
+        SmartDashboard.putString("LED Mode", ledName);
     }
 
     @Override

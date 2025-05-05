@@ -11,6 +11,7 @@ import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -19,6 +20,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
+import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.IntakeRumble;
 import frc.robot.commands.elev.MoveToInchesManual;
@@ -64,7 +66,9 @@ public class RobotContainer {
 
     private final CommandXboxController driver1;
     private final CommandXboxController driver2;
+    private final CommandJoystick driver3;
     private final XboxController hid1, hid2;
+    private final Joystick hid3;
     
     private final SwerveSubsystem swerve = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "swerve"));
     private final VisionSubsystem reeflimelight = new VisionSubsystem(LLReefConstants.LL_NAME, LLReefConstants.CAMERA_OFFSET, true);
@@ -83,8 +87,10 @@ public class RobotContainer {
     public RobotContainer() {
         driver1 = new CommandXboxController(0);
         driver2 = new CommandXboxController(1);
+        driver3 = new CommandJoystick(2);
         hid1 = driver1.getHID(); //use hid objects to reduce performance impact. Using getBoolean() on the trigger from CommandXboxController causes large CPU usage
         hid2 = driver2.getHID();
+        hid3 = driver3.getHID();
 
         teleopDrive = new TeleopDrive(swerve,
             () -> -MathUtil.applyDeadband(hid1.getLeftY(), SwerveConstants.LEFT_Y_DEADBAND),
@@ -171,6 +177,8 @@ public class RobotContainer {
         // new Trigger(() -> hid2.getRightY() < -SwerveConstants.RIGHT_Y_DEADBAND && elev.getPositionLevel() == ElevSubsystem.Level.LVL4).whileTrue(new AdjustL4Override(elev, 0.025));
         // new Trigger(() -> hid2.getRightY() > SwerveConstants.RIGHT_Y_DEADBAND && elev.getPositionLevel() == ElevSubsystem.Level.LVL4).whileTrue(new AdjustL4Override(elev, -0.025));
         // driver2.start().whileTrue(new ElevManualUp(elev).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
+
+        driver3.button(11).onTrue(new InstantCommand(ledManager::incrementMode));
     }
     private void configureNamedCommands() {
         //Pathplanner named commands
