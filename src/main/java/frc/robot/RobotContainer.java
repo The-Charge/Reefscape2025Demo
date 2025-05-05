@@ -5,38 +5,22 @@
 package frc.robot;
 
 import java.io.File;
-import java.util.Optional;
 
-import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.IntakeRumble;
-import frc.robot.commands.LoggingManager;
-import frc.robot.commands.algaerem.AlgaeRemSpin;
-import frc.robot.commands.climb.Climb;
-import frc.robot.commands.climb.ClimbClampDegreesManual;
-import frc.robot.commands.climb.ClimbLeverDegreesManual;
-import frc.robot.commands.climb.Declimb;
-import frc.robot.commands.elev.AdjustL4Override;
-import frc.robot.commands.elev.ElevManualUp;
 import frc.robot.commands.elev.MoveToInchesManual;
 import frc.robot.commands.elev.MoveToLevel;
 import frc.robot.commands.elev.MoveToLevelManual;
@@ -58,13 +42,10 @@ import frc.robot.commands.vision.AlignToTag;
 import frc.robot.commands.vision.DriveToTag;
 import frc.robot.commands.vision.LimelightManager;
 import frc.robot.commands.vision.ResetLLPiP;
-import frc.robot.constants.ClimbConstants;
 import frc.robot.constants.SwerveConstants;
 import frc.robot.constants.TelemetryConstants;
 import frc.robot.constants.VisionConstants.LLFunnelConstants;
 import frc.robot.constants.VisionConstants.LLReefConstants;
-import frc.robot.subsystems.AlgaeRemSubsystem;
-import frc.robot.subsystems.ClimbSubsystem;
 import frc.robot.subsystems.ElevSubsystem;
 import frc.robot.subsystems.ElevSubsystem.Level;
 import frc.robot.subsystems.HeadSubsystem;
@@ -89,13 +70,13 @@ public class RobotContainer {
     private final VisionSubsystem reeflimelight = new VisionSubsystem(LLReefConstants.LL_NAME, LLReefConstants.CAMERA_OFFSET, true);
     private final VisionSubsystem funnellimelight = new VisionSubsystem(LLFunnelConstants.LL_NAME, LLFunnelConstants.CAMERA_OFFSET, true);
     private final ElevSubsystem elev = new ElevSubsystem();
-    private final ClimbSubsystem climb = new ClimbSubsystem();
+    // private final ClimbSubsystem climb = new ClimbSubsystem();
     private final HeadSubsystem head = new HeadSubsystem();
     private final IntakeSubsystem intake = new IntakeSubsystem();
-    private final AlgaeRemSubsystem algaeRem = new AlgaeRemSubsystem();
+    // private final AlgaeRemSubsystem algaeRem = new AlgaeRemSubsystem();
     private final LEDSubsystem leds = new LEDSubsystem();
     
-    private SendableChooser<Command> autoChooser;
+    // private SendableChooser<Command> autoChooser;
     private TeleopDrive teleopDrive;
     private LEDManager ledManager;
     
@@ -121,13 +102,13 @@ public class RobotContainer {
         intake.setDefaultCommand(new Intake(intake, elev, head));
         leds.setDefaultCommand(ledManager);
         
-        configureNamedCommands();
+        // configureNamedCommands();
         configureBindings();
         addTelemetry();
 
-        autoChooser = AutoBuilder.buildAutoChooser();
-        setupAutoDisplay();
-        SmartDashboard.putData("Auto Chooser", autoChooser);
+        // autoChooser = AutoBuilder.buildAutoChooser();
+        // setupAutoDisplay();
+        // SmartDashboard.putData("Auto Chooser", autoChooser);
 
         Field2d field = new Field2d();
         SmartDashboard.putData("Field", field);
@@ -164,8 +145,8 @@ public class RobotContainer {
         
         // driver1.a().whileTrue(new DriveToAlgae(swerve, reeflimelight));
         
-        driver2.a().onTrue(new Climb(climb));
-        driver2.y().onTrue(new Declimb(climb));
+        // driver2.a().onTrue(new Climb(climb));
+        // driver2.y().onTrue(new Declimb(climb));
         // driver2.back().onTrue(new ClimbOverride(climb));
         driver2.povUp().onTrue(new MoveToLevel(elev, head, Level.LVL4));
         driver2.povRight().onTrue(new MoveToLevel(elev, head, Level.LVL3));
@@ -179,17 +160,17 @@ public class RobotContainer {
         //     new MoveToLevel(elev, Level.HOME)
         // ));
         driver2.rightTrigger(SwerveConstants.TRIGGER_DEADBAND).onTrue(new Shoot(head, elev));
-        driver2.rightBumper().whileTrue(new SequentialCommandGroup(
-            new MoveToLevel(elev, head, Level.ALGAE_HIGH, true),
-            new AlgaeRemSpin(algaeRem, false)
-        ));
-        driver2.leftBumper().whileTrue(new SequentialCommandGroup(
-            new MoveToLevel(elev, head, Level.ALGAE_LOW, true),
-            new AlgaeRemSpin(algaeRem, false)
-        ));
-        new Trigger(() -> hid2.getRightY() < -SwerveConstants.RIGHT_Y_DEADBAND && elev.getPositionLevel() == ElevSubsystem.Level.LVL4).whileTrue(new AdjustL4Override(elev, 0.025));
-        new Trigger(() -> hid2.getRightY() > SwerveConstants.RIGHT_Y_DEADBAND && elev.getPositionLevel() == ElevSubsystem.Level.LVL4).whileTrue(new AdjustL4Override(elev, -0.025));
-        driver2.start().whileTrue(new ElevManualUp(elev).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
+        // driver2.rightBumper().whileTrue(new SequentialCommandGroup(
+        //     new MoveToLevel(elev, head, Level.ALGAE_HIGH, true),
+        //     new AlgaeRemSpin(algaeRem, false)
+        // ));
+        // driver2.leftBumper().whileTrue(new SequentialCommandGroup(
+        //     new MoveToLevel(elev, head, Level.ALGAE_LOW, true),
+        //     new AlgaeRemSpin(algaeRem, false)
+        // ));
+        // new Trigger(() -> hid2.getRightY() < -SwerveConstants.RIGHT_Y_DEADBAND && elev.getPositionLevel() == ElevSubsystem.Level.LVL4).whileTrue(new AdjustL4Override(elev, 0.025));
+        // new Trigger(() -> hid2.getRightY() > SwerveConstants.RIGHT_Y_DEADBAND && elev.getPositionLevel() == ElevSubsystem.Level.LVL4).whileTrue(new AdjustL4Override(elev, -0.025));
+        // driver2.start().whileTrue(new ElevManualUp(elev).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
     }
     private void configureNamedCommands() {
         //Pathplanner named commands
@@ -216,7 +197,7 @@ public class RobotContainer {
         NamedCommands.registerCommand("HeadWaitForCoral", new WaitForHeadCoral(head));
         NamedCommands.registerCommand("IntakeWaitForCoral", new WaitForIntakeCoral(head, intake));
 
-        NamedCommands.registerCommand("AlgaeRemSpin", new AlgaeRemSpin(algaeRem, true));
+        // NamedCommands.registerCommand("AlgaeRemSpin", new AlgaeRemSpin(algaeRem, true));
     }
     private void addTelemetry() {
         SmartDashboard.putData("Reset Reef PiP", new ResetLLPiP(reeflimelight));
@@ -233,37 +214,37 @@ public class RobotContainer {
             SmartDashboard.putData("Elev Manual Move (LVL)", new MoveToLevelManual(elev));
             SmartDashboard.putData("Elev Zero", new InstantCommand(elev::setAsZero).ignoringDisable(true));
 
-            SmartDashboard.putData("Climb Lever Manual (DEG)", new ClimbLeverDegreesManual(climb));
-            SmartDashboard.putData("Climb Clamp Manual (DEG)", new ClimbClampDegreesManual(climb));
-            SmartDashboard.putData("Climb Manual", new Climb(climb));
-            SmartDashboard.putData("Declimb Manual", new Declimb(climb));
-            SmartDashboard.putData("Climb Slow", new Climb(climb, ClimbConstants.leverSlowVbus));
+            // SmartDashboard.putData("Climb Lever Manual (DEG)", new ClimbLeverDegreesManual(climb));
+            // SmartDashboard.putData("Climb Clamp Manual (DEG)", new ClimbClampDegreesManual(climb));
+            // SmartDashboard.putData("Climb Manual", new Climb(climb));
+            // SmartDashboard.putData("Declimb Manual", new Declimb(climb));
+            // SmartDashboard.putData("Climb Slow", new Climb(climb, ClimbConstants.leverSlowVbus));
 
             SmartDashboard.putData("Head Shoot", new Shoot(head, elev));
             SmartDashboard.putData("Head ShootSlow", new ShootSlow(head, elev));
 
-            SmartDashboard.putData("AlgaeRem Spin", new AlgaeRemSpin(algaeRem, true));
+            // SmartDashboard.putData("AlgaeRem Spin", new AlgaeRemSpin(algaeRem, true));
         }
     }
     private void setupAutoDisplay() {
         //update the displayed auto path in smartdashboard when ever the selection is changed
         //display is cleared in teleopInit
-        if(autoChooser.getSelected() != null)
-            LoggingManager.logValue("SelectedAuto", autoChooser.getSelected().getName());
-        else
-            LoggingManager.logValue("SelectedAuto", "Null");
+        // if(autoChooser.getSelected() != null)
+        //     LoggingManager.logValue("SelectedAuto", autoChooser.getSelected().getName());
+        // else
+        //     LoggingManager.logValue("SelectedAuto", "Null");
         
-        autoChooser.onChange((selected) -> {
-            if(DriverStation.isTeleopEnabled()) //don't display auton path in teleop
-                return;
+        // autoChooser.onChange((selected) -> {
+        //     if(DriverStation.isTeleopEnabled()) //don't display auton path in teleop
+        //         return;
 
-            displayAuto();
+        //     displayAuto();
 
-            if(autoChooser.getSelected() != null)
-                LoggingManager.logValue("SelectedAuto", autoChooser.getSelected().getName());
-            else
-                LoggingManager.logValue("SelectedAuto", "Null");
-        });
+        //     if(autoChooser.getSelected() != null)
+        //         LoggingManager.logValue("SelectedAuto", autoChooser.getSelected().getName());
+        //     else
+        //         LoggingManager.logValue("SelectedAuto", "Null");
+        // });
 
         /*
          * Robot.teleopInit clears the display
@@ -275,23 +256,24 @@ public class RobotContainer {
         swerve.setMotorBrake(brake);
     }
     public void displayAuto() {
-        Command auto = autoChooser.getSelected();
+        // Command auto = autoChooser.getSelected();
 
-        if(auto.getName().equals("InstantCommand")) {
-            AutoDisplayHelper.clearAutoPath();
-            return;
-        }
+        // if(auto.getName().equals("InstantCommand")) {
+        //     AutoDisplayHelper.clearAutoPath();
+        //     return;
+        // }
 
-        boolean isRed = false;
-        Optional<Alliance> alliance = DriverStation.getAlliance();
+        // boolean isRed = false;
+        // Optional<Alliance> alliance = DriverStation.getAlliance();
 
-        if(alliance.isPresent() && alliance.get() == Alliance.Red)
-            isRed = true;
+        // if(alliance.isPresent() && alliance.get() == Alliance.Red)
+        //     isRed = true;
 
-        AutoDisplayHelper.displayAutoPath(auto, isRed);
+        // AutoDisplayHelper.displayAutoPath(auto, isRed);
     }
     public Command getAutonomousCommand() {
-        return autoChooser.getSelected();
+        // return autoChooser.getSelected();
+        return Commands.none();
     }
     public SwerveSubsystem getSwerveSubsystem() {
         return swerve;

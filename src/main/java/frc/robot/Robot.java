@@ -180,7 +180,7 @@ public class Robot extends TimedRobot {
     @Override
     public void teleopPeriodic()
     {
-        LoggingManager.logAndSendValue("Time Remaining", DriverStation.getMatchTime());
+        // LoggingManager.logAndSendValue("Time Remaining", DriverStation.getMatchTime());
 
         if(TelemetryConstants.debugTelemetry) {
             SmartDashboard.putNumber("velocity", Math.hypot(
