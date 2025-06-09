@@ -8,7 +8,7 @@ import swervelib.parser.PIDFConfig;
 public abstract class ElevConstants {
 
     public static final int motorID = 19;
-    public static final double maxVBus = 1;
+    public static final double maxVBus = 0.6;
     public static final double maxCurrent = 35;
     public static final PIDFConfig pidf = new PIDFConfig(0.3, 0, 0.02, 0);
     public static final double minPosTicks = 0;

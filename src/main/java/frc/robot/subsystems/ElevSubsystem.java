@@ -3,6 +3,7 @@ package frc.robot.subsystems;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.SoftwareLimitSwitchConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.MusicTone;
 import com.ctre.phoenix6.controls.PositionDutyCycle;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.GravityTypeValue;
@@ -13,8 +14,11 @@ import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.commands.LoggingManager;
 import frc.robot.constants.ElevConstants;
@@ -166,6 +170,46 @@ public class ElevSubsystem extends SubsystemBase {
     }
     public void setVbus(double pow) {
         motor.set(pow);
+    }
+    public Command playTone(double freq) {
+        return new InstantCommand(() -> {
+            motor.setControl(new MusicTone(freq));
+        }).ignoringDisable(true);
+    }
+    public Command playTone(double freq, double secs) {
+        return new Command() {
+            private Timer timer;
+            private boolean hasStopped;
+
+            @Override
+            public void initialize() {
+                timer = new Timer();
+                timer.start();
+                motor.setControl(new MusicTone(freq));
+                hasStopped = false;
+            }
+            @Override
+            public void execute() {
+                if(timer.hasElapsed(secs - 0.05) && !hasStopped) {
+                    motor.setControl(new MusicTone(0));
+                    hasStopped = true;
+                }
+            }
+            @Override
+            public void end(boolean interrupted) {
+                timer.stop();
+                motor.setControl(new MusicTone(0));
+            }
+
+            @Override
+            public boolean isFinished() {
+                return timer.hasElapsed(secs);
+            }
+            @Override
+            public boolean runsWhenDisabled() {
+                return true;
+            }
+        };
     }
 
     public double getPositionInches() {

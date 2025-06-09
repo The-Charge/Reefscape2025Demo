@@ -6,8 +6,6 @@ package frc.robot;
 
 import java.io.File;
 
-import com.pathplanner.lib.auto.NamedCommands;
-
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
@@ -18,21 +16,17 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import frc.robot.commands.IntakeRumble;
 import frc.robot.commands.elev.MoveToInchesManual;
 import frc.robot.commands.elev.MoveToLevel;
 import frc.robot.commands.elev.MoveToLevelManual;
 import frc.robot.commands.elev.MoveToTicksManual;
+import frc.robot.commands.elev.PlayMusic;
 import frc.robot.commands.head.Shoot;
 import frc.robot.commands.head.ShootSlow;
-import frc.robot.commands.head.WaitForHeadCoral;
 import frc.robot.commands.intake.Intake;
 import frc.robot.commands.intake.ManualIntake;
-import frc.robot.commands.intake.WaitForIntakeCoral;
 import frc.robot.commands.leds.LEDManager;
 import frc.robot.commands.swervedrive.drivebase.AlignToBranch;
 import frc.robot.commands.swervedrive.drivebase.DriveSlow;
@@ -40,21 +34,15 @@ import frc.robot.commands.swervedrive.drivebase.DriveToReefDist;
 import frc.robot.commands.swervedrive.drivebase.DriveToSourceDist;
 import frc.robot.commands.swervedrive.drivebase.SwerveZero;
 import frc.robot.commands.swervedrive.drivebase.TeleopDrive;
-import frc.robot.commands.vision.AlignToTag;
 import frc.robot.commands.vision.DriveToTag;
-import frc.robot.commands.vision.LimelightManager;
-import frc.robot.commands.vision.ResetLLPiP;
 import frc.robot.constants.SwerveConstants;
 import frc.robot.constants.TelemetryConstants;
-import frc.robot.constants.VisionConstants.LLFunnelConstants;
-import frc.robot.constants.VisionConstants.LLReefConstants;
 import frc.robot.subsystems.ElevSubsystem;
 import frc.robot.subsystems.ElevSubsystem.Level;
 import frc.robot.subsystems.HeadSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.LEDSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
-import frc.robot.subsystems.VisionSubsystem;
 import frc.robot.subsystems.VisionSubsystem.ReefPosition;
 
 /**
@@ -71,8 +59,8 @@ public class RobotContainer {
     private final Joystick hid3;
     
     private final SwerveSubsystem swerve = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "swerve"));
-    private final VisionSubsystem reeflimelight = new VisionSubsystem(LLReefConstants.LL_NAME, LLReefConstants.CAMERA_OFFSET, true);
-    private final VisionSubsystem funnellimelight = new VisionSubsystem(LLFunnelConstants.LL_NAME, LLFunnelConstants.CAMERA_OFFSET, true);
+    // private final VisionSubsystem reeflimelight = new VisionSubsystem(LLReefConstants.LL_NAME, LLReefConstants.CAMERA_OFFSET, true);
+    // private final VisionSubsystem funnellimelight = new VisionSubsystem(LLFunnelConstants.LL_NAME, LLFunnelConstants.CAMERA_OFFSET, true);
     private final ElevSubsystem elev = new ElevSubsystem();
     // private final ClimbSubsystem climb = new ClimbSubsystem();
     private final HeadSubsystem head = new HeadSubsystem();
@@ -127,7 +115,7 @@ public class RobotContainer {
         // limelight testing
         // driver1.a().onTrue(Commands.runOnce(swerve::addFakeVision(Reading));
 
-        driver1.a().whileTrue(new AlignToTag(swerve, reeflimelight, ReefPosition.RIGHT));
+        // driver1.a().whileTrue(new AlignToTag(swerve, reeflimelight, ReefPosition.RIGHT));
         
         // driver1.rightBumper().onTrue(new DriveToTag(swerve, true,
         //         () -> (Math.abs(driver1.getLeftX()) < SwerveConstants.LEFT_X_DEADBAND
@@ -179,37 +167,38 @@ public class RobotContainer {
         // driver2.start().whileTrue(new ElevManualUp(elev).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
 
         driver3.button(11).onTrue(new InstantCommand(ledManager::incrementMode));
+        driver3.button(9).onTrue(new PlayMusic(elev));
     }
-    private void configureNamedCommands() {
-        //Pathplanner named commands
+    // private void configureNamedCommands() {
+    //     //Pathplanner named commands
 
-        /*
-         * Please use consitent naming conventions!!
-         * <Subsytem><Action>
-         * Use PascalCase
-         */
-        NamedCommands.registerCommand("SwerveDriveToReefDist", new DriveToReefDist(swerve, head));
-        NamedCommands.registerCommand("SwerveDriveToSourceDist", new DriveToSourceDist(swerve, head));
-        NamedCommands.registerCommand("SwerveAlignToBranch", new AlignToBranch(swerve, head, elev));
+    //     /*
+    //      * Please use consitent naming conventions!!
+    //      * <Subsytem><Action>
+    //      * Use PascalCase
+    //      */
+    //     NamedCommands.registerCommand("SwerveDriveToReefDist", new DriveToReefDist(swerve, head));
+    //     NamedCommands.registerCommand("SwerveDriveToSourceDist", new DriveToSourceDist(swerve, head));
+    //     NamedCommands.registerCommand("SwerveAlignToBranch", new AlignToBranch(swerve, head, elev));
         
-        NamedCommands.registerCommand("ElevHome", new MoveToLevel(elev, head, ElevSubsystem.Level.HOME, true));
-        NamedCommands.registerCommand("ElevLevel1", new MoveToLevel(elev, head, ElevSubsystem.Level.LVL1, true));
-        NamedCommands.registerCommand("ElevLevel2", new MoveToLevel(elev, head, ElevSubsystem.Level.LVL2, true));
-        NamedCommands.registerCommand("ElevLevel3", new MoveToLevel(elev, head, ElevSubsystem.Level.LVL3, true));
-        NamedCommands.registerCommand("ElevLevel4", new MoveToLevel(elev, head, ElevSubsystem.Level.LVL4, true));
-        NamedCommands.registerCommand("ElevAlgaeLow", new MoveToLevel(elev, head, ElevSubsystem.Level.ALGAE_LOW, true));
-        NamedCommands.registerCommand("ElevAlgaeHigh", new MoveToLevel(elev, head, ElevSubsystem.Level.ALGAE_HIGH, true));
+    //     NamedCommands.registerCommand("ElevHome", new MoveToLevel(elev, head, ElevSubsystem.Level.HOME, true));
+    //     NamedCommands.registerCommand("ElevLevel1", new MoveToLevel(elev, head, ElevSubsystem.Level.LVL1, true));
+    //     NamedCommands.registerCommand("ElevLevel2", new MoveToLevel(elev, head, ElevSubsystem.Level.LVL2, true));
+    //     NamedCommands.registerCommand("ElevLevel3", new MoveToLevel(elev, head, ElevSubsystem.Level.LVL3, true));
+    //     NamedCommands.registerCommand("ElevLevel4", new MoveToLevel(elev, head, ElevSubsystem.Level.LVL4, true));
+    //     NamedCommands.registerCommand("ElevAlgaeLow", new MoveToLevel(elev, head, ElevSubsystem.Level.ALGAE_LOW, true));
+    //     NamedCommands.registerCommand("ElevAlgaeHigh", new MoveToLevel(elev, head, ElevSubsystem.Level.ALGAE_HIGH, true));
 
-        NamedCommands.registerCommand("HeadShoot", new Shoot(head, elev));
-        NamedCommands.registerCommand("HeadShootSlow", new ShootSlow(head, elev));
-        NamedCommands.registerCommand("HeadWaitForCoral", new WaitForHeadCoral(head));
-        NamedCommands.registerCommand("IntakeWaitForCoral", new WaitForIntakeCoral(head, intake));
+    //     NamedCommands.registerCommand("HeadShoot", new Shoot(head, elev));
+    //     NamedCommands.registerCommand("HeadShootSlow", new ShootSlow(head, elev));
+    //     NamedCommands.registerCommand("HeadWaitForCoral", new WaitForHeadCoral(head));
+    //     NamedCommands.registerCommand("IntakeWaitForCoral", new WaitForIntakeCoral(head, intake));
 
-        // NamedCommands.registerCommand("AlgaeRemSpin", new AlgaeRemSpin(algaeRem, true));
-    }
+    //     // NamedCommands.registerCommand("AlgaeRemSpin", new AlgaeRemSpin(algaeRem, true));
+    // }
     private void addTelemetry() {
-        SmartDashboard.putData("Reset Reef PiP", new ResetLLPiP(reeflimelight));
-        SmartDashboard.putData("Reset Funnel PiP", new ResetLLPiP(funnellimelight));
+        // SmartDashboard.putData("Reset Reef PiP", new ResetLLPiP(reeflimelight));
+        // SmartDashboard.putData("Reset Funnel PiP", new ResetLLPiP(funnellimelight));
 
         //one time telemetry values, such as dashboard commands
         if(TelemetryConstants.debugTelemetry) {
@@ -234,7 +223,7 @@ public class RobotContainer {
             // SmartDashboard.putData("AlgaeRem Spin", new AlgaeRemSpin(algaeRem, true));
         }
     }
-    private void setupAutoDisplay() {
+    // private void setupAutoDisplay() {
         //update the displayed auto path in smartdashboard when ever the selection is changed
         //display is cleared in teleopInit
         // if(autoChooser.getSelected() != null)
@@ -258,7 +247,7 @@ public class RobotContainer {
          * Robot.teleopInit clears the display
          * Robot.autonomousInit redraws the display
          */
-    }
+    // }
 
     public void setMotorBrake(boolean brake) {
         swerve.setMotorBrake(brake);
@@ -295,21 +284,21 @@ public class RobotContainer {
     public void clearTeleopDefaultCommand() {
         swerve.setDefaultCommand(new SwerveZero(swerve));
     }
-    public void scheduleLimelight() {
-        new LimelightManager(swerve, reeflimelight, funnellimelight).schedule();
-    }
-    public void scheduleLimelightAuton() {
-        if(SwerveConstants.autonVisionTime == 0)
-            return;
+    // public void scheduleLimelight() {
+    //     new LimelightManager(swerve, reeflimelight, funnellimelight).schedule();
+    // }
+    // public void scheduleLimelightAuton() {
+    //     if(SwerveConstants.autonVisionTime == 0)
+    //         return;
 
-        new ParallelRaceGroup(
-            new LimelightManager(swerve, reeflimelight, funnellimelight),
-            new WaitCommand(SwerveConstants.autonVisionTime)
-        ).schedule();
-    }
-    public void scheduleControllerRumble() {
-        new IntakeRumble(head, driver1, driver2).schedule();
-    }
+    //     new ParallelRaceGroup(
+    //         new LimelightManager(swerve, reeflimelight, funnellimelight),
+    //         new WaitCommand(SwerveConstants.autonVisionTime)
+    //     ).schedule();
+    // }
+    // public void scheduleControllerRumble() {
+        // new IntakeRumble(head, driver1, driver2).schedule();
+    // }
     public void stopRumble() {
         driver1.setRumble(RumbleType.kBothRumble, 0);
         driver2.setRumble(RumbleType.kBothRumble, 0);

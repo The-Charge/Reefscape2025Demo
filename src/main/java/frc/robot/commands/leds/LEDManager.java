@@ -46,8 +46,8 @@ public class LEDManager extends Command {
         ledMode = 0;
 
         breathe = new LEDDualBreatheAnimation(LEDConstants.chargeGreen, LEDConstants.chargeGold, 4, 0.2, 0.4);
-        steps = new LEDStepsAnimation(LEDConstants.chargeGreen, LEDConstants.chargeGold, 4, Units.MetersPerSecond.of(Integer.MAX_VALUE));
-        scan = new LEDScanAnimation(LEDConstants.chargeGold, 10, 6);
+        steps = new LEDStepsAnimation(LEDConstants.chargeGreen, LEDConstants.chargeGold, 4, Units.MetersPerSecond.of(2));
+        scan = new LEDScanAnimation(LEDConstants.chargeGold, 16, 4);
         // rainbow = LEDPattern.rainbow(255, 255)
         //     .scrollAtAbsoluteSpeed(Units.MetersPerSecond.of(4), LEDConstants.ledSpacing);
 

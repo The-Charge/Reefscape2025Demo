@@ -26,10 +26,10 @@ public class MoveToLevel extends Command {
 
     @Override
     public void initialize() {
-        if(targetLevel != ElevSubsystem.Level.HOME && targetLevel != ElevSubsystem.Level.ALGAE_LOW && targetLevel != ElevSubsystem.Level.ALGAE_HIGH && !head.getHasCoral()) {
-            wait = false; //prevent the command from getting stuck
-            return;
-        }
+        // if(targetLevel != ElevSubsystem.Level.HOME && targetLevel != ElevSubsystem.Level.ALGAE_LOW && targetLevel != ElevSubsystem.Level.ALGAE_HIGH && !head.getHasCoral()) {
+        //     wait = false; //prevent the command from getting stuck
+        //     return;
+        // }
 
         elev.setTargetPositionLevel(targetLevel);
     }

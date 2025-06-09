@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.commands.LoggingManager;
 import frc.robot.constants.SwerveConstants;
 import frc.robot.constants.TelemetryConstants;
@@ -132,7 +133,8 @@ public class Robot extends TimedRobot {
     {
         m_robotContainer.clearTeleopDefaultCommand();
         m_robotContainer.setMotorBrake(true);
-        m_autonomousCommand = m_robotContainer.getAutonomousCommand();
+        // m_autonomousCommand = m_robotContainer.getAutonomousCommand();
+        m_autonomousCommand = Commands.print("No autons in demo mode");
         
         // schedule the autonomous command (example)
         if (m_autonomousCommand != null)
@@ -144,7 +146,7 @@ public class Robot extends TimedRobot {
 
         m_robotContainer.displayAuto();
         m_robotContainer.getHeadSubsystem().recheckHasCoral();
-        m_robotContainer.scheduleLimelightAuton();
+        // m_robotContainer.scheduleLimelightAuton();
     }
     
     /**
@@ -165,13 +167,13 @@ public class Robot extends TimedRobot {
         else {
             CommandScheduler.getInstance().cancelAll();
         }
-        m_robotContainer.scheduleLimelight();
+        // m_robotContainer.scheduleLimelight();
         
         m_robotContainer.setTeleopDefaultCommand();
         m_robotContainer.setMotorBrake(true);
         AutoDisplayHelper.clearAutoPath();
         m_robotContainer.getHeadSubsystem().recheckHasCoral();
-        m_robotContainer.scheduleControllerRumble();
+        // m_robotContainer.scheduleControllerRumble();
     }
     
     /**

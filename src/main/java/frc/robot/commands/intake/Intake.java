@@ -36,10 +36,10 @@ public class Intake extends Command {
         if(startupCheck || level != lastLevel || hasCoral != lastHadCoral) {
             switch(level) {
                 case HOME:
-                    if(!hasCoral)
+                    // if(!hasCoral)
                         intake.vBus(IntakeConstants.intakeVBus);
-                    else
-                        intake.stop();
+                    // else
+                        // intake.stop();
                     break;
 
                 default:
