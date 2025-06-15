@@ -26,7 +26,7 @@ public abstract class HeadConstants {
 
     public static final double indexerVbus = 0.2;
 
-    public static final double shootTime = 0.75; //seconds
+    public static final double shootTime = 0.2; //seconds
     public static final double shootVBus = 1;
     public static final double shootSlowVBus = 0.33;
 }

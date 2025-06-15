@@ -84,8 +84,8 @@ public class RobotContainer {
             () -> -MathUtil.applyDeadband(hid1.getLeftY(), SwerveConstants.LEFT_Y_DEADBAND),
             () -> -MathUtil.applyDeadband(hid1.getLeftX(), SwerveConstants.LEFT_X_DEADBAND),
             () -> -MathUtil.applyDeadband(hid1.getRightX(), SwerveConstants.RIGHT_X_DEADBAND),
-            () -> hid1.getPOV(),
-            () -> hid1.getLeftTriggerAxis() > SwerveConstants.TRIGGER_DEADBAND,
+            () -> -1, // () -> hid1.getPOV(),
+            () -> false, // () -> hid1.getLeftTriggerAxis() > SwerveConstants.TRIGGER_DEADBAND,
             () -> hid1.getBackButton(),
             () -> MathUtil.applyDeadband(hid1.getRightTriggerAxis(), SwerveConstants.TRIGGER_DEADBAND)
         );
