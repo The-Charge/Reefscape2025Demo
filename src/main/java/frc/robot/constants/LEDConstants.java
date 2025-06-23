@@ -11,11 +11,13 @@ import frc.robot.subsystems.ElevSubsystem;
 public abstract class LEDConstants {
     
     public static final int ledPort = 9;
-    public static final int ledLength = 142;
+    public static final int ledLength = 141;
     public static final ColorOrder ledColorOrder = ColorOrder.kGRB;
     public static final Distance ledSpacing = Units.Meters.of(1 / 60.0); //60 leds per meter
     public static final int[] brokenIndicies = new int[] {
-        ledLength - 12 * 3 + 1
+        ledLength - 12 * 3 + 1,
+        21,
+        33
     };
 
     public static final Color chargeGreen = new Color("#008800");
